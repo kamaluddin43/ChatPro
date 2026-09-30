@@ -2,359 +2,256 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Ittisal — Global Messenger</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Ittisal — Connect the World</title>
 <style>
 :root{
-  --primary:#1677ff; --primary-dark:#0d5ee8; --bg:#eef3fb; --card:#fff;
-  --text:#172033; --muted:#718096; --line:#e5ebf4; --green:#20c77a;
-  --danger:#ef4444; --shadow:0 8px 30px rgba(22,119,255,.12);
-  --radius:16px;
+  --primary:#1677ff; --primary-dark:#0d5ee8;
+  --bg:#eef3fb; --card:#fff;
+  --text:#172033; --muted:#718096;
+  --line:#e5ebf4; --green:#20c77a; --danger:#ef4444;
+  --shadow:0 8px 30px rgba(22,119,255,.12);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;
-}
+body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden}
 button,input,textarea{font:inherit;outline:none;border:none;background:none}
 button{cursor:pointer}
-.app{
-  max-width:480px;height:100dvh;margin:auto;background:var(--card);
-  position:relative;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.08);
-  display:flex;flex-direction:column;
-}
+.app{max-width:480px;height:100dvh;margin:auto;background:var(--card);position:relative;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.08);display:flex;flex-direction:column}
 .screen{display:none;height:100%;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
 
-/* ---------- AUTH ---------- */
-.auth{
-  padding:30px 24px;justify-content:center;
-  background:linear-gradient(160deg,#edf7ff,#fff 60%);
-}
-.auth .logo{
-  width:88px;height:88px;border-radius:28px;margin:0 auto 20px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  display:grid;place-items:center;font-size:42px;color:#fff;
-  box-shadow:0 16px 35px rgba(22,119,255,.3);
-}
-.auth h1{text-align:center;font-size:32px;font-weight:800;letter-spacing:-.5px}
+/* ===== AUTH ===== */
+.auth{padding:30px 24px;justify-content:center;background:linear-gradient(160deg,#edf7ff,#fff 60%);overflow-y:auto}
+.auth .logo{width:88px;height:88px;border-radius:28px;margin:0 auto 20px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:grid;place-items:center;font-size:42px;color:#fff;box-shadow:0 16px 35px rgba(22,119,255,.3)}
+.auth h1{text-align:center;font-size:32px;font-weight:800}
 .auth .tagline{text-align:center;color:var(--muted);font-size:14px;margin-bottom:22px}
-.field{
-  height:54px;border:1.5px solid #dce4ef;border-radius:14px;background:#fff;
-  padding:0 16px;display:flex;align-items:center;gap:10px;margin-top:12px;
-  transition:border-color .2s;
-}
-.field:focus-within{border-color:var(--primary)}
-.field input{flex:1;font-size:15px;background:transparent}
-.field .icon{font-size:18px;opacity:.7}
-.btn-primary{
-  height:54px;border-radius:14px;background:var(--primary);color:#fff;
-  font-weight:700;font-size:16px;width:100%;margin-top:16px;
-  box-shadow:0 8px 20px rgba(22,119,255,.25);transition:transform .1s;
-}
-.btn-primary:active{transform:scale(.98)}
-.btn-secondary{
-  height:50px;border-radius:14px;background:#fff;color:var(--primary);
-  font-weight:700;font-size:15px;width:100%;margin-top:10px;
-  border:1.5px solid #dce4ef;transition:background .2s;
-}
-.btn-secondary:hover{background:#f8fbff}
-.btn-link{color:var(--muted);font-size:13px;margin-top:18px;text-align:center;background:none;width:100%}
+.field{height:54px;border:1.5px solid #dce4ef;border-radius:14px;background:#fff;padding:0 16px;display:flex;align-items:center;gap:10px;margin-top:12px}
+.field input{flex:1;font-size:15px}
+.btn-primary{height:54px;border-radius:14px;background:var(--primary);color:#fff;font-weight:700;font-size:16px;width:100%;margin-top:16px;box-shadow:0 8px 20px rgba(22,119,255,.25)}
+.btn-secondary{height:50px;border-radius:14px;background:#fff;color:var(--primary);font-weight:700;font-size:15px;width:100%;margin-top:10px;border:1.5px solid #dce4ef}
+.btn-link{color:var(--muted);font-size:13px;margin-top:18px;text-align:center;width:100%}
 
-/* ---------- HEADER ---------- */
-.header{
-  height:68px;padding:0 16px;display:flex;align-items:center;gap:12px;
-  background:linear-gradient(135deg,#1681ff,#075de0);color:#fff;
-  flex-shrink:0;
-}
-.header .brand{font-size:22px;font-weight:800;letter-spacing:-.3px}
+/* ===== HEADER ===== */
+.header{height:64px;padding:0 16px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1681ff,#075de0);color:#fff;flex-shrink:0}
+.header .brand{font-size:22px;font-weight:800}
 .header .spacer{flex:1}
-.icon-btn{
-  width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);
-  color:#fff;font-size:20px;display:grid;place-items:center;
-  transition:background .2s;
-}
+.icon-btn{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:20px;display:grid;place-items:center;transition:.2s}
 .icon-btn:hover{background:rgba(255,255,255,.25)}
 
-/* ---------- SEARCH ---------- */
-.search-bar{
-  margin:12px 16px;height:46px;background:#f1f5fb;border:1px solid var(--line);
-  border-radius:14px;display:flex;align-items:center;padding:0 14px;gap:10px;
-  flex-shrink:0;
-}
-.search-bar input{flex:1;font-size:14px;background:transparent}
-.search-bar .icon{font-size:16px;opacity:.6}
+/* ===== SEARCH ===== */
+.search-bar{margin:12px 16px;height:46px;background:#f1f5fb;border:1px solid var(--line);border-radius:14px;display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0}
+.search-bar input{flex:1;font-size:14px}
 
-/* ---------- TABS ---------- */
+/* ===== TABS ===== */
 .tabs{display:flex;padding:0 12px;border-bottom:1px solid var(--line);flex-shrink:0}
-.tab{
-  flex:1;padding:14px 4px;background:none;color:var(--muted);
-  font-weight:700;font-size:14px;border-bottom:3px solid transparent;
-  transition:color .2s;
-}
+.tab{flex:1;padding:14px 4px;color:var(--muted);font-weight:700;font-size:14px;border-bottom:3px solid transparent;transition:.2s}
 .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
 
-/* ---------- LIST ---------- */
+/* ===== LIST ===== */
 .list{flex:1;overflow-y:auto;padding:6px 10px 90px}
-.row{
-  display:flex;align-items:center;gap:12px;padding:12px 10px;
-  border-radius:14px;transition:background .15s;cursor:pointer;
-}
+.row{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:14px;cursor:pointer;transition:.15s}
 .row:hover{background:#f5f8ff}
-.avatar{
-  width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
-  background:linear-gradient(135deg,#dbeafe,#93c5fd);font-size:24px;
-  flex-shrink:0;position:relative;
-}
-.avatar .dot{
-  position:absolute;width:12px;height:12px;border:2px solid #fff;
-  background:var(--green);border-radius:50%;right:0;bottom:2px;
-}
+.avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#dbeafe,#93c5fd);font-size:24px;flex-shrink:0;position:relative}
+.avatar .dot{position:absolute;width:12px;height:12px;border:2px solid #fff;background:var(--green);border-radius:50%;right:0;bottom:2px}
 .info{flex:1;min-width:0}
 .name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .preview{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
 .meta{text-align:right;font-size:11px;color:var(--muted);flex-shrink:0}
-.badge{
-  background:var(--primary);color:#fff;border-radius:20px;min-width:20px;
-  height:20px;padding:0 6px;display:inline-grid;place-items:center;
-  font-size:10px;font-weight:700;margin-top:5px;
-}
+.badge{background:var(--primary);color:#fff;border-radius:20px;min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center;font-size:10px;font-weight:700;margin-top:5px}
 
-/* ---------- BOTTOM NAV ---------- */
-.bottom-nav{
-  height:68px;border-top:1px solid var(--line);display:flex;background:#fff;
-  flex-shrink:0;
-}
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;font-size:11px;font-weight:600;color:#8b96a8;background:none;
-  transition:color .2s;
-}
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{height:66px;border-top:1px solid var(--line);display:flex;background:#fff;flex-shrink:0}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:#8b96a8;transition:.2s}
 .nav-btn .icon{font-size:22px;line-height:1}
 .nav-btn.active{color:var(--primary)}
 
-/* ---------- CHAT ---------- */
+/* ===== CHAT ===== */
 .chat-screen{background:#eef3f8}
-.chat-header{
-  height:68px;background:linear-gradient(135deg,#1681ff,#075de0);color:#fff;
-  display:flex;align-items:center;padding:0 10px;gap:8px;flex-shrink:0;
-}
+.chat-header{height:64px;background:linear-gradient(135deg,#1681ff,#075de0);color:#fff;display:flex;align-items:center;padding:0 10px;gap:8px;flex-shrink:0}
 .chat-header .avatar{width:44px;height:44px;font-size:20px;background:#fff}
-.chat-header .info{flex:1}
-.chat-header .name{font-weight:700;font-size:15px}
+.chat-header .info{flex:1;min-width:0}
+.chat-header .name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chat-header .status{font-size:11px;opacity:.85}
-.messages{
-  flex:1;overflow-y:auto;padding:18px 14px 12px;
-  background:radial-gradient(circle at 20% 20%,rgba(22,119,255,.05),transparent 30%),#eef3f8;
-}
+.messages{flex:1;overflow-y:auto;padding:18px 14px 12px;background:#eef3f8}
 .day{text-align:center;color:#8a94a5;font-size:11px;margin:5px 0 14px}
-.bubble{
-  max-width:78%;padding:10px 14px;margin:6px 0;border-radius:18px;
-  font-size:14px;line-height:1.4;box-shadow:0 2px 6px rgba(0,0,0,.04);
-  word-wrap:break-word;animation:fadeIn .2s ease;
-}
+.bubble{max-width:78%;padding:10px 14px;margin:6px 0;border-radius:18px;font-size:14px;line-height:1.4;box-shadow:0 2px 6px rgba(0,0,0,.04);word-wrap:break-word;animation:fadeIn .2s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .bubble.in{background:#fff;border-top-left-radius:6px}
 .bubble.out{background:var(--primary);color:#fff;margin-left:auto;border-top-right-radius:6px}
 .bubble .time{font-size:9px;opacity:.65;float:right;margin:5px 0 0 8px}
-.composer{
-  min-height:64px;background:#fff;border-top:1px solid var(--line);
-  display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0;
-}
-.composer input{
-  flex:1;background:#f1f5fa;border-radius:24px;padding:12px 18px;font-size:15px;
-}
-.round-btn{
-  width:44px;height:44px;border-radius:50%;background:#f0f4fa;color:#667085;
-  font-size:20px;display:grid;place-items:center;transition:background .2s;flex-shrink:0;
-}
+.bubble img{max-width:100%;border-radius:10px;margin-top:4px;display:block}
+.bubble.file-link{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit}
+.bubble.file-link .file-icon{font-size:24px}
+.composer{min-height:62px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0}
+.composer input{flex:1;background:#f1f5fa;border-radius:24px;padding:12px 18px;font-size:15px}
+.round-btn{width:44px;height:44px;border-radius:50%;background:#f0f4fa;color:#667085;font-size:20px;display:grid;place-items:center;flex-shrink:0;transition:.15s}
 .round-btn:hover{background:#e2e8f0}
 .round-btn.send{background:var(--primary);color:#fff}
 .round-btn.send:hover{background:var(--primary-dark)}
 
-/* ---------- PROFILE & SETTINGS ---------- */
-.profile-header{
-  text-align:center;padding:30px 20px 24px;
-  background:linear-gradient(135deg,#edf6ff,#fff);
-}
-.big-avatar{
-  width:96px;height:96px;margin:0 auto 14px;border-radius:50%;
-  display:grid;place-items:center;font-size:44px;background:#dbeafe;
-  border:4px solid #fff;box-shadow:var(--shadow);
-}
+/* ===== ATTACHMENT MENU ===== */
+.attach-menu{position:absolute;bottom:70px;left:8px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:8px;display:none;z-index:50;min-width:180px}
+.attach-menu.show{display:block;animation:fadeIn .15s ease}
+.attach-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600}
+.attach-item:hover{background:#f1f5fb}
+.attach-item .ai{font-size:20px}
+
+/* ===== PROFILE ===== */
+.profile-header{text-align:center;padding:30px 20px 24px;background:linear-gradient(135deg,#edf6ff,#fff)}
+.big-avatar{width:96px;height:96px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;font-size:44px;background:#dbeafe;border:4px solid #fff;box-shadow:var(--shadow)}
 .profile-header h2{font-size:22px;margin-bottom:4px}
 .profile-header p{color:var(--muted);font-size:14px}
 .menu{padding:10px 16px 90px;overflow-y:auto}
-.menu-item{
-  display:flex;align-items:center;gap:14px;padding:16px 8px;
-  border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;
-}
+.menu-item{display:flex;align-items:center;gap:14px;padding:16px 8px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
 .menu-item:hover{background:#f8fbff}
-.menu-icon{
-  width:44px;height:44px;border-radius:14px;background:#eef5ff;color:var(--primary);
-  display:grid;place-items:center;font-size:20px;flex-shrink:0;
-}
+.menu-icon{width:44px;height:44px;border-radius:14px;background:#eef5ff;color:var(--primary);display:grid;place-items:center;font-size:20px;flex-shrink:0}
 .menu-text{flex:1}
 .menu-text b{font-size:15px;display:block}
 .menu-text small{color:var(--muted);font-size:12px;margin-top:2px;display:block}
 .menu-arrow{color:#cbd5e1;font-size:18px}
 
-/* ---------- MODAL / SHEET ---------- */
-.modal{
-  position:absolute;inset:0;background:rgba(11,22,40,.5);display:none;
-  align-items:flex-end;z-index:100;
-}
+/* ===== MODAL ===== */
+.modal{position:absolute;inset:0;background:rgba(11,22,40,.5);display:none;align-items:flex-end;z-index:100}
 .modal.show{display:flex}
-.sheet{
-  width:100%;background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 30px;
-  animation:slideUp .25s ease;
-}
+.modal.center{align-items:center;justify-content:center}
+.sheet{width:100%;background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 30px;max-height:85vh;overflow-y:auto;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet h3{margin-bottom:18px;font-size:18px}
-.sheet-action{
-  display:flex;align-items:center;gap:14px;padding:14px 4px;
-  border-bottom:1px solid var(--line);width:100%;text-align:left;
-  background:none;cursor:pointer;transition:background .15s;
-}
+.sheet-action{display:flex;align-items:center;gap:14px;padding:14px 4px;border-bottom:1px solid var(--line);width:100%;text-align:left;transition:.15s}
 .sheet-action:hover{background:#f8fbff}
-.sheet-icon{
-  width:44px;height:44px;border-radius:14px;background:#eef5ff;
-  display:grid;place-items:center;font-size:20px;color:var(--primary);flex-shrink:0;
-}
+.sheet-icon{width:44px;height:44px;border-radius:14px;background:#eef5ff;display:grid;place-items:center;font-size:20px;color:var(--primary);flex-shrink:0}
 .sheet-text b{font-size:15px;display:block}
 .sheet-text small{color:var(--muted);font-size:12px;display:block;margin-top:2px}
 
-/* ---------- TOAST ---------- */
-.toast{
-  position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
-  background:#172033;color:#fff;padding:12px 20px;border-radius:24px;
-  font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:200;
-  white-space:nowrap;max-width:90%;
-}
+/* ===== TOAST ===== */
+.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#172033;color:#fff;padding:12px 20px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:500;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ---------- LOADING ---------- */
-.loading{
-  position:absolute;inset:0;background:#fff;display:flex;align-items:center;
-  justify-content:center;z-index:300;
-}
+/* ===== LOADING ===== */
+.loading{position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:600;flex-direction:column;gap:14px}
 .loading.hide{display:none}
-.spinner{
-  width:40px;height:40px;border:4px solid #dceaff;border-top-color:var(--primary);
-  border-radius:50%;animation:spin .8s linear infinite;
-}
+.spinner{width:40px;height:40px;border:4px solid #dceaff;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.loading p{color:var(--muted);font-size:13px}
 
-/* ---------- SETUP ---------- */
-.setup{padding:24px;overflow-y:auto;background:#f8fbff}
-.setup h2{margin-bottom:8px;font-size:22px}
-.setup .note{
-  background:#eef6ff;padding:14px;border-radius:14px;font-size:13px;
-  line-height:1.6;color:#31577e;margin-bottom:16px;
-}
-.setup textarea{
-  width:100%;height:240px;border:1.5px solid #dce4ef;border-radius:14px;
-  padding:14px;font-family:'Courier New',monospace;font-size:12px;
-  resize:vertical;background:#fff;
-}
-.setup .help{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6}
+/* ===== PROFILE SETUP ===== */
+.setup-card{background:#fff;padding:24px;border-radius:20px;box-shadow:var(--shadow);margin:0 auto;max-width:400px;width:100%}
+.emoji-picker{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+.emoji-option{font-size:28px;padding:8px;border-radius:12px;background:#f1f5fb;text-align:center;cursor:pointer;transition:.15s}
+.emoji-option:hover{background:#e0ebff}
+.emoji-option.selected{background:var(--primary);transform:scale(1.1);box-shadow:0 4px 12px rgba(22,119,255,.3)}
 
-/* ---------- RESPONSIVE ---------- */
-@media(min-width:600px){
-  .app{height:94dvh;margin:3dvh auto;border-radius:24px}
-  .bottom-nav{border-radius:0 0 24px 24px}
-}
+/* ===== GROUP CREATE ===== */
+.member-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;background:#eef5ff;color:var(--primary);border-radius:20px;font-size:12px;font-weight:600;margin:4px 4px 0 0}
+.member-chip .x{cursor:pointer;font-weight:800;font-size:14px;margin-left:2px}
+.select-member{display:flex;align-items:center;gap:12px;padding:12px 8px;border-bottom:1px solid var(--line);cursor:pointer;transition:.15s}
+.select-member:hover{background:#f5f8ff}
+.select-member.selected{background:#eef5ff}
+.check-box{width:24px;height:24px;border-radius:50%;border:2px solid #dce4ef;display:grid;place-items:center;flex-shrink:0;color:#fff;font-size:14px}
+.select-member.selected .check-box{background:var(--primary);border-color:var(--primary)}
+
+/* ===== CALL SCREEN ===== */
+.call-screen{background:linear-gradient(160deg,#1a2b4a,#0f172a);color:#fff;align-items:center;justify-content:space-between;padding:60px 24px 40px;text-align:center}
+.call-avatar{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#93c5fd);font-size:64px;display:grid;place-items:center;margin:0 auto 24px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(22,119,255,.4)}50%{box-shadow:0 0 0 30px rgba(22,119,255,0)}}
+.call-name{font-size:24px;font-weight:700;margin-bottom:8px}
+.call-status{color:#94a3b8;font-size:14px}
+.call-actions{display:flex;gap:20px;justify-content:center;margin-top:auto;padding-top:20px}
+.call-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:26px;display:grid;place-items:center;transition:.2s}
+.call-btn:hover{background:rgba(255,255,255,.25)}
+.call-btn.end{background:#ef4444}
+.call-btn.end:hover{background:#dc2626}
+.call-btn.accept{background:#20c77a}
+.call-btn.accept:hover{background:#16a34a}
+
+/* ===== INCOMING CALL ===== */
+.incoming-call{position:absolute;inset:0;background:rgba(15,23,42,.95);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:400;padding:40px 24px;text-align:center}
+.incoming-call.show{display:flex}
+.incoming-call .call-avatar{animation:pulse 1.2s infinite}
+
+/* ===== FILE PREVIEW ===== */
+.file-preview{margin:6px 0;padding:10px;background:#f1f5fb;border-radius:12px;display:flex;align-items:center;gap:10px}
+.file-preview img{max-width:80px;max-height:80px;border-radius:8px}
+.file-preview .file-name{font-size:13px;flex:1;word-break:break-all}
 </style>
 </head>
 <body>
 <div class="app">
-
   <!-- LOADING -->
-  <div id="loading" class="loading"><div class="spinner"></div></div>
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Connecting to Ittisal...</p>
+  </div>
+  <div id="toast" class="toast"></div>
 
   <!-- ========== LOGIN SCREEN ========== -->
-  <section id="screen-login" class="screen auth active">
+  <section id="screen-login" class="screen auth">
     <div class="logo">💬</div>
     <h1>Ittisal</h1>
-    <p class="tagline">Connect · Chat · Share — Worldwide</p>
-    <div class="field">
-      <span class="icon">✉️</span>
-      <input id="email" type="email" placeholder="Email address" autocomplete="email">
-    </div>
-    <div class="field">
-      <span class="icon">🔒</span>
-      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-    </div>
+    <p class="tagline">Connect · Chat · Share</p>
+    <div class="field">✉️<input id="email" type="email" placeholder="Email address" autocomplete="email"></div>
+    <div class="field">🔒<input id="password" type="password" placeholder="Password" autocomplete="current-password"></div>
     <button class="btn-primary" onclick="handleLogin()">Log In</button>
     <button class="btn-secondary" onclick="handleSignup()">Create New Account</button>
-    <button class="btn-secondary" onclick="handleGuest()" style="color:#64748b">Continue as Guest</button>
-    <button class="btn-link" onclick="showScreen('screen-setup')">⚙️ Firebase Setup</button>
+    <button class="btn-secondary" style="color:#64748b" onclick="handleGuest()">Continue as Guest</button>
   </section>
 
-  <!-- ========== FIREBASE SETUP ========== -->
-  <section id="screen-setup" class="screen setup">
-    <h2>🔧 Connect to Firebase</h2>
-    <div class="note">
-      Paste your Firebase Web App configuration below. This is safe for client-side use — protect your data with Firestore Security Rules.
+  <!-- ========== PROFILE SETUP ========== -->
+  <section id="screen-setup" class="screen auth">
+    <h2 style="text-align:center;margin-bottom:6px;font-size:26px">Welcome to Ittisal!</h2>
+    <p class="tagline">Let's set up your profile</p>
+    <div class="setup-card">
+      <label style="font-size:13px;color:#718096;font-weight:600">Your Name</label>
+      <div class="field">👤<input id="setupName" placeholder="Enter your name" maxlength="30"></div>
+      <label style="font-size:13px;color:#718096;font-weight:600;display:block;margin-top:18px">Choose Avatar</label>
+      <div class="emoji-picker" id="emojiPicker"></div>
+      <button class="btn-primary" onclick="saveProfile()">Continue</button>
     </div>
-    <textarea id="configBox" spellcheck="false">{
-  "apiKey": "PASTE_API_KEY",
-  "authDomain": "YOUR_PROJECT.firebaseapp.com",
-  "projectId": "YOUR_PROJECT_ID",
-  "storageBucket": "YOUR_PROJECT.firebasestorage.app",
-  "messagingSenderId": "YOUR_SENDER_ID",
-  "appId": "YOUR_APP_ID"
-}</textarea>
-    <button class="btn-primary" onclick="saveConfig()">Save & Connect</button>
-    <button class="btn-secondary" onclick="showScreen('screen-login')">Back to Login</button>
-    <p class="help">Your configuration is stored only in this browser's local storage. It never leaves your device except to connect to Firebase.</p>
   </section>
 
-  <!-- ========== HOME ========== -->
+  <!-- ========== HOME (INBOX) ========== -->
   <section id="screen-home" class="screen">
     <header class="header">
       <div class="brand">Ittisal</div>
       <div class="spacer"></div>
-      <button class="icon-btn" onclick="toast('Search is active')">⌕</button>
-      <button class="icon-btn" onclick="handleLogout()">↪</button>
+      <button class="icon-btn" onclick="showScreen('screen-users')" title="Users">👥</button>
+      <button class="icon-btn" onclick="handleLogout()" title="Logout">↪</button>
     </header>
-    <div class="search-bar">
-      <span class="icon">🔎</span>
-      <input id="searchInput" placeholder="Search people, chats, or groups..." oninput="filterList()">
-    </div>
+    <div class="search-bar">🔎<input id="searchChats" placeholder="Search chats..." oninput="filterChats()"></div>
     <div class="tabs">
-      <button class="tab active" onclick="setTab(this,'all')">Chats</button>
-      <button class="tab" onclick="setTab(this,'groups')">Groups</button>
-      <button class="tab" onclick="setTab(this,'calls')">Calls</button>
+      <button class="tab active" onclick="switchHomeTab(this,'chats')">Chats</button>
+      <button class="tab" onclick="switchHomeTab(this,'groups')">Groups</button>
     </div>
-    <div class="list" id="chatList"></div>
-    <button class="icon-btn" onclick="openSheet()" style="position:absolute;right:18px;bottom:82px;width:58px;height:58px;background:var(--primary);box-shadow:0 10px 25px rgba(22,119,255,.35);font-size:26px;z-index:10">＋</button>
+    <div class="list" id="chatList">
+      <div style="text-align:center;padding:60px 20px;color:#718096">
+        <div style="font-size:50px">💬</div>
+        <p style="margin-top:10px">No chats yet</p>
+        <p style="font-size:13px;margin-top:6px">Tap 👥 to find people</p>
+      </div>
+    </div>
+    <button class="icon-btn" onclick="openNewChatSheet()" style="position:absolute;right:18px;bottom:80px;width:58px;height:58px;background:var(--primary);box-shadow:0 10px 25px rgba(22,119,255,.35);font-size:26px;z-index:10">＋</button>
     <nav class="bottom-nav">
-      <button class="nav-btn active" onclick="switchTab('screen-home',this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn" onclick="switchTab('screen-contacts',this)"><span class="icon">👥</span>Contacts</button>
-      <button class="nav-btn" onclick="switchTab('screen-profile',this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn" onclick="switchTab('screen-settings',this)"><span class="icon">⚙️</span>Settings</button>
+      <button class="nav-btn active" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
+      <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
+      <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
+      <button class="nav-btn" onclick="showScreen('screen-settings');setNav(this)"><span class="icon">⚙️</span>Settings</button>
     </nav>
   </section>
 
-  <!-- ========== CONTACTS ========== -->
-  <section id="screen-contacts" class="screen">
+  <!-- ========== USERS ========== -->
+  <section id="screen-users" class="screen">
     <header class="header">
-      <button class="icon-btn" onclick="switchTab('screen-home')">‹</button>
-      <div class="brand">Contacts</div>
+      <div class="brand">All Users</div>
       <div class="spacer"></div>
-      <button class="icon-btn" onclick="toast('Invite link copied!')">↗</button>
+      <button class="icon-btn" onclick="loadUsers()" title="Refresh">🔄</button>
     </header>
-    <div class="search-bar">
-      <span class="icon">🔎</span>
-      <input placeholder="Find people..." oninput="filterContacts(this.value)">
-    </div>
-    <div class="list" id="contactList"></div>
+    <div class="search-bar">🔎<input id="searchUsers" placeholder="Search users..." oninput="filterUsers()"></div>
+    <div class="list" id="userList"></div>
     <nav class="bottom-nav">
-      <button class="nav-btn" onclick="switchTab('screen-home',this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn active" onclick="switchTab('screen-contacts',this)"><span class="icon">👥</span>Contacts</button>
-      <button class="nav-btn" onclick="switchTab('screen-profile',this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn" onclick="switchTab('screen-settings',this)"><span class="icon">⚙️</span>Settings</button>
+      <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
+      <button class="nav-btn active" onclick="setNav(this)"><span class="icon">👥</span>Users</button>
+      <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
+      <button class="nav-btn" onclick="showScreen('screen-settings');setNav(this)"><span class="icon">⚙️</span>Settings</button>
     </nav>
   </section>
 
@@ -363,254 +260,267 @@ button{cursor:pointer}
     <header class="header">
       <div class="brand">My Profile</div>
       <div class="spacer"></div>
-      <button class="icon-btn" onclick="toast('Edit profile coming soon')">✎</button>
+      <button class="icon-btn" onclick="openEditProfile()" title="Edit">✎</button>
     </header>
     <div class="profile-header">
-      <div class="big-avatar" id="profileAvatar">🧑‍💼</div>
-      <h2 id="profileName">Guest User</h2>
-      <p id="profileEmail">guest@ittisal.app</p>
+      <div class="big-avatar" id="profileAvatar">🧑</div>
+      <h2 id="profileName">Loading...</h2>
+      <p id="profileEmail">...</p>
       <p style="margin-top:6px;font-size:12px;color:var(--green)">● Online</p>
     </div>
     <div class="menu">
-      <div class="menu-item" onclick="toast('Phone settings')">
-        <div class="menu-icon">📱</div>
-        <div class="menu-text"><b>Phone</b><small>+880 1XXXXXXXXX</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('Email settings')">
-        <div class="menu-icon">✉️</div>
-        <div class="menu-text"><b>Email</b><small id="profileEmailMenu">guest@ittisal.app</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('About section')">
-        <div class="menu-icon">📝</div>
-        <div class="menu-text"><b>About</b><small>Stay connected with the world.</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('Invite link copied!')">
-        <div class="menu-icon">🔗</div>
-        <div class="menu-text"><b>Invite Friends</b><small>Share Ittisal with your friends</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
+      <div class="menu-item" onclick="toast('Coming soon')"><div class="menu-icon">📱</div><div class="menu-text"><b>Phone</b><small>Add your phone number</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toast('Coming soon')"><div class="menu-icon">📝</div><div class="menu-text"><b>About</b><small>Tell people about you</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="shareInvite()"><div class="menu-icon">🔗</div><div class="menu-text"><b>Invite Friends</b><small>Share Ittisal with friends</small></div><span class="menu-arrow">›</span></div>
     </div>
     <nav class="bottom-nav">
-      <button class="nav-btn" onclick="switchTab('screen-home',this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn" onclick="switchTab('screen-contacts',this)"><span class="icon">👥</span>Contacts</button>
-      <button class="nav-btn active" onclick="switchTab('screen-profile',this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn" onclick="switchTab('screen-settings',this)"><span class="icon">⚙️</span>Settings</button>
+      <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
+      <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
+      <button class="nav-btn active" onclick="setNav(this)"><span class="icon">👤</span>Profile</button>
+      <button class="nav-btn" onclick="showScreen('screen-settings');setNav(this)"><span class="icon">⚙️</span>Settings</button>
     </nav>
   </section>
 
   <!-- ========== SETTINGS ========== -->
   <section id="screen-settings" class="screen">
-    <header class="header">
-      <div class="brand">Settings</div>
-    </header>
+    <header class="header"><div class="brand">Settings</div></header>
     <div class="menu">
-      <div class="menu-item" onclick="toast('Account settings')">
-        <div class="menu-icon">👤</div>
-        <div class="menu-text"><b>Account</b><small>Manage your account</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('Privacy settings')">
-        <div class="menu-icon">🔒</div>
-        <div class="menu-text"><b>Privacy</b><small>Control who can see your info</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('Notification settings')">
-        <div class="menu-icon">🔔</div>
-        <div class="menu-text"><b>Notifications</b><small>Messages, calls, and groups</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toggleDark()">
-        <div class="menu-icon">🌙</div>
-        <div class="menu-text"><b>Theme</b><small>Tap to switch light/dark</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('Language: English · বাংলা · العربية')">
-        <div class="menu-icon">🌐</div>
-        <div class="menu-text"><b>Language</b><small>English · বাংলা · العربية</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="toast('Ittisal v2.0 — International Prototype')">
-        <div class="menu-icon">ℹ️</div>
-        <div class="menu-text"><b>About Ittisal</b><small>Version 2.0 · International</small></div>
-        <span class="menu-arrow">›</span>
-      </div>
+      <div class="menu-item" onclick="toast('Account settings')"><div class="menu-icon">👤</div><div class="menu-text"><b>Account</b><small>Manage your account</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toast('Privacy settings')"><div class="menu-icon">🔒</div><div class="menu-text"><b>Privacy</b><small>Control who sees your info</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toast('Notification settings')"><div class="menu-icon">🔔</div><div class="menu-text"><b>Notifications</b><small>Manage notifications</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toggleDark()"><div class="menu-icon">🌙</div><div class="menu-text"><b>Dark Mode</b><small>Switch theme</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toast('Language: English · বাংলা · العربية')"><div class="menu-icon">🌐</div><div class="menu-text"><b>Language</b><small>English · বাংলা · العربية</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="shareInvite()"><div class="menu-icon">🔗</div><div class="menu-text"><b>Invite Friends</b><small>Share Ittisal</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toast('Ittisal v4.0 · Full Featured')"><div class="menu-icon">ℹ️</div><div class="menu-text"><b>About Ittisal</b><small>Version 4.0</small></div><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="handleLogout()" style="color:#ef4444"><div class="menu-icon" style="background:#fee2e2;color:#ef4444">↪</div><div class="menu-text"><b>Logout</b><small>Sign out of Ittisal</small></div><span class="menu-arrow">›</span></div>
     </div>
     <nav class="bottom-nav">
-      <button class="nav-btn" onclick="switchTab('screen-home',this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn" onclick="switchTab('screen-contacts',this)"><span class="icon">👥</span>Contacts</button>
-      <button class="nav-btn" onclick="switchTab('screen-profile',this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn active" onclick="switchTab('screen-settings',this)"><span class="icon">⚙️</span>Settings</button>
+      <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
+      <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
+      <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
+      <button class="nav-btn active" onclick="setNav(this)"><span class="icon">⚙️</span>Settings</button>
     </nav>
   </section>
 
-  <!-- ========== CHAT ========== -->
+  <!-- ========== CHAT SCREEN ========== -->
   <section id="screen-chat" class="screen chat-screen">
     <header class="chat-header">
-      <button class="icon-btn" onclick="switchTab('screen-home')" style="background:rgba(255,255,255,.12)">‹</button>
-      <div class="avatar" id="chatAvatar">👩</div>
+      <button class="icon-btn" style="background:rgba(255,255,255,.12)" onclick="goBackFromChat()">‹</button>
+      <div class="avatar" id="chatAvatar">👤</div>
       <div class="info">
-        <div class="name" id="chatName">Amina Rahman</div>
+        <div class="name" id="chatName">Chat</div>
         <div class="status" id="chatStatus">online</div>
       </div>
-      <button class="icon-btn" onclick="toast('Starting voice call...')">📞</button>
-      <button class="icon-btn" onclick="toast('Starting video call...')">🎥</button>
+      <button class="icon-btn" onclick="startVoiceCall()" title="Voice Call">📞</button>
+      <button class="icon-btn" onclick="startVideoCall()" title="Video Call">🎥</button>
     </header>
-    <div class="messages" id="messages">
-      <div class="day">Today</div>
-      <div class="bubble in">Hi! How are you today? <span class="time">5:05 PM</span></div>
-      <div class="bubble out">Alhamdulillah, I'm fine. How about you? <span class="time">5:06 PM</span></div>
-      <div class="bubble in">Great! 😊 Where are you from? <span class="time">5:07 PM</span></div>
-      <div class="bubble out">I'm from Bangladesh 🇧🇩 And you? <span class="time">5:08 PM</span></div>
-      <div class="bubble in">Malaysia 🇲🇾 Nice to meet you! <span class="time">5:10 PM</span></div>
-    </div>
+    <div class="messages" id="messages"></div>
     <div class="composer">
-      <button class="round-btn" onclick="toast('Attachment menu')">📎</button>
-      <input id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button class="round-btn" onclick="toggleAttachMenu()" title="Attach">📎</button>
+      <input id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage()}">
       <button class="round-btn send" onclick="sendMessage()">➤</button>
+    </div>
+    <div class="attach-menu" id="attachMenu">
+      <div class="attach-item" onclick="attachImage()"><span class="ai">📸</span> Photo</div>
+      <div class="attach-item" onclick="attachFile()"><span class="ai">📄</span> Document</div>
+      <div class="attach-item" onclick="attachLink()"><span class="ai">🔗</span> Link</div>
+    </div>
+    <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+    <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(event)">
+  </section>
+
+  <!-- ========== CALL SCREEN ========== -->
+  <section id="screen-call" class="screen call-screen">
+    <div>
+      <div class="call-avatar" id="callAvatar">👤</div>
+      <div class="call-name" id="callName">Calling...</div>
+      <div class="call-status" id="callStatus">Connecting...</div>
+    </div>
+    <div class="call-actions">
+      <button class="call-btn" onclick="toggleMute()" id="muteBtn" title="Mute">🎤</button>
+      <button class="call-btn end" onclick="endCall()" title="End Call">📞</button>
+      <button class="call-btn" onclick="toggleSpeaker()" title="Speaker">🔊</button>
     </div>
   </section>
 
   <!-- ========== NEW CHAT SHEET ========== -->
-  <div class="modal" id="sheet" onclick="if(event.target===this)closeSheet()">
+  <div class="modal" id="sheet" onclick="if(event.target===this)closeSheet('sheet')">
     <div class="sheet">
       <h3>Start something new</h3>
-      <button class="sheet-action" onclick="closeSheet();switchTab('screen-contacts')">
+      <button class="sheet-action" onclick="closeSheet('sheet');showScreen('screen-users')">
         <div class="sheet-icon">💬</div>
         <div class="sheet-text"><b>New Chat</b><small>Message a person</small></div>
       </button>
-      <button class="sheet-action" onclick="closeSheet();toast('Group creator opened')">
+      <button class="sheet-action" onclick="closeSheet('sheet');openCreateGroup()">
         <div class="sheet-icon">👥</div>
         <div class="sheet-text"><b>New Group</b><small>Create a group chat</small></div>
       </button>
-      <button class="sheet-action" onclick="closeSheet();toast('Invite link copied!')">
+      <button class="sheet-action" onclick="closeSheet('sheet');shareInvite()">
         <div class="sheet-icon">🔗</div>
         <div class="sheet-text"><b>Invite Friend</b><small>Share your Ittisal link</small></div>
-      </button>
-      <button class="sheet-action" onclick="closeSheet();toast('QR scanner opened')">
-        <div class="sheet-icon">▦</div>
-        <div class="sheet-text"><b>Scan QR</b><small>Connect instantly</small></div>
       </button>
     </div>
   </div>
 
-  <!-- ========== TOAST ========== -->
-  <div class="toast" id="toast"></div>
+  <!-- ========== EDIT PROFILE SHEET ========== -->
+  <div class="modal" id="editSheet" onclick="if(event.target===this)closeSheet('editSheet')">
+    <div class="sheet">
+      <h3>Edit Profile</h3>
+      <label style="font-size:13px;color:#718096;font-weight:600">Your Name</label>
+      <div class="field">👤<input id="editName" placeholder="Your name" maxlength="30"></div>
+      <button class="btn-primary" onclick="saveProfileEdit()">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- ========== CREATE GROUP SHEET ========== -->
+  <div class="modal" id="groupSheet" onclick="if(event.target===this)closeSheet('groupSheet')">
+    <div class="sheet">
+      <h3>Create Group</h3>
+      <label style="font-size:13px;color:#718096;font-weight:600">Group Name</label>
+      <div class="field">👥<input id="groupName" placeholder="Enter group name" maxlength="40"></div>
+      <label style="font-size:13px;color:#718096;font-weight:600;display:block;margin-top:14px">Members</label>
+      <div id="selectedMembers" style="margin-top:6px;min-height:10px"></div>
+      <div id="groupMemberList" style="max-height:250px;overflow-y:auto;margin-top:8px;border:1px solid var(--line);border-radius:12px"></div>
+      <button class="btn-primary" onclick="createGroup()">Create Group</button>
+    </div>
+  </div>
+
+  <!-- ========== INCOMING CALL ========== -->
+  <div class="incoming-call" id="incomingCall">
+    <div class="call-avatar" id="incomingAvatar">👤</div>
+    <div class="call-name" id="incomingName">Incoming Call</div>
+    <div class="call-status" id="incomingType">Voice Call</div>
+    <div class="call-actions" style="margin-top:40px">
+      <button class="call-btn end" onclick="rejectCall()">📞</button>
+      <button class="call-btn accept" onclick="acceptCall()">📞</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { 
+  getAuth, onAuthStateChanged, createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, signOut, updateProfile, signInAnonymously 
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { 
+  getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, 
+  serverTimestamp, doc, setDoc, getDoc, getDocs, updateDoc, limit, deleteDoc 
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-// ---------- GLOBALS ----------
-let app, auth, db, unsubscribe = null, currentUser = null;
-const defaultCfg = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+// ================================================================
+// FIREBASE CONFIG
+// ================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCHYBEd8L4YTZHdWAyMDjK_kyVCjMe2K5c",
+  authDomain: "ittisal-2f6cc.firebaseapp.com",
+  projectId: "ittisal-2f6cc",
+  storageBucket: "ittisal-2f6cc.firebasestorage.app",
+  messagingSenderId: "880476684053",
+  appId: "1:880476684053:web:b22e37a7f1d638f215f31c"
 };
 
-// ---------- SCREEN NAVIGATION ----------
-window.showScreen = (id) => {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-window.switchTab = (id, btn) => {
-  showScreen(id);
-  if (btn) {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  } else {
-    // Auto-highlight correct nav button
-    const map = {
-      'screen-home': 0, 'screen-contacts': 1,
-      'screen-profile': 2, 'screen-settings': 3
-    };
-    if (map[id] !== undefined) {
-      document.querySelectorAll('.nav-btn').forEach((b, i) => {
-        b.classList.toggle('active', i === map[id]);
-      });
-    }
-  }
-};
+// ================================================================
+// GLOBAL STATE
+// ================================================================
+let currentUser = null;
+let currentChatId = null;
+let currentChatInfo = null;
+let allUsers = [];
+let allChats = [];
+let unsubMessages = null;
+let unsubChats = null;
+let unsubUsers = null;
+let selectedEmoji = '🧑';
+let selectedMembers = [];
+let currentHomeTab = 'chats';
+const EMOJIS = ['🧑','👨','👩','🧕','👧','👦','🧔','👶','👴','👵','🧑‍💼','👨‍💻','👩‍💻','🦸','🧙','🐱','🐶','🦊','🐼','🦁','🐯','🐨'];
 
-// ---------- TOAST ----------
+// ================================================================
+// UTILITIES
+// ================================================================
 window.toast = (msg) => {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 };
 
-// ---------- FIREBASE CONFIG ----------
-window.saveConfig = () => {
-  try {
-    const cfg = JSON.parse(document.getElementById('configBox').value);
-    localStorage.setItem('ittisal_firebase_config', JSON.stringify(cfg));
-    toast('Configuration saved. Reloading...');
-    setTimeout(() => location.reload(), 800);
-  } catch (e) {
-    toast('Invalid JSON format');
-  }
+window.showScreen = (id) => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
 };
 
-function isValidConfig(c) {
-  return c && c.apiKey && !String(c.apiKey).startsWith('PASTE_') &&
-         c.projectId && !String(c.projectId).startsWith('YOUR_') && c.appId;
+window.setNav = (btn) => {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+};
+
+window.goHome = (btn) => {
+  showScreen('screen-home');
+  if (btn) setNav(btn);
+};
+
+window.closeSheet = (id = 'sheet') => document.getElementById(id)?.classList.remove('show');
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[<>&"']/g, m => 
+    ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
-async function connectFirebase(cfg) {
-  if (!isValidConfig(cfg)) {
-    document.getElementById('loading').classList.add('hide');
-    showScreen('screen-login');
-    return;
-  }
-  try {
-    app = initializeApp(cfg);
-    auth = getAuth(app);
-    db = getFirestore(app);
-
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user;
-      document.getElementById('loading').classList.add('hide');
-      if (user) {
-        updateProfileUI(user);
-        showScreen('screen-home');
-        loadMessages();
-      } else {
-        showScreen('screen-login');
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    document.getElementById('loading').classList.add('hide');
-    toast('Firebase connection failed. Check config.');
-    showScreen('screen-login');
-  }
+function timeAgo(ts) {
+  if (!ts) return '';
+  const date = ts.toDate ? ts.toDate() : new Date(ts);
+  const diff = (Date.now() - date.getTime()) / 1000;
+  if (diff < 60) return 'now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd';
+  return date.toLocaleDateString();
 }
 
-// ---------- AUTH HANDLERS ----------
+function formatTime(ts) {
+  if (!ts) return '';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function humanError(code) {
+  const map = {
+    'auth/invalid-credential': 'Email or password is incorrect.',
+    'auth/wrong-password': 'Password is incorrect.',
+    'auth/user-not-found': 'No account with this email.',
+    'auth/email-already-in-use': 'This email is already registered.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
+    'auth/invalid-email': 'Please enter a valid email.',
+    'auth/operation-not-allowed': 'Enable this sign-in method in Firebase.',
+    'auth/network-request-failed': 'Check your internet connection.',
+    'auth/too-many-requests': 'Too many attempts. Try again later.',
+    'auth/unauthorized-domain': 'Domain not authorized. Contact admin.'
+  };
+  return map[code] || 'Something went wrong. Try again.';
+}
+
+// ================================================================
+// AUTH HANDLERS
+// ================================================================
 window.handleLogin = async () => {
-  if (!auth) { toast('Connect Firebase first'); showScreen('screen-setup'); return; }
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('password').value;
   if (!email || !pass) { toast('Enter email and password'); return; }
   try {
     await signInWithEmailAndPassword(auth, email, pass);
     toast('Welcome back!');
-  } catch (e) { toast(friendlyError(e.code)); }
+  } catch (e) { toast(humanError(e.code)); }
 };
 
 window.handleSignup = async () => {
-  if (!auth) { toast('Connect Firebase first'); showScreen('screen-setup'); return; }
   const email = document.getElementById('email').value.trim();
   const pass = document.getElementById('password').value;
   if (!email || !pass) { toast('Enter email and password'); return; }
@@ -619,217 +529,1036 @@ window.handleSignup = async () => {
     const res = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(res.user, { displayName: email.split('@')[0] });
     toast('Account created!');
-  } catch (e) { toast(friendlyError(e.code)); }
+  } catch (e) { toast(humanError(e.code)); }
 };
 
 window.handleGuest = async () => {
-  if (!auth) { toast('Connect Firebase first'); showScreen('screen-setup'); return; }
   try {
     await signInAnonymously(auth);
     toast('Signed in as Guest');
-  } catch (e) { toast(friendlyError(e.code)); }
+  } catch (e) { toast(humanError(e.code)); }
 };
 
 window.handleLogout = async () => {
-  if (auth) {
+  if (!confirm('Are you sure you want to log out?')) return;
+  if (unsubMessages) unsubMessages();
+  if (unsubChats) unsubChats();
+  if (unsubUsers) unsubUsers();
+  try {
     await signOut(auth);
     toast('Logged out');
+  } catch (e) { toast('Logout failed'); }
+};
+
+// ================================================================
+// PROFILE SETUP
+// ================================================================
+function renderEmojiPicker() {
+  const picker = document.getElementById('emojiPicker');
+  if (!picker) return;
+  picker.innerHTML = EMOJIS.map(e => 
+    `<div class="emoji-option" data-emoji="${e}">${e}</div>`
+  ).join('');
+  picker.querySelectorAll('.emoji-option').forEach(el => {
+    el.onclick = () => {
+      picker.querySelectorAll('.emoji-option').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedEmoji = el.dataset.emoji;
+    };
+  });
+}
+
+window.saveProfile = async () => {
+  const name = document.getElementById('setupName').value.trim();
+  if (!name) { toast('Please enter your name'); return; }
+  try {
+    await setDoc(doc(db, 'users', currentUser.uid), {
+      uid: currentUser.uid,
+      name,
+      emoji: selectedEmoji,
+      email: currentUser.email || 'guest@ittisal.app',
+      lastSeen: serverTimestamp(),
+      createdAt: serverTimestamp()
+    });
+    await updateProfile(currentUser, { displayName: name });
+    toast('Profile saved! Welcome to Ittisal');
+    showScreen('screen-home');
+    await loadUsers();
+    loadAllChats();
+  } catch (e) {
+    console.error(e);
+    toast('Could not save profile');
   }
 };
 
-// ---------- PROFILE UI ----------
-function updateProfileUI(user) {
-  const name = user.displayName || (user.isAnonymous ? 'Guest User' : 'User');
-  const email = user.email || 'guest@ittisal.app';
-  const initial = name.charAt(0).toUpperCase();
-  const emoji = ['🧑‍💼','👩','👨','🧕','👧','👦'][name.length % 6];
+// ================================================================
+// USERS
+// ================================================================
+window.loadUsers = async () => {
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    allUsers = [];
+    snap.forEach(d => {
+      if (d.id !== currentUser?.uid) allUsers.push(d.data());
+    });
+    renderUsers(allUsers);
+    // Re-render chats to update names
+    if (allChats.length) renderChats(filteredChats());
+  } catch (e) {
+    console.error(e);
+    toast('Could not load users');
+  }
+};
 
-  document.getElementById('profileAvatar').textContent = emoji;
-  document.getElementById('profileName').textContent = name;
-  document.getElementById('profileEmail').textContent = email;
-  document.getElementById('profileEmailMenu').textContent = email;
-}
-
-// ---------- CHAT LIST ----------
-const sampleChats = [
-  { name: 'Amina Rahman', flag: '🇧🇩', emoji: '👩', msg: 'Hi! How are you today?', time: '5:12 PM', unread: 0, online: true },
-  { name: 'Global Friends 🌍', flag: '🌍', emoji: '👥', msg: 'Rashed: Good to see you!', time: '4:48 PM', unread: 5, online: false },
-  { name: 'David Smith', flag: '🇺🇸', emoji: '👨', msg: 'Voice message (0:12)', time: '3:32 PM', unread: 2, online: true },
-  { name: 'Fatima Noor', flag: '🇲🇾', emoji: '👩', msg: 'Photo', time: '2:17 PM', unread: 0, online: false },
-  { name: 'Muhammad Ali', flag: '🇵🇰', emoji: '👨', msg: 'Okay, see you!', time: '1:05 PM', unread: 0, online: true },
-  { name: 'International Group', flag: '🌎', emoji: '👥', msg: 'Sara: Welcome everyone!', time: '12:41 PM', unread: 5, online: false },
-  { name: 'Sakura Tanaka', flag: '🇯🇵', emoji: '👩', msg: "Let's chat later 😊", time: '11:15 AM', unread: 0, online: false }
-];
-
-function renderChats(data = sampleChats) {
-  const el = document.getElementById('chatList');
-  el.innerHTML = data.map(c => `
-    <div class="row" onclick="openChat('${c.name.replace(/'/g, "\\'")}','${c.emoji}')">
-      <div class="avatar">${c.emoji}${c.online ? '<span class="dot"></span>' : ''}</div>
+function renderUsers(users) {
+  const el = document.getElementById('userList');
+  if (!el) return;
+  if (users.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
+      <div style="font-size:50px">👥</div>
+      <p style="margin-top:10px">No other users yet</p>
+      <p style="font-size:13px;margin-top:6px">Invite friends to join Ittisal!</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = users.map(u => `
+    <div class="row" onclick="startPrivateChat('${u.uid}')">
+      <div class="avatar">${u.emoji || '🧑'}<span class="dot"></span></div>
       <div class="info">
-        <div class="name">${c.name}</div>
-        <div class="preview">${c.msg}</div>
-      </div>
-      <div class="meta">
-        ${c.time}
-        ${c.unread ? `<div class="badge">${c.unread}</div>` : ''}
+        <div class="name">${escapeHtml(u.name || 'User')}</div>
+        <div class="preview">${escapeHtml(u.email || '')}</div>
       </div>
     </div>
   `).join('');
 }
 
-window.filterList = () => {
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  renderChats(sampleChats.filter(c => (c.name + ' ' + c.msg).toLowerCase().includes(q)));
+window.filterUsers = () => {
+  const q = document.getElementById('searchUsers').value.toLowerCase();
+  renderUsers(allUsers.filter(u => (u.name || '').toLowerCase().includes(q)));
 };
 
-window.setTab = (btn, type) => {
+// ================================================================
+// CHATS (INBOX)
+// ================================================================
+function loadAllChats() {
+  if (unsubChats) unsubChats();
+  const q = query(
+    collection(db, 'chats'),
+    where('members', 'array-contains', currentUser.uid)
+  );
+  unsubChats = onSnapshot(q, (snap) => {
+    allChats = [];
+    snap.forEach(d => allChats.push({ id: d.id, ...d.data() }));
+    allChats.sort((a, b) => {
+      const at = a.updatedAt?.toMillis?.() || 0;
+      const bt = b.updatedAt?.toMillis?.() || 0;
+      return bt - at;
+    });
+    renderChats(filteredChats());
+  }, (err) => {
+    console.error(err);
+    toast('Could not load chats');
+  });
+}
+
+function filteredChats() {
+  if (currentHomeTab === 'groups') return allChats.filter(c => c.isGroup);
+  return allChats;
+}
+
+function getOtherMember(chat) {
+  if (!chat?.members || chat.isGroup) return null;
+  const otherId = chat.members.find(uid => uid !== currentUser.uid);
+  return allUsers.find(u => u.uid === otherId);
+}
+
+function renderChats(chats) {
+  const el = document.getElementById('chatList');
+  if (!el) return;
+  if (chats.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
+      <div style="font-size:50px">💬</div>
+      <p style="margin-top:10px">No chats yet</p>
+      <p style="font-size:13px;margin-top:6px">Tap 👥 to find people</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = chats.map(c => {
+    const other = getOtherMember(c);
+    const title = c.isGroup ? (c.groupName || 'Group') : (other?.name || 'Chat');
+    const emoji = c.isGroup ? '👥' : (other?.emoji || '🧑');
+    let preview = 'Tap to start chatting';
+    if (c.lastMessage) {
+      if (c.lastMessageType === 'image') preview = '📸 Photo';
+      else if (c.lastMessageType === 'file') preview = '📄 File';
+      else preview = c.lastMessage;
+    }
+    return `
+      <div class="row" onclick="openChat('${c.id}')">
+        <div class="avatar">${emoji}</div>
+        <div class="info">
+          <div class="name">${escapeHtml(title)}</div>
+          <div class="preview">${escapeHtml(preview)}</div>
+        </div>
+        <div class="meta">${timeAgo(c.updatedAt)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.filterChats = () => {
+  const q = document.getElementById('searchChats').value.toLowerCase();
+  const source = filteredChats();
+  const filtered = source.filter(c => {
+    const other = getOtherMember(c);
+    const title = c.isGroup ? (c.groupName || '') : (other?.name || '');
+    return title.toLowerCase().includes(q);
+  });
+  renderChats(filtered);
+};
+
+window.switchHomeTab = (btn, type) => {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  if (type === 'groups') renderChats(sampleChats.filter(c => c.name.toLowerCase().includes('group')));
-  else if (type === 'calls') renderChats(sampleChats.filter((c, i) => i === 2 || i === 4));
-  else renderChats();
+  currentHomeTab = type;
+  renderChats(filteredChats());
 };
 
-// ---------- CONTACTS ----------
-const sampleContacts = [
-  { name: 'Amina Rahman', emoji: '👩', status: 'Online', online: true },
-  { name: 'David Smith', emoji: '👨', status: 'Online', online: true },
-  { name: 'Fatima Noor', emoji: '👩', status: 'Last seen recently', online: false },
-  { name: 'Muhammad Ali', emoji: '👨', status: 'Online', online: true },
-  { name: 'Sakura Tanaka', emoji: '👩', status: 'Last seen today', online: false }
-];
-
-function renderContacts(data = sampleContacts) {
-  const el = document.getElementById('contactList');
-  el.innerHTML = data.map(c => `
-    <div class="row" onclick="openChat('${c.name.replace(/'/g, "\\'")}','${c.emoji}')">
-      <div class="avatar">${c.emoji}${c.online ? '<span class="dot"></span>' : ''}</div>
-      <div class="info">
-        <div class="name">${c.name}</div>
-        <div class="preview">${c.status}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-window.filterContacts = (q) => {
-  q = q.toLowerCase();
-  renderContacts(sampleContacts.filter(c => c.name.toLowerCase().includes(q)));
-};
-
-// ---------- OPEN CHAT ----------
-window.openChat = (name, emoji) => {
-  document.getElementById('chatName').textContent = name;
-  document.getElementById('chatAvatar').textContent = emoji;
-  document.getElementById('chatStatus').textContent =
-    name.includes('Global') || name.includes('International') ? 'group · 128 members' : 'online';
-  showScreen('screen-chat');
-  setTimeout(() => document.getElementById('messageInput').focus(), 150);
-};
-
-// ---------- SEND MESSAGE (Firestore) ----------
-window.sendMessage = async () => {
-  const input = document.getElementById('messageInput');
-  const text = input.value.trim();
-  if (!text) return;
-
-  // Always show locally first (optimistic UI)
-  appendMessage(text, 'out');
-
-  if (currentUser && db) {
-    try {
-      await addDoc(collection(db, 'messages'), {
-        text,
-        uid: currentUser.uid,
-        name: currentUser.displayName || 'Guest',
-        createdAt: serverTimestamp()
-      });
-    } catch (e) {
-      console.error(e);
-      toast('Message could not be saved to cloud');
-    }
+// ================================================================
+// START PRIVATE CHAT
+// ================================================================
+window.startPrivateChat = async (otherUid) => {
+  const existing = allChats.find(c =>
+    !c.isGroup &&
+    c.members?.includes(currentUser.uid) &&
+    c.members?.includes(otherUid) &&
+    c.members.length === 2
+  );
+  if (existing) {
+    openChat(existing.id);
+    return;
   }
-  input.value = '';
+  try {
+    const chatRef = await addDoc(collection(db, 'chats'), {
+      members: [currentUser.uid, otherUid],
+      isGroup: false,
+      lastMessage: '',
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp()
+    });
+    openChat(chatRef.id);
+  } catch (e) {
+    console.error(e);
+    toast('Could not start chat');
+  }
 };
 
-function appendMessage(text, type) {
+// ================================================================
+// OPEN CHAT
+// ================================================================
+window.openChat = (chatId) => {
+  currentChatId = chatId;
+  const chat = allChats.find(c => c.id === chatId);
+  if (!chat) { toast('Chat not found'); return; }
+  currentChatInfo = chat;
+
+  const other = getOtherMember(chat);
+  const title = chat.isGroup ? (chat.groupName || 'Group') : (other?.name || 'Chat');
+  const emoji = chat.isGroup ? '👥' : (other?.emoji || '🧑');
+
+  document.getElementById('chatName').textContent = title;
+  document.getElementById('chatAvatar').textContent = emoji;
+  document.getElementById('chatStatus').textContent = chat.isGroup 
+    ? `${chat.members.length} members` 
+    : 'online';
+
+  showScreen('screen-chat');
+  loadMessages(chatId);
+  setTimeout(() => document.getElementById('messageInput')?.focus(), 150);
+};
+
+function loadMessages(chatId) {
+  if (unsubMessages) unsubMessages();
   const box = document.getElementById('messages');
-  const b = document.createElement('div');
-  b.className = 'bubble ' + type;
-  b.innerHTML = text.replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m])) +
-    ' <span class="time">now</span>';
-  box.appendChild(b);
-  box.scrollTop = box.scrollHeight;
-}
+  if (!box) return;
+  box.innerHTML = '<div class="day">Loading...</div>';
 
-// ---------- LOAD REAL-TIME MESSAGES ----------
-function loadMessages() {
-  if (!db) return;
-  if (unsubscribe) unsubscribe();
-
-  const q = query(collection(db, 'messages'), orderBy('createdAt', 'asc'));
-  unsubscribe = onSnapshot(q, (snap) => {
-    const box = document.getElementById('messages');
-    box.innerHTML = '<div class="day">Real-time messages</div>';
+  const q = query(
+    collection(db, 'chats', chatId, 'messages'),
+    orderBy('createdAt', 'asc'),
+    limit(300)
+  );
+  unsubMessages = onSnapshot(q, (snap) => {
+    box.innerHTML = '<div class="day">Messages</div>';
+    if (snap.empty) {
+      box.innerHTML += '<div style="text-align:center;color:#8a94a5;font-size:13px;margin-top:20px">No messages yet. Say hi! 👋</div>';
+    }
     snap.forEach(d => {
       const m = d.data();
-      const b = document.createElement('div');
-      b.className = 'bubble ' + (m.uid === currentUser?.uid ? 'out' : 'in');
-      b.textContent = (m.name || 'Guest') + ': ' + m.text;
-      box.appendChild(b);
+      box.appendChild(buildMessageBubble(m));
     });
     box.scrollTop = box.scrollHeight;
   }, (err) => {
     console.error(err);
-    toast('Could not load messages. Check Firestore rules.');
+    box.innerHTML = '<div class="day">Could not load messages</div>';
   });
 }
 
-// ---------- SHEET ----------
-window.openSheet = () => document.getElementById('sheet').classList.add('show');
-window.closeSheet = () => document.getElementById('sheet').classList.remove('show');
+function buildMessageBubble(m) {
+  const isMine = m.senderId === currentUser.uid;
+  const b = document.createElement('div');
+  b.className = 'bubble ' + (isMine ? 'out' : 'in');
+  const time = formatTime(m.createdAt);
+  const senderPrefix = (!isMine && currentChatInfo?.isGroup) 
+    ? `<b>${escapeHtml(m.senderName || 'User')}:</b> ` 
+    : '';
 
-// ---------- DARK MODE ----------
+  if (m.type === 'image' && m.imageData) {
+    b.innerHTML = `${senderPrefix}<img src="${m.imageData}" alt="image" onclick="window.open('${m.imageData}')"><span class="time">${time}</span>`;
+  } else if (m.type === 'file') {
+    b.innerHTML = `${senderPrefix}<a class="file-link" href="${m.fileData}" download="${escapeHtml(m.fileName)}"><span class="file-icon">📄</span><span>${escapeHtml(m.fileName)}</span></a><span class="time">${time}</span>`;
+  } else {
+    b.innerHTML = senderPrefix + escapeHtml(m.text || '') + `<span class="time">${time}</span>`;
+  }
+  return b;
+}
+
+// ================================================================
+// SEND MESSAGE
+// ================================================================
+window.sendMessage = async () => {
+  const input = document.getElementById('messageInput');
+  const text = input.value.trim();
+  if (!text || !currentChatId) return;
+  input.value = '';
+
+  const me = allUsers.find(u => u.uid === currentUser.uid);
+  const myName = me?.name || currentUser.displayName || 'Guest';
+
+  try {
+    await addDoc(collection(db, 'chats', currentChatId, 'messages'), {
+      text,
+      type: 'text',
+      senderId: currentUser.uid,
+      senderName: myName,
+      createdAt: serverTimestamp()
+    });
+    await updateDoc(doc(db, 'chats', currentChatId), {
+      lastMessage: text.slice(0, 60),
+      lastMessageType: 'text',
+      lastSenderId: currentUser.uid,
+      updatedAt: serverTimestamp()
+    });
+  } catch (e) {
+    console.error(e);
+    toast('Message not sent');
+  }
+};
+
+window.goBackFromChat = () => {
+  if (unsubMessages) { unsubMessages(); unsubMessages = null; }
+  currentChatId = null;
+  currentChatInfo = null;
+  showScreen('screen-home');
+};
+
+// ================================================================
+// PROFILE UI
+// ================================================================
+async function refreshProfileUI() {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+    const data = userDoc.exists() ? userDoc.data() : {};
+    const name = data.name || currentUser.displayName || 'Guest';
+    const emoji = data.emoji || '🧑';
+    const email = currentUser.email || 'guest@ittisal.app';
+    document.getElementById('profileAvatar').textContent = emoji;
+    document.getElementById('profileName').textContent = name;
+    document.getElementById('profileEmail').textContent = email;
+  } catch (e) { console.error(e); }
+}
+
+window.openEditProfile = () => {
+  document.getElementById('editName').value = document.getElementById('profileName').textContent;
+  document.getElementById('editSheet').classList.add('show');
+};
+
+window.saveProfileEdit = async () => {
+  const newName = document.getElementById('editName').value.trim();
+  if (!newName) { toast('Name cannot be empty'); return; }
+  try {
+    await updateDoc(doc(db, 'users', currentUser.uid), { name: newName });
+    await updateProfile(currentUser, { displayName: newName });
+    document.getElementById('profileName').textContent = newName;
+    closeSheet('editSheet');
+    toast('Profile updated');
+    loadUsers();
+  } catch (e) {
+    toast('Could not update profile');
+  }
+};
+
+// ================================================================
+// NEW CHAT SHEET
+// ================================================================
+window.openNewChatSheet = () => document.getElementById('sheet')?.classList.add('show');
+
+// ================================================================
+// INVITE
+// ================================================================
+window.shareInvite = async () => {
+  const url = location.href;
+  try {
+    if (navigator.share) {
+      await navigator.share({ 
+        title: 'Join Ittisal', 
+        text: 'Chat with me on Ittisal!', 
+        url 
+      });
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast('Link copied! Share with friends.');
+    }
+  } catch (e) {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast('Link copied!');
+    } catch (err) { toast('Could not share'); }
+  }
+};
+
+// ================================================================
+// DARK MODE
+// ================================================================
 window.toggleDark = () => {
   document.body.classList.toggle('dark');
   const dark = document.body.classList.contains('dark');
-  const root = document.documentElement.style;
-  root.setProperty('--card', dark ? '#0f172a' : '#fff');
-  root.setProperty('--bg', dark ? '#0b1220' : '#eef3fb');
-  root.setProperty('--text', dark ? '#f1f5f9' : '#172033');
-  root.setProperty('--muted', dark ? '#94a3b8' : '#718096');
-  root.setProperty('--line', dark ? '#1e293b' : '#e5ebf4');
-  root.setProperty('--primary', dark ? '#3b82f6' : '#1677ff');
+  const r = document.documentElement.style;
+  r.setProperty('--card', dark ? '#0f172a' : '#fff');
+  r.setProperty('--bg', dark ? '#0b1220' : '#eef3fb');
+  r.setProperty('--text', dark ? '#f1f5f9' : '#172033');
+  r.setProperty('--muted', dark ? '#94a3b8' : '#718096');
+  r.setProperty('--line', dark ? '#1e293b' : '#e5ebf4');
   toast(dark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
 };
 
-// ---------- ERROR HELPER ----------
-function friendlyError(code) {
-  const map = {
-    'auth/invalid-credential': 'Email or password is incorrect.',
-    'auth/email-already-in-use': 'This email is already registered.',
-    'auth/weak-password': 'Password must be at least 6 characters.',
-    'auth/invalid-email': 'Please enter a valid email address.',
-    'auth/operation-not-allowed': 'Enable this sign-in method in Firebase Console.',
-    'auth/network-request-failed': 'Check your internet connection.',
-    'auth/too-many-requests': 'Too many attempts. Try again later.'
+// ================================================================
+// PART 3: ADVANCED FEATURES
+// Group Chat, Image/File Sharing, Voice/Video Call, Notifications
+// ================================================================
+
+// ================================================================
+// ATTACHMENT MENU
+// ================================================================
+window.toggleAttachMenu = () => {
+  const menu = document.getElementById('attachMenu');
+  menu?.classList.toggle('show');
+};
+
+window.attachImage = () => {
+  document.getElementById('attachMenu')?.classList.remove('show');
+  document.getElementById('imageInput')?.click();
+};
+
+window.attachFile = () => {
+  document.getElementById('attachMenu')?.classList.remove('show');
+  document.getElementById('fileInput')?.click();
+};
+
+window.attachLink = () => {
+  document.getElementById('attachMenu')?.classList.remove('show');
+  const url = prompt('Enter URL:');
+  if (url && url.trim() && currentChatId) {
+    sendSpecialMessage({
+      text: url.trim(),
+      type: 'text'
+    });
+  }
+};
+
+// ================================================================
+// IMAGE SHARING (Base64, max 100KB after compression)
+// ================================================================
+window.handleImageSelect = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+
+  if (!currentChatId) { toast('Open a chat first'); return; }
+  if (!file.type.startsWith('image/')) { toast('Not an image'); return; }
+
+  toast('Compressing image...');
+
+  try {
+    const base64 = await compressImage(file, 800, 0.6);
+    if (base64.length > 130000) {
+      toast('Image too large. Try a smaller one.');
+      return;
+    }
+    await sendSpecialMessage({
+      imageData: base64,
+      type: 'image',
+      text: '[Photo]'
+    });
+    toast('Photo sent');
+  } catch (e) {
+    console.error(e);
+    toast('Could not send image');
+  }
+};
+
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round(height * maxWidth / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        try {
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        } catch (err) { reject(err); }
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ================================================================
+// FILE SHARING (Base64, max 100KB)
+// ================================================================
+window.handleFileSelect = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+
+  if (!currentChatId) { toast('Open a chat first'); return; }
+  if (file.size > 100000) {
+    toast('File too large. Max 100KB.');
+    return;
+  }
+
+  toast('Uploading file...');
+
+  try {
+    const base64 = await fileToBase64(file);
+    await sendSpecialMessage({
+      fileData: base64,
+      fileName: file.name,
+      fileSize: file.size,
+      type: 'file',
+      text: `[File: ${file.name}]`
+    });
+    toast('File sent');
+  } catch (e) {
+    console.error(e);
+    toast('Could not send file');
+  }
+};
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ================================================================
+// SEND SPECIAL MESSAGE (Image/File)
+// ================================================================
+async function sendSpecialMessage(payload) {
+  if (!currentChatId) return;
+  const me = allUsers.find(u => u.uid === currentUser.uid);
+  const myName = me?.name || currentUser.displayName || 'Guest';
+
+  const msg = {
+    ...payload,
+    senderId: currentUser.uid,
+    senderName: myName,
+    createdAt: serverTimestamp()
   };
-  return map[code] || 'Something went wrong. Please try again.';
+
+  try {
+    await addDoc(collection(db, 'chats', currentChatId, 'messages'), msg);
+    await updateDoc(doc(db, 'chats', currentChatId), {
+      lastMessage: payload.text || (payload.type === 'image' ? '📸 Photo' : '📄 File'),
+      lastMessageType: payload.type,
+      lastSenderId: currentUser.uid,
+      updatedAt: serverTimestamp()
+    });
+  } catch (e) {
+    console.error(e);
+    toast('Message not sent');
+    throw e;
+  }
 }
 
-// ---------- INIT ----------
-renderChats();
-renderContacts();
+// ================================================================
+// GROUP CHAT
+// ================================================================
+window.openCreateGroup = async () => {
+  selectedMembers = [];
+  const nameInput = document.getElementById('groupName');
+  if (nameInput) nameInput.value = '';
+  renderSelectedMembers();
+  await renderGroupMemberList();
+  document.getElementById('groupSheet')?.classList.add('show');
+};
+
+function renderSelectedMembers() {
+  const el = document.getElementById('selectedMembers');
+  if (!el) return;
+  el.innerHTML = selectedMembers.map(uid => {
+    const u = allUsers.find(x => x.uid === uid);
+    if (!u) return '';
+    return `<span class="member-chip">${u.emoji || '🧑'} ${escapeHtml(u.name)}<span class="x" onclick="removeGroupMember('${uid}')">×</span></span>`;
+  }).join('');
+}
+
+window.removeGroupMember = (uid) => {
+  selectedMembers = selectedMembers.filter(x => x !== uid);
+  renderSelectedMembers();
+  renderGroupMemberList();
+};
+
+async function renderGroupMemberList() {
+  const el = document.getElementById('groupMemberList');
+  if (!el) return;
+  if (allUsers.length === 0) {
+    await loadUsers();
+  }
+  if (allUsers.length === 0) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:#718096;font-size:13px">No other users available</div>';
+    return;
+  }
+  el.innerHTML = allUsers.map(u => {
+    const isSelected = selectedMembers.includes(u.uid);
+    return `
+      <div class="select-member ${isSelected ? 'selected' : ''}" onclick="toggleGroupMember('${u.uid}')">
+        <div class="avatar" style="width:40px;height:40px;font-size:18px">${u.emoji || '🧑'}</div>
+        <div class="info">
+          <div class="name" style="font-size:14px">${escapeHtml(u.name || 'User')}</div>
+        </div>
+        <div class="check-box">${isSelected ? '✓' : ''}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.toggleGroupMember = (uid) => {
+  if (selectedMembers.includes(uid)) {
+    selectedMembers = selectedMembers.filter(x => x !== uid);
+  } else {
+    selectedMembers.push(uid);
+  }
+  renderSelectedMembers();
+  renderGroupMemberList();
+};
+
+window.createGroup = async () => {
+  const groupName = document.getElementById('groupName').value.trim();
+  if (!groupName) { toast('Enter a group name'); return; }
+  if (selectedMembers.length === 0) { toast('Select at least one member'); return; }
+
+  const members = [currentUser.uid, ...selectedMembers];
+
+  try {
+    const chatRef = await addDoc(collection(db, 'chats'), {
+      members,
+      isGroup: true,
+      groupName,
+      createdBy: currentUser.uid,
+      lastMessage: '',
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp()
+    });
+    closeSheet('groupSheet');
+    toast('Group created!');
+    // Give Firestore a moment to update the local cache
+    setTimeout(() => openChat(chatRef.id), 500);
+  } catch (e) {
+    console.error(e);
+    toast('Could not create group');
+  }
+};
+
+// ================================================================
+// VOICE / VIDEO CALL (WebRTC with Firestore signaling)
+// ================================================================
+let localStream = null;
+let peerConnection = null;
+let currentCallId = null;
+let currentCallRole = null; // 'caller' or 'callee'
+let unsubCall = null;
+let unsubSignals = null;
+let isMuted = false;
+let isSpeaker = true;
+
+const RTC_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' }
+  ]
+};
+
+window.startVoiceCall = () => startCall('voice');
+window.startVideoCall = () => startCall('video');
+
+async function startCall(type) {
+  if (!currentChatInfo || currentChatInfo.isGroup) {
+    toast('Calls only work in private chats');
+    return;
+  }
+  const other = getOtherMember(currentChatInfo);
+  if (!other) { toast('User not found'); return; }
+
+  try {
+    toast('Starting call...');
+    localStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: type === 'video'
+    });
+
+    currentCallRole = 'caller';
+
+    const callRef = await addDoc(collection(db, 'calls'), {
+      from: currentUser.uid,
+      fromName: currentUser.displayName || 'User',
+      fromEmoji: allUsers.find(u => u.uid === currentUser.uid)?.emoji || '🧑',
+      to: other.uid,
+      type,
+      status: 'ringing',
+      createdAt: serverTimestamp()
+    });
+    currentCallId = callRef.id;
+
+    // Show call screen
+    document.getElementById('callAvatar').textContent = other.emoji || '🧑';
+    document.getElementById('callName').textContent = other.name || 'User';
+    document.getElementById('callStatus').textContent = 'Ringing...';
+    showScreen('screen-call');
+
+    // Listen for answer/reject
+    unsubCall = onSnapshot(doc(db, 'calls', currentCallId), (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      if (data.status === 'accepted') {
+        document.getElementById('callStatus').textContent = 'Connected';
+        setupPeerConnection(other.uid, true);
+      } else if (data.status === 'rejected') {
+        toast('Call declined');
+        cleanupCall();
+        showScreen('screen-chat');
+      } else if (data.status === 'ended') {
+        toast('Call ended');
+        cleanupCall();
+        showScreen('screen-chat');
+      }
+    });
+
+  } catch (e) {
+    console.error(e);
+    toast('Could not access microphone/camera');
+    cleanupCall();
+  }
+}
+
+async function setupPeerConnection(otherUid, isCaller) {
+  if (peerConnection) return;
+
+  peerConnection = new RTCPeerConnection(RTC_CONFIG);
+
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  peerConnection.onicecandidate = async (event) => {
+    if (event.candidate && currentCallId) {
+      await addDoc(collection(db, 'calls', currentCallId, 'signals'), {
+        from: currentUser.uid,
+        candidate: event.candidate.toJSON(),
+        createdAt: serverTimestamp()
+      });
+    }
+  };
+
+  peerConnection.ontrack = (event) => {
+    const remoteStream = event.streams[0];
+    // In a full implementation, attach to <video>/<audio> element.
+    // For now, we just log it.
+    console.log('Remote stream received', remoteStream);
+  };
+
+  if (isCaller) {
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    await updateDoc(doc(db, 'calls', currentCallId), {
+      offer: { type: offer.type, sdp: offer.sdp }
+    });
+  }
+
+  // Listen for signals
+  unsubSignals = onSnapshot(
+    query(collection(db, 'calls', currentCallId, 'signals'), orderBy('createdAt')),
+    async (snap) => {
+      for (const d of snap.docs) {
+        const sig = d.data();
+        if (sig.from === currentUser.uid) continue;
+        if (sig.candidate) {
+          try {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(sig.candidate));
+          } catch (e) { console.warn('ICE error', e); }
+        }
+        if (sig.answer && isCaller) {
+          try {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(sig.answer));
+          } catch (e) { console.warn('Answer error', e); }
+        }
+        if (sig.offer && !isCaller) {
+          try {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(sig.offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await addDoc(collection(db, 'calls', currentCallId, 'signals'), {
+              from: currentUser.uid,
+              answer: { type: answer.type, sdp: answer.sdp },
+              createdAt: serverTimestamp()
+            });
+          } catch (e) { console.warn('Offer error', e); }
+        }
+      }
+    }
+  );
+}
+
+// -------- Incoming Call Listener --------
+let unsubIncomingCall = null;
+function listenIncomingCalls() {
+  if (unsubIncomingCall) unsubIncomingCall();
+  const q = query(
+    collection(db, 'calls'),
+    where('to', '==', currentUser.uid),
+    where('status', '==', 'ringing')
+  );
+  unsubIncomingCall = onSnapshot(q, (snap) => {
+    snap.docChanges().forEach(async (change) => {
+      if (change.type === 'added') {
+        const callData = change.doc.data();
+        const callId = change.doc.id;
+        // Show incoming call UI
+        const fromUser = allUsers.find(u => u.uid === callData.from);
+        document.getElementById('incomingAvatar').textContent = callData.fromEmoji || fromUser?.emoji || '🧑';
+        document.getElementById('incomingName').textContent = callData.fromName || fromUser?.name || 'User';
+        document.getElementById('incomingType').textContent = callData.type === 'video' ? 'Video Call' : 'Voice Call';
+        document.getElementById('incomingCall').classList.add('show');
+        // Store for accept/reject
+        window._incomingCallId = callId;
+        window._incomingType = callData.type;
+      }
+    });
+  });
+}
+
+window.acceptCall = async () => {
+  const callId = window._incomingCallId;
+  if (!callId) return;
+  document.getElementById('incomingCall').classList.remove('show');
+
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: window._incomingType === 'video'
+    });
+    currentCallId = callId;
+    currentCallRole = 'callee';
+
+    await updateDoc(doc(db, 'calls', callId), { status: 'accepted' });
+
+    const callSnap = await getDoc(doc(db, 'calls', callId));
+    const callData = callSnap.data();
+
+    document.getElementById('callAvatar').textContent = callData.fromEmoji || '🧑';
+    document.getElementById('callName').textContent = callData.fromName || 'User';
+    document.getElementById('callStatus').textContent = 'Connected';
+    showScreen('screen-call');
+
+    await setupPeerConnection(callData.from, false);
+
+    // Apply offer if present
+    if (callData.offer) {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      await addDoc(collection(db, 'calls', callId, 'signals'), {
+        from: currentUser.uid,
+        answer: { type: answer.type, sdp: answer.sdp },
+        createdAt: serverTimestamp()
+      });
+    }
+
+  } catch (e) {
+    console.error(e);
+    toast('Could not accept call');
+    rejectCall();
+  }
+};
+
+window.rejectCall = async () => {
+  const callId = window._incomingCallId;
+  document.getElementById('incomingCall').classList.remove('show');
+  if (callId) {
+    try { await updateDoc(doc(db, 'calls', callId), { status: 'rejected' }); } catch (e) {}
+  }
+  cleanupCall();
+};
+
+window.endCall = async () => {
+  if (currentCallId) {
+    try { await updateDoc(doc(db, 'calls', currentCallId), { status: 'ended' }); } catch (e) {}
+  }
+  cleanupCall();
+  showScreen('screen-chat');
+};
+
+window.toggleMute = () => {
+  if (!localStream) return;
+  isMuted = !isMuted;
+  localStream.getAudioTracks().forEach(t => { t.enabled = !isMuted; });
+  document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🎤';
+  toast(isMuted ? 'Muted' : 'Unmuted');
+};
+
+window.toggleSpeaker = () => {
+  isSpeaker = !isSpeaker;
+  toast(isSpeaker ? 'Speaker ON' : 'Speaker OFF');
+};
+
+function cleanupCall() {
+  if (unsubCall) { unsubCall(); unsubCall = null; }
+  if (unsubSignals) { unsubSignals(); unsubSignals = null; }
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  currentCallId = null;
+  currentCallRole = null;
+  isMuted = false;
+  window._incomingCallId = null;
+  window._incomingType = null;
+}
+
+// ================================================================
+// IN-APP NOTIFICATION (browser tab title + toast)
+// ================================================================
+let originalTitle = document.title;
+let unreadTotal = 0;
+
+function incrementUnread() {
+  unreadTotal++;
+  document.title = `(${unreadTotal}) ${originalTitle}`;
+}
+
+window.addEventListener('focus', () => {
+  unreadTotal = 0;
+  document.title = originalTitle;
+});
+
+// ================================================================
+// INITIALIZE PART 3
+// ================================================================
+// Start listening for incoming calls
+setTimeout(() => {
+  if (currentUser) listenIncomingCalls();
+}, 3000);
+
+// Re-listen when auth changes
+const _originalOnAuthStateChanged = onAuthStateChanged;
+
+// Close attach menu when clicking outside
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('attachMenu');
+  if (menu && menu.classList.contains('show')) {
+    if (!e.target.closest('.attach-menu') && !e.target.closest('.round-btn')) {
+      menu.classList.remove('show');
+    }
+  }
+});
+
+// ================================================================
+// AUTH STATE LISTENER
+// ================================================================
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('loading').classList.add('hide');
+  
+  if (user) {
+    currentUser = user;
+    
+    // Check if user profile exists
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const snap = await getDoc(userRef);
+      
+      if (!snap.exists()) {
+        // New user — show setup screen
+        renderEmojiPicker();
+        showScreen('screen-setup');
+        return;
+      } else {
+        // Update lastSeen
+        await updateDoc(userRef, { lastSeen: serverTimestamp() });
+      }
+    } catch (e) { console.error(e); }
+
+    // Existing user — go to home
+    showScreen('screen-home');
+    await loadUsers();
+    loadAllChats();
+    await refreshProfileUI();
+  } else {
+    currentUser = null;
+    if (unsubChats) unsubChats();
+    if (unsubUsers) unsubUsers();
+    showScreen('screen-login');
+  }
+});
+
+// ================================================================
+// KEEP ONLINE (heartbeat every 60s)
+// ================================================================
+setInterval(async () => {
+  if (currentUser) {
+    try {
+      await updateDoc(doc(db, 'users', currentUser.uid), { 
+        lastSeen: serverTimestamp() 
+      });
+    } catch (e) {}
+  }
+}, 60000);
+
+// ================================================================
+// INITIALIZE
+// ================================================================
 document.getElementById('loading').classList.add('hide');
-
-const savedCfg = localStorage.getItem('ittisal_firebase_config');
-if (savedCfg) {
-  try { connectFirebase(JSON.parse(savedCfg)); }
-  catch (e) { showScreen('screen-login'); }
-} else {
-  showScreen('screen-login');
-}
+document.getElementById('screen-login').classList.add('active');
+renderEmojiPicker();
 </script>
 </body>
 </html>
