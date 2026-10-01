@@ -2210,12 +2210,32 @@ let unsubSignals = null;
 let isMuted = false;
 let isSpeaker = true;
 
-const RTC_CONFIG = {
+// ================================================================
+// TURN SERVER (free from metered.ca)
+// ================================================================
+const TURN_SERVERS = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { 
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    { 
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    { 
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
   ]
 };
+
+const RTC_CONFIG = TURN_SERVERS;
 
 const MEDIA_CONSTRAINTS = {
   audio: {
@@ -2588,31 +2608,6 @@ document.addEventListener('click', function unlockAudio() {
     }
   });
 }, { passive: true });
-
-// ================================================================
-// TURN SERVER (free from metered.ca)
-// ================================================================
-const TURN_SERVERS = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { 
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    { 
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    { 
-      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    }
-  ]
-};
 
 // ================================================================
 // IN-APP NOTIFICATION (browser tab title + toast)
