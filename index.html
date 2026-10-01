@@ -801,6 +801,7 @@ body.dark .typing-indicator{background:#0b1220}
     <div class="tabs">
       <button class="tab active" onclick="switchHomeTab(this,'chats')">Chats</button>
       <button class="tab" onclick="switchHomeTab(this,'groups')">Groups</button>
+      <button class="tab" onclick="switchHomeTab(this,'calls')">Calls</button>
     </div>
     <div class="list" id="chatList">
       <div style="text-align:center;padding:60px 20px;color:#718096">
@@ -1427,7 +1428,11 @@ window.switchHomeTab = (btn, type) => {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   currentHomeTab = type;
-  renderChats(filteredChats());
+  if (type === 'calls') {
+    renderCallHistory();
+  } else {
+    renderChats(filteredChats());
+  }
 };
 
 // ================================================================
@@ -2154,14 +2159,20 @@ window.rejectCall = async () => {
   document.getElementById('incomingCall').classList.remove('show');
   stopRingtone();
   if (callId) {
-    try { await updateDoc(doc(db, 'calls', callId), { status: 'rejected' }); } catch (e) {}
+    try { await updateDoc(doc(db, 'calls', callId), { status: 'rejected', outcome: 'rejected' }); } catch (e) {}
   }
   cleanupCall();
 };
 
 window.endCall = async () => {
   if (currentCallId) {
-    try { await updateDoc(doc(db, 'calls', currentCallId), { status: 'ended' }); } catch (e) {}
+    try {
+      await updateDoc(doc(db, 'calls', currentCallId), { 
+        status: 'ended',
+        outcome: 'completed',
+        endedAt: serverTimestamp()
+      });
+    } catch (e) {}
   }
   cleanupCall();
   showScreen('screen-chat');
