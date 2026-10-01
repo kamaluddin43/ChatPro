@@ -1379,6 +1379,61 @@ function getOtherMember(chat) {
   return allUsers.find(u => u.uid === otherId);
 }
 
+function renderCallHistory() {
+  const el = document.getElementById('chatList');
+  if (!el) return;
+  
+  const calls = allChats.filter(c => false); // placeholder
+  // Fetch call records
+  getDocs(query(collection(db, 'calls'), where('from', '==', currentUser.uid), orderBy('createdAt', 'desc'), limit(50)))
+    .then(snapOut => {
+      getDocs(query(collection(db, 'calls'), where('to', '==', currentUser.uid), orderBy('createdAt', 'desc'), limit(50)))
+        .then(snapIn => {
+          const allCalls = [];
+          snapOut.forEach(d => allCalls.push({ id: d.id, ...d.data(), direction: 'outgoing' }));
+          snapIn.forEach(d => allCalls.push({ id: d.id, ...d.data(), direction: 'incoming' }));
+          allCalls.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+          
+          if (allCalls.length === 0) {
+            el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
+              <div style="font-size:50px">📞</div>
+              <p style="margin-top:10px">No calls yet</p>
+            </div>`;
+            return;
+          }
+          
+          el.innerHTML = allCalls.map(c => {
+            const isOutgoing = c.direction === 'outgoing';
+            const otherUid = isOutgoing ? c.to : c.from;
+            const otherUser = allUsers.find(u => u.uid === otherUid);
+            const name = otherUser?.name || c.fromName || 'Unknown';
+            const emoji = otherUser?.emoji || c.fromEmoji || '🧑';
+            const missed = !isOutgoing && c.outcome === 'rejected';
+            const icon = isOutgoing ? '↗️' : (missed ? '↙️' : '↙️');
+            const status = c.outcome === 'completed' ? 'Completed' : (c.outcome === 'rejected' ? 'Missed' : 'Cancelled');
+            
+            return `
+              <div class="row" onclick="startPrivateChat('${otherUid}')">
+                <div class="avatar">${emoji}</div>
+                <div class="info">
+                  <div class="name">${escapeHtml(name)}</div>
+                  <div class="preview">${icon} ${c.type === 'video' ? 'Video' : 'Voice'} · ${status}</div>
+                </div>
+                <div class="meta">${timeAgo(c.createdAt)}</div>
+              </div>
+            `;
+          }).join('');
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
+        <div style="font-size:50px">📞</div>
+        <p style="margin-top:10px">Could not load calls</p>
+      </div>`;
+    });
+}
+
 function renderChats(chats) {
   const el = document.getElementById('chatList');
   if (!el) return;
