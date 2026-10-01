@@ -82,9 +82,9 @@ button{cursor:pointer}
 .bubble img{max-width:100%;border-radius:10px;margin-top:4px;display:block}
 .bubble.file-link{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit}
 .bubble.file-link .file-icon{font-size:24px}
-.composer{min-height:62px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 12px;flex-shrink:0}
-.composer input{flex:1;background:#f1f5fa;border-radius:24px;padding:12px 18px;font-size:15px}
-.round-btn{width:44px;height:44px;border-radius:50%;background:#f0f4fa;color:#667085;font-size:20px;display:grid;place-items:center;flex-shrink:0;transition:.15s}
+.composer{min-height:62px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:8px 10px;flex-shrink:0;max-width:100%;overflow:hidden}
+.composer input{flex:1;min-width:0;background:#f1f5fa;border-radius:24px;padding:12px 16px;font-size:15px}
+.round-btn{width:40px;height:40px;border-radius:50%;background:#f0f4fa;color:#667085;font-size:18px;display:grid;place-items:center;flex-shrink:0;transition:.15s}
 .round-btn:hover{background:#e2e8f0}
 .round-btn.send{background:var(--primary);color:#fff}
 .round-btn.send:hover{background:var(--primary-dark)}
@@ -756,6 +756,7 @@ body.dark .typing-indicator{background:#0b1220}
 </head>
 <body>
 <div class="app">
+  <audio id="remoteAudio" autoplay playsinline></audio>
   <!-- LOADING -->
   <div id="loading" class="loading">
     <div class="spinner"></div>
@@ -992,7 +993,7 @@ body.dark .typing-indicator{background:#0b1220}
     <span class="timer" id="voiceTimer">0:00</span>
     <span class="cancel-btn" onclick="cancelVoiceRecording()">✕</span>
   </div>
-    <button class="round-btn" id="micBtn" onclick="startVoiceRecording()" title="Voice Message">🎤</button>
+    <button class="round-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Voice Message">🎤</button>
     <button class="round-btn send" onclick="sendMessage()">➤</button>
   </div>
   <div class="sticker-panel" id="stickerPanel">
@@ -1323,15 +1324,18 @@ function renderUsers(users) {
     </div>`;
     return;
   }
-  el.innerHTML = users.map(u => `
+  el.innerHTML = users.map(u => {
+    const isOnline = u.lastSeen && (Date.now() - (u.lastSeen.toMillis ? u.lastSeen.toMillis() : 0) < 60000);
+    return `
     <div class="row" onclick="startPrivateChat('${u.uid}')">
-      <div class="avatar">${u.emoji || '🧑'}<span class="dot"></span></div>
+      <div class="avatar">${u.emoji || '🧑'}${isOnline ? '<span class="dot"></span>' : ''}</div>
       <div class="info">
         <div class="name">${escapeHtml(u.name || 'User')}</div>
-        <div class="preview">${escapeHtml(u.email || '')}</div>
+        <div class="preview">${isOnline ? 'Online' : timeAgo(u.lastSeen) || 'Offline'}</div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 window.filterUsers = () => {
@@ -1470,9 +1474,12 @@ window.openChat = (chatId) => {
 
   document.getElementById('chatName').textContent = title;
   document.getElementById('chatAvatar').textContent = emoji;
-  document.getElementById('chatStatus').textContent = chat.isGroup 
-    ? `${chat.members.length} members` 
-    : 'online';
+  if (chat.isGroup) {
+    document.getElementById('chatStatus').textContent = `${chat.members.length} members`;
+  } else {
+    const isOnline = other?.lastSeen && (Date.now() - (other.lastSeen.toMillis ? other.lastSeen.toMillis() : 0) < 60000);
+    document.getElementById('chatStatus').textContent = isOnline ? 'online' : (other ? timeAgo(other.lastSeen) : 'offline');
+  }
 
   showScreen('screen-chat');
   loadMessages(chatId);
@@ -1961,6 +1968,7 @@ async function startCall(type) {
     document.getElementById('callName').textContent = other.name || 'User';
     document.getElementById('callStatus').textContent = 'Ringing...';
     showScreen('screen-call');
+    playRingtone();
 
     // Listen for answer/reject
     unsubCall = onSnapshot(doc(db, 'calls', currentCallId), (snap) => {
@@ -1968,6 +1976,7 @@ async function startCall(type) {
       const data = snap.data();
       if (data.status === 'accepted') {
         document.getElementById('callStatus').textContent = 'Connected';
+        stopRingtone();
         setupPeerConnection(other.uid, true);
       } else if (data.status === 'rejected') {
         toast('Call declined');
@@ -2008,9 +2017,18 @@ async function setupPeerConnection(otherUid, isCaller) {
 
   peerConnection.ontrack = (event) => {
     const remoteStream = event.streams[0];
-    // In a full implementation, attach to <video>/<audio> element.
-    // For now, we just log it.
     console.log('Remote stream received', remoteStream);
+    const remoteAudio = document.getElementById('remoteAudio');
+    if (remoteAudio) {
+      remoteAudio.srcObject = remoteStream;
+      remoteAudio.play().catch(err => {
+        console.warn('Audio autoplay blocked:', err);
+        toast('Tap anywhere to enable audio');
+        document.body.addEventListener('click', () => {
+          remoteAudio.play().catch(() => {});
+        }, { once: true });
+      });
+    }
   };
 
   if (isCaller) {
@@ -2157,7 +2175,27 @@ window.toggleSpeaker = () => {
   toast(isSpeaker ? 'Speaker ON' : 'Speaker OFF');
 };
 
+let ringtoneAudio = null;
+
+function playRingtone() {
+  stopRingtone();
+  try {
+    ringtoneAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQBvT18AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+    ringtoneAudio.loop = true;
+    ringtoneAudio.volume = 0.3;
+    ringtoneAudio.play().catch(() => {});
+  } catch (e) { /* silent */ }
+}
+
+function stopRingtone() {
+  if (ringtoneAudio) {
+    ringtoneAudio.pause();
+    ringtoneAudio = null;
+  }
+}
+
 function cleanupCall() {
+  stopRingtone();
   if (unsubCall) { unsubCall(); unsubCall = null; }
   if (unsubSignals) { unsubSignals(); unsubSignals = null; }
   if (peerConnection) {
@@ -2168,6 +2206,8 @@ function cleanupCall() {
     localStream.getTracks().forEach(t => t.stop());
     localStream = null;
   }
+  const remoteAudio = document.getElementById('remoteAudio');
+  if (remoteAudio) remoteAudio.srcObject = null;
   currentCallId = null;
   currentCallRole = null;
   isMuted = false;
@@ -3227,6 +3267,13 @@ window.startVoiceRecording = async () => {
     toast('Could not access microphone');
   }
 };
+window.toggleVoiceRecording = () => {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    stopVoiceRecording();
+  } else {
+    startVoiceRecording();
+  }
+};
 
 function stopVoiceRecording() {
   if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -3343,7 +3390,13 @@ function showReactionPicker(e, wrapper, messageId) {
 
 function showMessageOptions(e, wrapper, messageId, senderId) {
   document.querySelectorAll('.msg-options').forEach(el => el.remove());
+  document.querySelectorAll('.reaction-picker').forEach(el => el.remove());
   const isMine = senderId === currentUser.uid;
+
+  const bubbleText = wrapper.querySelector('.bubble')?.innerText || '';
+  const senderName = currentChatInfo?.isGroup 
+    ? (wrapper.querySelector('.bubble b')?.innerText?.replace(':', '') || 'User')
+    : (isMine ? 'You' : (getOtherMember(currentChatInfo)?.name || 'User'));
 
   const menu = document.createElement('div');
   menu.className = 'msg-options show';
@@ -3351,14 +3404,24 @@ function showMessageOptions(e, wrapper, messageId, senderId) {
     <button onclick="addReaction('${messageId}','❤️')">
       <span class="icon">❤️</span> React
     </button>
+    <button onclick="startReply('${messageId}','${escapeHtml(senderName)}','${escapeHtml(bubbleText.slice(0, 80))}')">
+      <span class="icon">↩️</span> Reply
+    </button>
     <button onclick="copyMessageText('${messageId}')">
       <span class="icon">📋</span> Copy
+    </button>
+    <button onclick="pinMessage('${messageId}','${escapeHtml(bubbleText.slice(0, 80))}','${escapeHtml(senderName)}')">
+      <span class="icon">📌</span> Pin
     </button>
     ${isMine ? `
       <button class="danger" onclick="deleteMessage('${messageId}')">
         <span class="icon">🗑️</span> Delete
       </button>
-    ` : ''}
+    ` : `
+      <button class="danger" onclick="deleteForMe('${messageId}')">
+        <span class="icon">🚫</span> Delete for me
+      </button>
+    `}
   `;
   wrapper.appendChild(menu);
   setTimeout(() => {
@@ -3414,7 +3477,14 @@ window.deleteMessage = async (messageId) => {
     toast('Could not delete');
   }
 };
-
+window.deleteForMe = (messageId) => {
+  const wrapper = document.querySelector(`[data-msg-id="${messageId}"]`);
+  if (wrapper) {
+    wrapper.remove();
+    toast('Message hidden from your view');
+  }
+  document.querySelectorAll('.msg-options').forEach(el => el.remove());
+};
 window.copyMessageText = (messageId) => {
   const wrapper = document.querySelector(`[data-msg-id="${messageId}"]`);
   if (!wrapper) return;
@@ -3928,21 +3998,18 @@ window.buildMessageBubble = function(m, messageId) {
 const _origOpenChat = window.openChat;
 window.openChat = function(chatId) {
   _origOpenChat(chatId);
-  // Attach profile viewer to avatar click in chat header
-  const headerAvatar = document.getElementById('chatAvatar');
-  if (headerAvatar) {
-    headerAvatar.style.cursor = 'pointer';
-    headerAvatar.onclick = () => {
-      if (currentChatInfo && !currentChatInfo.isGroup) {
-        const other = getOtherMember(currentChatInfo);
-        if (other) openProfileViewer(other.uid);
-      }
-    };
-  }
-  // Also in group, clicking avatar shows nothing special
   cancelReply();
   document.getElementById('pinBanner')?.classList.remove('show');
 };
+
+// Global click handler for header avatar (survives re-renders)
+document.addEventListener('click', (e) => {
+  const headerAvatar = e.target.closest('#chatAvatar');
+  if (headerAvatar && currentChatInfo && !currentChatInfo.isGroup) {
+    const other = getOtherMember(currentChatInfo);
+    if (other) openProfileViewer(other.uid);
+  }
+});
 
 // ---------- Init stickers + prevent menu overlap ----------
 renderStickerPanel();
