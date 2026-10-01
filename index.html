@@ -3219,14 +3219,16 @@ let recordingSeconds = 0;
 
 window.startVoiceRecording = async () => {
   if (!currentChatId) { toast('Open a chat first'); return; }
+  if (mediaRecorder && mediaRecorder.state === 'recording') return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
     audioChunks = [];
     recordingSeconds = 0;
+    const startTime = Date.now();
 
     mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) audioChunks.push(e.data);
+      if (e.data && e.data.size > 0) audioChunks.push(e.data);
     };
 
     mediaRecorder.onstop = async () => {
@@ -3235,17 +3237,26 @@ window.startVoiceRecording = async () => {
       document.getElementById('voiceRecording').classList.remove('show');
       document.getElementById('messageInput').style.display = '';
       document.getElementById('micBtn').style.display = '';
-      
-      if (recordingSeconds < 1) {
+
+      // Use real elapsed time instead of interval counter
+      const elapsed = Math.round((Date.now() - startTime) / 1000);
+      recordingSeconds = Math.max(recordingSeconds, elapsed);
+
+      if (recordingSeconds < 1 || audioChunks.length === 0) {
         toast('Recording too short');
         return;
       }
 
       const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      if (blob.size < 1000) {
+        toast('Recording empty');
+        return;
+      }
       if (blob.size > 150000) {
         toast('Recording too long. Max 2 minutes.');
         return;
       }
+
       const base64 = await blobToBase64(blob);
       await sendVoiceMessage(base64, recordingSeconds);
     };
@@ -3284,6 +3295,7 @@ function stopVoiceRecording() {
 window.cancelVoiceRecording = () => {
   if (mediaRecorder && mediaRecorder.state !== 'inactive') {
     recordingSeconds = 0;
+    audioChunks = [];
     mediaRecorder.onstop = () => {
       if (mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(t => t.stop());
     };
@@ -3316,7 +3328,8 @@ async function sendVoiceMessage(base64, duration) {
       type: 'voice',
       senderId: currentUser.uid,
       senderName: myName,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      readBy: []
     });
     await updateDoc(doc(db, 'chats', currentChatId), {
       lastMessage: '🎤 Voice message',
