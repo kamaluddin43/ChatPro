@@ -1959,6 +1959,8 @@ async function startCall(type) {
       to: other.uid,
       type,
       status: 'ringing',
+      outcome: 'ringing',
+      duration: 0,
       createdAt: serverTimestamp()
     });
     currentCallId = callRef.id;
@@ -2093,6 +2095,7 @@ function listenIncomingCalls() {
         document.getElementById('incomingName').textContent = callData.fromName || fromUser?.name || 'User';
         document.getElementById('incomingType').textContent = callData.type === 'video' ? 'Video Call' : 'Voice Call';
         document.getElementById('incomingCall').classList.add('show');
+        playRingtone();
         // Store for accept/reject
         window._incomingCallId = callId;
         window._incomingType = callData.type;
@@ -2105,6 +2108,7 @@ window.acceptCall = async () => {
   const callId = window._incomingCallId;
   if (!callId) return;
   document.getElementById('incomingCall').classList.remove('show');
+  stopRingtone();
 
   try {
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -2148,6 +2152,7 @@ window.acceptCall = async () => {
 window.rejectCall = async () => {
   const callId = window._incomingCallId;
   document.getElementById('incomingCall').classList.remove('show');
+  stopRingtone();
   if (callId) {
     try { await updateDoc(doc(db, 'calls', callId), { status: 'rejected' }); } catch (e) {}
   }
