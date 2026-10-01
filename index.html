@@ -1087,7 +1087,7 @@ body.dark .typing-indicator{background:#0b1220}
   <section id="screen-chat" class="screen chat-screen">
     <header class="chat-header">
       <button class="icon-btn" style="background:rgba(255,255,255,.12)" onclick="goBackFromChat()">‹</button>
-      <div class="avatar" id="chatAvatar">👤</div>
+      <div class="avatar" id="chatAvatar" onclick="openChatProfile()" style="cursor:pointer">👤</div>
       <div class="info">
         <div class="name" id="chatName">Chat</div>
         <div class="status" id="chatStatus">online</div>
@@ -4500,14 +4500,13 @@ window.openChat = function(chatId) {
   document.getElementById('pinBanner')?.classList.remove('show');
 };
 
-// Global click handler for header avatar (survives re-renders)
-document.addEventListener('click', (e) => {
-  const headerAvatar = e.target.closest('#chatAvatar');
-  if (headerAvatar && currentChatInfo && !currentChatInfo.isGroup) {
+// Global click handler for header avatar
+window.openChatProfile = () => {
+  if (currentChatInfo && !currentChatInfo.isGroup) {
     const other = getOtherMember(currentChatInfo);
     if (other) openProfileViewer(other.uid);
   }
-});
+};
 
 // ---------- Init stickers + prevent menu overlap ----------
 renderStickerPanel();
