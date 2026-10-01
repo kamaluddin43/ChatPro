@@ -2151,6 +2151,26 @@ const RTC_CONFIG = {
   ]
 };
 
+const MEDIA_CONSTRAINTS = {
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true,
+    sampleRate: 48000,
+    channelCount: 1
+  },
+  video: false
+};
+
+const MEDIA_CONSTRAINTS_VIDEO = {
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  },
+  video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 24 } }
+};
+
 window.startVoiceCall = () => startCall('voice');
 window.startVideoCall = () => startCall('video');
 
@@ -2164,10 +2184,9 @@ async function startCall(type) {
 
   try {
     toast('Starting call...');
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: type === 'video'
-    });
+    localStream = await navigator.mediaDevices.getUserMedia(
+      type === 'video' ? MEDIA_CONSTRAINTS_VIDEO : MEDIA_CONSTRAINTS
+    );
 
     currentCallRole = 'caller';
 
@@ -2198,6 +2217,7 @@ async function startCall(type) {
       if (data.status === 'accepted') {
         document.getElementById('callStatus').textContent = 'Connected';
         stopRingtone();
+        startCallTimer();
         setupPeerConnection(other.uid, true);
       } else if (data.status === 'rejected') {
         toast('Call declined');
@@ -2330,10 +2350,9 @@ window.acceptCall = async () => {
   stopRingtone();
 
   try {
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: window._incomingType === 'video'
-    });
+    localStream = await navigator.mediaDevices.getUserMedia(
+      window._incomingType === 'video' ? MEDIA_CONSTRAINTS_VIDEO : MEDIA_CONSTRAINTS
+    );
     currentCallId = callId;
     currentCallRole = 'callee';
 
@@ -2404,6 +2423,29 @@ window.toggleSpeaker = () => {
   isSpeaker = !isSpeaker;
   toast(isSpeaker ? 'Speaker ON' : 'Speaker OFF');
 };
+
+let callTimerInterval = null;
+let callStartTime = null;
+
+function startCallTimer() {
+  stopCallTimer();
+  callStartTime = Date.now();
+  callTimerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+    const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
+    const s = (elapsed % 60).toString().padStart(2, '0');
+    const statusEl = document.getElementById('callStatus');
+    if (statusEl) statusEl.textContent = `Connected · ${m}:${s}`;
+  }, 1000);
+}
+
+function stopCallTimer() {
+  if (callTimerInterval) {
+    clearInterval(callTimerInterval);
+    callTimerInterval = null;
+  }
+  callStartTime = null;
+}
 
 let ringtoneAudio = null;
 
