@@ -3475,7 +3475,6 @@ let selectedMessage = null;
 function attachMessageHandlers(wrapper, messageId, senderId, isMine) {
   const bubble = wrapper.querySelector('.bubble');
   
-  // Long press / right-click
   const startPress = (e) => {
     e.preventDefault();
     longPressTimer = setTimeout(() => {
@@ -3495,13 +3494,11 @@ function attachMessageHandlers(wrapper, messageId, senderId, isMine) {
     showMessageOptions(e, wrapper, messageId, senderId);
   });
 
-  // Double click for quick ❤️
   bubble.addEventListener('dblclick', () => {
     if (selectionMode) return;
     addReaction(messageId, '❤️');
   });
 
-  // Tap in selection mode = toggle
   bubble.addEventListener('click', (e) => {
     if (selectionMode) {
       e.preventDefault();
