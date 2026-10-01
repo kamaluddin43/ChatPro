@@ -2578,6 +2578,43 @@ function cleanupCall() {
 }
 
 // ================================================================
+// ENSURE AUDIO AUTOPLAY UNLOCK
+// ================================================================
+document.addEventListener('click', function unlockAudio() {
+  const audios = document.querySelectorAll('audio');
+  audios.forEach(a => {
+    if (a.paused && a.srcObject) {
+      a.play().catch(() => {});
+    }
+  });
+}, { passive: true });
+
+// ================================================================
+// TURN SERVER (free from metered.ca)
+// ================================================================
+const TURN_SERVERS = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { 
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    { 
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    },
+    { 
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
+  ]
+};
+
+// ================================================================
 // IN-APP NOTIFICATION (browser tab title + toast)
 // ================================================================
 let originalTitle = document.title;
