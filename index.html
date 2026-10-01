@@ -739,7 +739,46 @@ body.dark .bubble.deleted{background:#1e293b!important;color:#64748b!important}
   background:#eef5ff;color:var(--primary);
 }
 
-/* Dark mode overrides */
+/* Selection mode */
+.bubble-wrapper.selected .bubble{
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+  background: #dbeafe !important;
+}
+.bubble-wrapper.selected .bubble.out{
+  background: #93c5fd !important;
+}
+.selection-bar{
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: linear-gradient(135deg, #1681ff, #075de0);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  z-index: 300;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.15);
+}
+.selection-bar .sel-btn{
+  width: 40px;height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 18px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: .15s;
+}
+.selection-bar .sel-btn:hover{background: rgba(255,255,255,.25)}
+.selection-bar .sel-btn.danger{background: rgba(239,68,68,.8)}
+.selection-bar .sel-btn.danger:hover{background: #ef4444}
+.selection-bar .sel-count{font-weight: 700; font-size: 15px}
+.selection-bar .spacer{flex: 1}
+
+body.dark .bubble-wrapper.selected .bubble{background: #1e3a5f !important}
+body.dark .bubble-wrapper.selected .bubble.out{background: #1d4ed8 !important}
 body.dark .reply-preview{background:#1e293b}
 body.dark .sticker-panel{background:#0f172a}
 body.dark .sticker-panel h4{color:#94a3b8}
@@ -3458,7 +3497,17 @@ function attachMessageHandlers(wrapper, messageId, senderId, isMine) {
 
   // Double click for quick ❤️
   bubble.addEventListener('dblclick', () => {
+    if (selectionMode) return;
     addReaction(messageId, '❤️');
+  });
+
+  // Tap in selection mode = toggle
+  bubble.addEventListener('click', (e) => {
+    if (selectionMode) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMessageSelection(messageId);
+    }
   });
 }
 
