@@ -2256,6 +2256,19 @@ async function setupPeerConnection(otherUid, isCaller) {
     }
   };
 
+    peerConnection.onconnectionstatechange = () => {
+    const state = peerConnection.connectionState;
+    console.log('Connection state:', state);
+    if (state === 'failed' || state === 'disconnected') {
+      toast('Connection lost. Reconnecting...');
+      try {
+        if (typeof peerConnection.restartIce === 'function') {
+          peerConnection.restartIce();
+        }
+      } catch (e) { /* silent */ }
+    }
+  };
+
   peerConnection.ontrack = (event) => {
     const remoteStream = event.streams[0];
     console.log('Remote stream received', remoteStream);
@@ -2365,6 +2378,7 @@ window.acceptCall = async () => {
     document.getElementById('callName').textContent = callData.fromName || 'User';
     document.getElementById('callStatus').textContent = 'Connected';
     showScreen('screen-call');
+    startCallTimer();
 
     await setupPeerConnection(callData.from, false);
 
@@ -2415,8 +2429,12 @@ window.toggleMute = () => {
   if (!localStream) return;
   isMuted = !isMuted;
   localStream.getAudioTracks().forEach(t => { t.enabled = !isMuted; });
-  document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🎤';
-  toast(isMuted ? 'Muted' : 'Unmuted');
+  const btn = document.getElementById('muteBtn');
+  if (btn) {
+    btn.textContent = isMuted ? '🔇' : '🎤';
+    btn.style.background = isMuted ? '#ef4444' : 'rgba(255,255,255,.15)';
+  }
+  toast(isMuted ? '🔇 Muted' : '🎤 Unmuted');
 };
 
 window.toggleSpeaker = () => {
@@ -2468,6 +2486,7 @@ function stopRingtone() {
 
 function cleanupCall() {
   stopRingtone();
+  stopCallTimer();
   if (unsubCall) { unsubCall(); unsubCall = null; }
   if (unsubSignals) { unsubSignals(); unsubSignals = null; }
   if (peerConnection) {
@@ -2483,6 +2502,11 @@ function cleanupCall() {
   currentCallId = null;
   currentCallRole = null;
   isMuted = false;
+  const muteBtn = document.getElementById('muteBtn');
+  if (muteBtn) {
+    muteBtn.textContent = '🎤';
+    muteBtn.style.background = 'rgba(255,255,255,.15)';
+  }
   window._incomingCallId = null;
   window._incomingType = null;
 }
