@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Ittisal — Connect the World</title>
+<meta name="theme-color" content="#1677ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ittisal">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiB2aWV3Qm94PSIwIDAgMTkyIDE5MiI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSI0MiIgZmlsbD0iIzE2NzdmZiIvPjx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtc2l6ZT0iOTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIj7wn5KsPC90ZXh0Pjwvc3ZnPg==">
 <style>
 :root{
   --primary:#1677ff; --primary-dark:#0d5ee8;
@@ -746,6 +753,65 @@ body.dark .bubble.deleted{background:#1e293b!important;color:#64748b!important}
   opacity: 0;
   pointer-events: none;
   z-index: -1;
+}
+
+/* PWA Install Banner */
+.install-banner{
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  background: #172033;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 900;
+  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  max-width: 90%;
+  animation: slideUpBanner .3s ease;
+}
+@keyframes slideUpBanner{
+  from{opacity:0; transform: translateX(-50%) translateY(20px);}
+  to{opacity:1; transform: translateX(-50%) translateY(0);}
+}
+.install-banner .ib-icon{
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.install-banner .ib-text{
+  flex: 1;
+  min-width: 0;
+}
+.install-banner .ib-text b{
+  font-size: 14px;
+  display: block;
+}
+.install-banner .ib-text small{
+  font-size: 11px;
+  opacity: .7;
+  display: block;
+  margin-top: 2px;
+}
+.install-banner .ib-btn{
+  background: #1677ff;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.install-banner .ib-close{
+  background: transparent;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  flex-shrink: 0;
 }
 
 /* Selection mode */
@@ -4454,6 +4520,76 @@ document.addEventListener('click', (e) => {
       stickerPanel.classList.remove('show');
     }
   }
+});
+
+// ================================================================
+// PWA — Register Service Worker
+// ================================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => {
+        console.log('SW registered:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('SW registration failed:', err);
+      });
+  });
+}
+
+// PWA Install Prompt
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show install banner after 10 seconds
+  setTimeout(() => {
+    if (deferredPrompt && !localStorage.getItem('ittisal_pwa_dismissed')) {
+      showInstallBanner();
+    }
+  }, 10000);
+});
+
+function showInstallBanner() {
+  if (document.getElementById('installBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.className = 'install-banner';
+  banner.innerHTML = `
+    <div class="ib-icon">💬</div>
+    <div class="ib-text">
+      <b>Install Ittisal</b>
+      <small>Faster access from your home screen</small>
+    </div>
+    <button class="ib-btn" onclick="installPWA()">Install</button>
+    <button class="ib-close" onclick="dismissInstallBanner()">✕</button>
+  `;
+  document.body.appendChild(banner);
+}
+
+window.installPWA = async () => {
+  if (!deferredPrompt) {
+    toast('Install not available. Use browser menu.');
+    return;
+  }
+  deferredPrompt.prompt();
+  const choice = await deferredPrompt.userChoice;
+  if (choice.outcome === 'accepted') {
+    toast('Installing Ittisal...');
+  }
+  deferredPrompt = null;
+  dismissInstallBanner();
+};
+
+window.dismissInstallBanner = () => {
+  localStorage.setItem('ittisal_pwa_dismissed', '1');
+  const b = document.getElementById('installBanner');
+  if (b) b.remove();
+};
+
+window.addEventListener('appinstalled', () => {
+  toast('Ittisal installed! 🎉');
+  dismissInstallBanner();
 });
 
 // ================================================================
