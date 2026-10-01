@@ -173,6 +173,234 @@ button{cursor:pointer}
 .file-preview{margin:6px 0;padding:10px;background:#f1f5fb;border-radius:12px;display:flex;align-items:center;gap:10px}
 .file-preview img{max-width:80px;max-height:80px;border-radius:8px}
 .file-preview .file-name{font-size:13px;flex:1;word-break:break-all}
+/* ===== SETTINGS DETAIL SCREEN ===== */
+.setting-section{margin-bottom:24px}
+.setting-section-title{
+  font-size:12px;font-weight:700;color:var(--primary);
+  text-transform:uppercase;letter-spacing:0.5px;
+  padding:0 16px;margin-bottom:8px;
+}
+.setting-section-body{
+  background:#fff;border-radius:0;overflow:hidden;
+}
+
+/* Settings row (list item with toggle/arrow) */
+.setting-row{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .15s;
+}
+.setting-row:last-child{border-bottom:none}
+.setting-row:hover{background:#f8fbff}
+.setting-row .row-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:#eef5ff;color:var(--primary);
+  display:grid;place-items:center;font-size:18px;
+  flex-shrink:0;
+}
+.setting-row .row-text{flex:1;min-width:0}
+.setting-row .row-text b{font-size:15px;font-weight:600;display:block}
+.setting-row .row-text small{
+  color:var(--muted);font-size:12px;margin-top:2px;
+  display:block;line-height:1.4;
+}
+.setting-row .row-arrow{color:#cbd5e1;font-size:18px;flex-shrink:0}
+.setting-row .row-value{
+  color:var(--muted);font-size:13px;margin-right:6px;
+  max-width:120px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* iOS-style Toggle Switch */
+.switch{
+  position:relative;display:inline-block;
+  width:48px;height:28px;flex-shrink:0;
+}
+.switch input{opacity:0;width:0;height:0}
+.slider{
+  position:absolute;cursor:pointer;top:0;left:0;
+  right:0;bottom:0;background:#cbd5e1;
+  border-radius:28px;transition:.25s;
+}
+.slider:before{
+  position:absolute;content:"";
+  height:22px;width:22px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;
+  transition:.25s;box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+.switch input:checked + .slider{background:var(--primary)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+
+/* Radio selection (for Theme, Language) */
+.radio-option{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .15s;
+}
+.radio-option:last-child{border-bottom:none}
+.radio-option:hover{background:#f8fbff}
+.radio-option .radio-text{flex:1;font-size:15px;font-weight:500}
+.radio-option .radio-text small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.radio-circle{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid #cbd5e1;display:grid;place-items:center;
+  flex-shrink:0;
+}
+.radio-option.selected .radio-circle{
+  border-color:var(--primary);
+  background:var(--primary);
+}
+.radio-option.selected .radio-circle:after{
+  content:"✓";color:#fff;font-size:14px;font-weight:800;
+}
+
+/* Profile info card */
+.profile-info-card{
+  background:#fff;border-radius:0;
+  padding:24px 20px;text-align:center;
+  border-bottom:8px solid #f1f5fb;
+}
+.profile-info-card .big-avatar{
+  width:96px;height:96px;font-size:44px;
+  margin:0 auto 14px;
+}
+.profile-info-card h2{font-size:22px;margin-bottom:4px}
+.profile-info-card p{color:var(--muted);font-size:14px;margin-bottom:4px}
+.profile-info-card .uid{
+  font-size:11px;color:var(--muted);
+  background:#f1f5fb;padding:4px 10px;
+  border-radius:10px;display:inline-block;
+  margin-top:6px;font-family:monospace;
+}
+
+/* Danger zone (Delete account, Clear chat) */
+.danger-zone .setting-row{
+  color:#ef4444;
+}
+.danger-zone .row-icon{
+  background:#fee2e2;color:#ef4444;
+}
+.danger-zone .row-text b{color:#ef4444}
+
+/* Storage bar */
+.storage-bar{
+  margin:16px 20px;
+  background:#f1f5fb;
+  border-radius:10px;height:12px;
+  overflow:hidden;
+}
+.storage-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,#20c77a,#1677ff);
+  width:35%;border-radius:10px;
+  transition:width .3s;
+}
+.storage-info{
+  padding:0 20px 16px;
+  font-size:13px;color:var(--muted);
+  display:flex;justify-content:space-between;
+}
+
+/* About section */
+.about-logo{
+  text-align:center;padding:40px 20px 24px;
+  background:linear-gradient(160deg,#edf7ff,#fff);
+}
+.about-logo .logo{
+  width:96px;height:96px;border-radius:28px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:46px;display:grid;place-items:center;
+  margin:0 auto 16px;
+  box-shadow:0 16px 35px rgba(22,119,255,.3);
+}
+.about-logo h2{font-size:26px;margin-bottom:4px}
+.about-logo p{color:var(--muted);font-size:14px}
+.about-logo .ver{
+  display:inline-block;margin-top:10px;
+  background:var(--primary);color:#fff;
+  padding:4px 12px;border-radius:20px;
+  font-size:12px;font-weight:700;
+}
+
+/* Link list (privacy policy, terms) */
+.link-row{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .15s;
+  color:var(--primary);text-decoration:none;
+}
+.link-row:last-child{border-bottom:none}
+.link-row:hover{background:#f8fbff}
+.link-row .link-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:#eef5ff;color:var(--primary);
+  display:grid;place-items:center;font-size:18px;
+}
+.link-row .link-text{flex:1;font-size:15px;color:var(--text);font-weight:500}
+.link-row .row-arrow{color:#cbd5e1;font-size:18px}
+
+/* Chat wallpaper preview */
+.wallpaper-preview{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;padding:16px 20px;
+}
+.wallpaper-thumb{
+  aspect-ratio:9/16;border-radius:12px;
+  cursor:pointer;border:3px solid transparent;
+  background-size:cover;background-position:center;
+  transition:.2s;
+}
+.wallpaper-thumb.selected{
+  border-color:var(--primary);
+  transform:scale(1.02);
+}
+.wallpaper-thumb:hover{transform:scale(1.03)}
+
+/* Font size preview */
+.font-preview{
+  margin:16px 20px;padding:16px;
+  background:#f1f5fb;border-radius:14px;
+  transition:font-size .2s;
+}
+
+/* Backup row */
+.backup-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+}
+.backup-row:last-child{border-bottom:none}
+
+/* Settings header back arrow */
+.settings-back{
+  display:flex;align-items:center;
+  gap:8px;padding:14px 20px;
+  background:transparent;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;transition:background .15s;
+}
+.settings-back:hover{background:#f5f8ff}
+.settings-back b{font-size:14px;color:var(--primary)}
+
+/* Dark mode override */
+body.dark .setting-section-body,
+body.dark .profile-info-card,
+body.dark .setting-row,
+body.dark .radio-option{background:#0f172a}
+body.dark .setting-row:hover{background:#1e293b}
+body.dark .radio-option:hover{background:#1e293b}
+body.dark .slider{background:#475569}
+body.dark .radio-circle{border-color:#475569}
+body.dark .storage-bar{background:#1e293b}
+body.dark .about-logo{background:linear-gradient(160deg,#0f172a,#0b1220)}
+body.dark .font-preview{background:#1e293b}
+body.dark .profile-info-card .uid{background:#1e293b}
+body.dark .link-row:hover{background:#1e293b}
+
+/* Selection list (Language, Theme) */
+.list-select{
+  background:#fff;border-radius:0;
+  max-height:400px;overflow-y:auto;
+}
 </style>
 </head>
 <body>
@@ -281,26 +509,101 @@ button{cursor:pointer}
     </nav>
   </section>
 
-  <!-- ========== SETTINGS ========== -->
-  <section id="screen-settings" class="screen">
-    <header class="header"><div class="brand">Settings</div></header>
-    <div class="menu">
-      <div class="menu-item" onclick="toast('Account settings')"><div class="menu-icon">👤</div><div class="menu-text"><b>Account</b><small>Manage your account</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toast('Privacy settings')"><div class="menu-icon">🔒</div><div class="menu-text"><b>Privacy</b><small>Control who sees your info</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toast('Notification settings')"><div class="menu-icon">🔔</div><div class="menu-text"><b>Notifications</b><small>Manage notifications</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toggleDark()"><div class="menu-icon">🌙</div><div class="menu-text"><b>Dark Mode</b><small>Switch theme</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toast('Language: English · বাংলা · العربية')"><div class="menu-icon">🌐</div><div class="menu-text"><b>Language</b><small>English · বাংলা · العربية</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="shareInvite()"><div class="menu-icon">🔗</div><div class="menu-text"><b>Invite Friends</b><small>Share Ittisal</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toast('Ittisal v4.0 · Full Featured')"><div class="menu-icon">ℹ️</div><div class="menu-text"><b>About Ittisal</b><small>Version 4.0</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="handleLogout()" style="color:#ef4444"><div class="menu-icon" style="background:#fee2e2;color:#ef4444">↪</div><div class="menu-text"><b>Logout</b><small>Sign out of Ittisal</small></div><span class="menu-arrow">›</span></div>
+<!-- ========== SETTINGS (MAIN) ========== -->
+<section id="screen-settings" class="screen">
+  <header class="header">
+    <div class="brand">Settings</div>
+    <div class="spacer"></div>
+    <button class="icon-btn" onclick="showScreen('screen-profile')">👤</button>
+  </header>
+  <div class="menu">
+    
+    <!-- ACCOUNT -->
+    <div class="menu-item" onclick="openSettingScreen('account')">
+      <div class="menu-icon">👤</div>
+      <div class="menu-text"><b>Account</b><small>Security notifications, change number</small></div>
+      <span class="menu-arrow">›</span>
     </div>
-    <nav class="bottom-nav">
-      <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
-      <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn active" onclick="setNav(this)"><span class="icon">⚙️</span>Settings</button>
-    </nav>
-  </section>
+    
+    <!-- PRIVACY -->
+    <div class="menu-item" onclick="openSettingScreen('privacy')">
+      <div class="menu-icon">🔒</div>
+      <div class="menu-text"><b>Privacy</b><small>Block contacts, disappearing messages</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- NOTIFICATIONS -->
+    <div class="menu-item" onclick="openSettingScreen('notifications')">
+      <div class="menu-icon">🔔</div>
+      <div class="menu-text"><b>Notifications</b><small>Message, group & call tones</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- CHAT SETTINGS -->
+    <div class="menu-item" onclick="openSettingScreen('chat')">
+      <div class="menu-icon">💬</div>
+      <div class="menu-text"><b>Chats</b><small>Theme, wallpaper, chat history</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- STORAGE -->
+    <div class="menu-item" onclick="openSettingScreen('storage')">
+      <div class="menu-icon">💾</div>
+      <div class="menu-text"><b>Storage and Data</b><small>Network usage, auto-download</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- LANGUAGE -->
+    <div class="menu-item" onclick="openSettingScreen('language')">
+      <div class="menu-icon">🌐</div>
+      <div class="menu-text"><b>App Language</b><small id="currentLangLabel">English</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- HELP -->
+    <div class="menu-item" onclick="openSettingScreen('help')">
+      <div class="menu-icon">❓</div>
+      <div class="menu-text"><b>Help</b><small>Help center, contact us, privacy policy</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- INVITE -->
+    <div class="menu-item" onclick="shareInvite()">
+      <div class="menu-icon">🔗</div>
+      <div class="menu-text"><b>Invite a friend</b><small>Share Ittisal with friends</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- ABOUT -->
+    <div class="menu-item" onclick="openSettingScreen('about')">
+      <div class="menu-icon">ℹ️</div>
+      <div class="menu-text"><b>About Ittisal</b><small>Version 4.5 · International</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+    
+    <!-- LOGOUT -->
+    <div class="menu-item" onclick="handleLogout()" style="color:#ef4444">
+      <div class="menu-icon" style="background:#fee2e2;color:#ef4444">↪</div>
+      <div class="menu-text"><b>Log Out</b><small>Sign out of Ittisal</small></div>
+      <span class="menu-arrow">›</span>
+    </div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
+    <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
+    <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
+    <button class="nav-btn active" onclick="setNav(this)"><span class="icon">⚙️</span>Settings</button>
+  </nav>
+</section>
+
+<!-- ========== SETTINGS DETAIL SCREEN (Dynamic) ========== -->
+<section id="screen-setting-detail" class="screen">
+  <header class="header">
+    <button class="icon-btn" style="background:rgba(255,255,255,.12)" onclick="closeSettingScreen()">‹</button>
+    <div class="brand" id="settingTitle">Settings</div>
+  </header>
+  <div class="menu" id="settingContent"></div>
+</section>
 
   <!-- ========== CHAT SCREEN ========== -->
   <section id="screen-chat" class="screen chat-screen">
@@ -1559,6 +1862,746 @@ setInterval(async () => {
 document.getElementById('loading').classList.add('hide');
 document.getElementById('screen-login').classList.add('active');
 renderEmojiPicker();
+// ================================================================
+// PART 4: SETTINGS SYSTEM (WhatsApp/imo style)
+// ================================================================
+
+// ---------- Settings State ----------
+const DEFAULT_SETTINGS = {
+  // Privacy
+  privacy_lastSeen: 'everyone',        // 'everyone' | 'contacts' | 'nobody'
+  privacy_profilePhoto: 'everyone',
+  privacy_about: 'everyone',
+  privacy_readReceipts: true,
+  privacy_typingIndicator: true,
+  // Notifications
+  notif_messageSound: true,
+  notif_messageVibrate: true,
+  notif_messagePopup: true,
+  notif_groupSound: true,
+  notif_callRingtone: true,
+  notif_highPriority: false,
+  // Chats
+  chat_enterToSend: true,
+  chat_fontSize: 14,                    // 12 | 14 | 16 | 18
+  chat_wallpaper: 'default',
+  chat_mediaAutoDownload: true,
+  chat_backupEnabled: false,
+  // Theme & Language
+  theme: 'light',                       // 'light' | 'dark' | 'system'
+  language: 'en'                        // 'en' | 'bn' | 'ar' | 'hi'
+};
+
+// Load settings from localStorage
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('ittisal_settings') || '{}');
+    return { ...DEFAULT_SETTINGS, ...saved };
+  } catch (e) { return { ...DEFAULT_SETTINGS }; }
+}
+function saveSettings(s) {
+  localStorage.setItem('ittisal_settings', JSON.stringify(s));
+}
+let userSettings = loadSettings();
+
+// ---------- Open / Close Settings Sub-screens ----------
+window.openSettingScreen = (name) => {
+  const titles = {
+    account: 'Account',
+    privacy: 'Privacy',
+    notifications: 'Notifications',
+    chat: 'Chats',
+    storage: 'Storage and Data',
+    language: 'App Language',
+    help: 'Help',
+    about: 'About'
+  };
+  document.getElementById('settingTitle').textContent = titles[name] || 'Settings';
+  document.getElementById('settingContent').innerHTML = renderSettingContent(name);
+  showScreen('screen-setting-detail');
+  // Attach event handlers
+  attachSettingHandlers(name);
+};
+
+window.closeSettingScreen = () => {
+  showScreen('screen-settings');
+};
+
+// ---------- Render each sub-screen ----------
+function renderSettingContent(name) {
+  switch (name) {
+    case 'account':      return renderAccount();
+    case 'privacy':      return renderPrivacy();
+    case 'notifications':return renderNotifications();
+    case 'chat':         return renderChatSettings();
+    case 'storage':      return renderStorage();
+    case 'language':     return renderLanguage();
+    case 'help':         return renderHelp();
+    case 'about':        return renderAbout();
+    default:             return '<p style="padding:20px">Coming soon</p>';
+  }
+}
+
+// ---------- Account ----------
+function renderAccount() {
+  const name = document.getElementById('profileName').textContent;
+  const email = document.getElementById('profileEmail').textContent;
+  const emoji = document.getElementById('profileAvatar').textContent;
+  const uid = currentUser?.uid || 'Unknown';
+  const shortUid = uid.slice(0, 12) + '...' + uid.slice(-4);
+
+  return `
+    <div class="profile-info-card">
+      <div class="big-avatar">${emoji}</div>
+      <h2>${escapeHtml(name)}</h2>
+      <p>${escapeHtml(email)}</p>
+      <div class="uid">ID: ${shortUid}</div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Account Info</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="editAccountName()">
+          <div class="row-icon">✏️</div>
+          <div class="row-text"><b>Edit Name</b><small>Change your display name</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="copyUid()">
+          <div class="row-icon">📋</div>
+          <div class="row-text"><b>Copy ID</b><small>Share your unique ID</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="viewEmail()">
+          <div class="row-icon">✉️</div>
+          <div class="row-text"><b>Email</b><small>${escapeHtml(email)}</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Security</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="sendPasswordReset()">
+          <div class="row-icon">🔑</div>
+          <div class="row-text"><b>Change Password</b><small>Send reset email</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="toast('Two-step verification coming soon')">
+          <div class="row-icon">🛡️</div>
+          <div class="row-text"><b>Two-Step Verification</b><small>Extra security</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section danger-zone">
+      <div class="setting-section-title">Danger Zone</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="deleteAccountConfirm()">
+          <div class="row-icon">⚠️</div>
+          <div class="row-text"><b>Delete My Account</b><small>Permanently delete all data</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Privacy ----------
+function renderPrivacy() {
+  const s = userSettings;
+  return `
+    <div class="setting-section">
+      <div class="setting-section-title">Who Can See</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="openPrivacyOption('lastSeen')">
+          <div class="row-icon">🕒</div>
+          <div class="row-text"><b>Last Seen</b><small>When you were last online</small></div>
+          <span class="row-value">${labelFor(s.privacy_lastSeen)}</span>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="openPrivacyOption('profilePhoto')">
+          <div class="row-icon">📷</div>
+          <div class="row-text"><b>Profile Photo</b><small>Who can see your avatar</small></div>
+          <span class="row-value">${labelFor(s.privacy_profilePhoto)}</span>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="openPrivacyOption('about')">
+          <div class="row-icon">💬</div>
+          <div class="row-text"><b>About</b><small>Who can see your status</small></div>
+          <span class="row-value">${labelFor(s.privacy_about)}</span>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Messaging</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toggleSettingRow('privacy_readReceipts')">
+          <div class="row-icon">✓✓</div>
+          <div class="row-text"><b>Read Receipts</b><small>Show blue ticks when you read</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.privacy_readReceipts ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="toggleSettingRow('privacy_typingIndicator')">
+          <div class="row-icon">⌨️</div>
+          <div class="row-text"><b>Typing Indicator</b><small>Show when you're typing</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.privacy_typingIndicator ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Blocked</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toast('Block list empty')">
+          <div class="row-icon">🚫</div>
+          <div class="row-text"><b>Blocked Contacts</b><small>0 contacts blocked</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Notifications ----------
+function renderNotifications() {
+  const s = userSettings;
+  return `
+    <div class="setting-section">
+      <div class="setting-section-title">Messages</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toggleSettingRow('notif_messageSound')">
+          <div class="row-icon">🔊</div>
+          <div class="row-text"><b>Message Sound</b><small>Play sound on new message</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.notif_messageSound ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="toggleSettingRow('notif_messageVibrate')">
+          <div class="row-icon">📳</div>
+          <div class="row-text"><b>Vibrate</b><small>Vibrate on new message</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.notif_messageVibrate ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="toggleSettingRow('notif_messagePopup')">
+          <div class="row-icon">💬</div>
+          <div class="row-text"><b>Message Popup</b><small>Show popup preview</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.notif_messagePopup ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Groups & Calls</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toggleSettingRow('notif_groupSound')">
+          <div class="row-icon">👥</div>
+          <div class="row-text"><b>Group Sound</b><small>Play sound for group messages</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.notif_groupSound ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="toggleSettingRow('notif_callRingtone')">
+          <div class="row-icon">📞</div>
+          <div class="row-text"><b>Call Ringtone</b><small>Play ringtone for calls</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.notif_callRingtone ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="toggleSettingRow('notif_highPriority')">
+          <div class="row-icon">⚡</div>
+          <div class="row-text"><b>High Priority</b><small>Show previews at top</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.notif_highPriority ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Chat Settings ----------
+function renderChatSettings() {
+  const s = userSettings;
+  return `
+    <div class="setting-section">
+      <div class="setting-section-title">Display</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toggleSettingRow('chat_enterToSend')">
+          <div class="row-icon">⏎</div>
+          <div class="row-text"><b>Enter to Send</b><small>Press Enter to send messages</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.chat_enterToSend ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="openFontSizeOptions()">
+          <div class="row-icon">🔤</div>
+          <div class="row-text"><b>Font Size</b><small>Adjust chat text size</small></div>
+          <span class="row-value">${s.chat_fontSize}px</span>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="openWallpaperOptions()">
+          <div class="row-icon">🎨</div>
+          <div class="row-text"><b>Chat Wallpaper</b><small>Change chat background</small></div>
+          <span class="row-value">${s.chat_wallpaper}</span>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Media</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toggleSettingRow('chat_mediaAutoDownload')">
+          <div class="row-icon">⬇️</div>
+          <div class="row-text"><b>Auto-Download Media</b><small>Images & files on WiFi</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.chat_mediaAutoDownload ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Backup</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toggleSettingRow('chat_backupEnabled')">
+          <div class="row-icon">☁️</div>
+          <div class="row-text"><b>Chat Backup</b><small>Backup to cloud</small></div>
+          <label class="switch">
+            <input type="checkbox" ${s.chat_backupEnabled ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row" onclick="toast('Last backup: never')">
+          <div class="row-icon">📅</div>
+          <div class="row-text"><b>Last Backup</b><small>Never</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Storage ----------
+function renderStorage() {
+  return `
+    <div class="setting-section">
+      <div class="setting-section-title">Storage Usage</div>
+      <div style="background:#fff;padding:16px 0">
+        <div class="storage-info">
+          <span><b style="font-size:18px">~50 MB</b> used</span>
+          <span>of 5 GB available</span>
+        </div>
+        <div class="storage-bar">
+          <div class="storage-bar-fill" style="width:5%"></div>
+        </div>
+        <div class="storage-info" style="padding-top:8px">
+          <span>📸 Photos: ~30 MB</span>
+          <span>📄 Files: ~15 MB</span>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Manage</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="clearLocalCache()">
+          <div class="row-icon">🗑️</div>
+          <div class="row-text"><b>Clear Local Cache</b><small>Free up browser storage</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="toast('Data usage: WiFi only')">
+          <div class="row-icon">📊</div>
+          <div class="row-text"><b>Data Usage</b><small>WiFi only</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="toast('No downloads yet')">
+          <div class="row-icon">⬇️</div>
+          <div class="row-text"><b>Downloaded Files</b><small>0 files</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- Language ----------
+function renderLanguage() {
+  const langs = [
+    { code: 'en', name: 'English',  flag: '🇬🇧' },
+    { code: 'bn', name: 'বাংলা',    flag: '🇧🇩' },
+    { code: 'ar', name: 'العربية',  flag: '🇸🇦' },
+    { code: 'hi', name: 'हिन्दी',    flag: '🇮🇳' }
+  ];
+  return `
+    <div class="setting-section">
+      <div class="setting-section-title">Choose Language</div>
+      <div class="setting-section-body">
+        ${langs.map(l => `
+          <div class="radio-option ${userSettings.language === l.code ? 'selected' : ''}" onclick="setLanguage('${l.code}')">
+            <div class="row-icon" style="font-size:24px">${l.flag}</div>
+            <div class="radio-text">${l.name}</div>
+            <div class="radio-circle"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <p style="padding:16px 20px;color:var(--muted);font-size:12px">
+      Note: Full translation will be added in the next update. Currently the UI stays in English.
+    </p>
+  `;
+}
+
+// ---------- Help ----------
+function renderHelp() {
+  return `
+    <div class="setting-section">
+      <div class="setting-section-title">Get Help</div>
+      <div class="setting-section-body">
+        <a class="link-row" href="mailto:kamaluddin43@example.com">
+          <div class="link-icon">✉️</div>
+          <div class="link-text">Contact Support</div>
+          <span class="row-arrow">›</span>
+        </a>
+        <a class="link-row" href="#" onclick="event.preventDefault();toast('FAQ coming soon')">
+          <div class="link-icon">❓</div>
+          <div class="link-text">Frequently Asked Questions</div>
+          <span class="row-arrow">›</span>
+        </a>
+        <a class="link-row" href="#" onclick="event.preventDefault();toast('Privacy policy opened')">
+          <div class="link-icon">🔒</div>
+          <div class="link-text">Privacy Policy</div>
+          <span class="row-arrow">›</span>
+        </a>
+        <a class="link-row" href="#" onclick="event.preventDefault();toast('Terms opened')">
+          <div class="link-icon">📜</div>
+          <div class="link-text">Terms of Service</div>
+          <span class="row-arrow">›</span>
+        </a>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Report</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toast('Thanks for your report')">
+          <div class="row-icon">🚨</div>
+          <div class="row-text"><b>Report a Problem</b><small>Tell us what went wrong</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ---------- About ----------
+function renderAbout() {
+  return `
+    <div class="about-logo">
+      <div class="logo">💬</div>
+      <h2>Ittisal</h2>
+      <p>Connect · Chat · Share</p>
+      <span class="ver">Version 4.5.0</span>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Information</div>
+      <div class="setting-section-body">
+        <div class="setting-row" onclick="toast('Built with ❤️ in Bangladesh')">
+          <div class="row-icon">🇧🇩</div>
+          <div class="row-text"><b>Made in</b><small>Bangladesh</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="toast('Built with Firebase + WebRTC')">
+          <div class="row-icon">🔧</div>
+          <div class="row-text"><b>Powered by</b><small>Firebase + WebRTC</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+        <div class="setting-row" onclick="toast('Developer: Kamal Uddin')">
+          <div class="row-icon">👨‍💻</div>
+          <div class="row-text"><b>Developer</b><small>Kamal Uddin</small></div>
+          <span class="row-arrow">›</span>
+        </div>
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Legal</div>
+      <div class="setting-section-body">
+        <a class="link-row" href="#" onclick="event.preventDefault();toast('Privacy policy')">
+          <div class="link-icon">🔒</div>
+          <div class="link-text">Privacy Policy</div>
+          <span class="row-arrow">›</span>
+        </a>
+        <a class="link-row" href="#" onclick="event.preventDefault();toast('Terms of service')">
+          <div class="link-icon">📜</div>
+          <div class="link-text">Terms of Service</div>
+          <span class="row-arrow">›</span>
+        </a>
+        <a class="link-row" href="#" onclick="event.preventDefault();toast('Open-source licenses')">
+          <div class="link-icon">⚖️</div>
+          <div class="link-text">Open-Source Licenses</div>
+          <span class="row-arrow">›</span>
+        </a>
+      </div>
+    </div>
+    <p style="text-align:center;padding:24px;color:var(--muted);font-size:12px">
+      © 2026 Ittisal · All rights reserved
+    </p>
+  `;
+}
+
+// ---------- Helper: Attach Handlers (mostly delegated) ----------
+function attachSettingHandlers(name) {
+  // Most handlers are inline onclick, so nothing extra needed here
+  // But we ensure switches don't double-trigger
+  document.querySelectorAll('#settingContent .switch input').forEach(inp => {
+    inp.addEventListener('click', (e) => e.stopPropagation());
+  });
+}
+
+// ---------- Toggle Setting ----------
+window.toggleSettingRow = (key) => {
+  userSettings[key] = !userSettings[key];
+  saveSettings(userSettings);
+  // Re-render current screen
+  const title = document.getElementById('settingTitle').textContent;
+  const map = {
+    'Privacy': 'privacy',
+    'Notifications': 'notifications',
+    'Chats': 'chat'
+  };
+  const name = map[title];
+  if (name) {
+    document.getElementById('settingContent').innerHTML = renderSettingContent(name);
+    attachSettingHandlers(name);
+  }
+  // Apply side effects
+  applySettingEffect(key);
+};
+
+function applySettingEffect(key) {
+  // Example: read receipts, typing indicator, etc. can be synced to Firestore later
+  console.log('Setting changed:', key, '=', userSettings[key]);
+}
+
+// ---------- Privacy Option Chooser ----------
+window.openPrivacyOption = (which) => {
+  const labels = ['everyone', 'contacts', 'nobody'];
+  const currentKey = 'privacy_' + which;
+  const current = userSettings[currentKey] || 'everyone';
+  const pretty = { everyone: 'Everyone', contacts: 'My Contacts', nobody: 'Nobody' };
+
+  const html = `
+    <div class="setting-section">
+      <div class="setting-section-title">Who can see my ${which.replace(/([A-Z])/g, ' $1').toLowerCase()}?</div>
+      <div class="setting-section-body">
+        ${labels.map(l => `
+          <div class="radio-option ${current === l ? 'selected' : ''}" onclick="setPrivacyOption('${currentKey}','${l}')">
+            <div class="radio-text">${pretty[l]}</div>
+            <div class="radio-circle"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('settingContent').innerHTML = html;
+};
+
+window.setPrivacyOption = (key, value) => {
+  userSettings[key] = value;
+  saveSettings(userSettings);
+  toast('Saved: ' + labelFor(value));
+  // Go back to privacy screen
+  openSettingScreen('privacy');
+};
+
+function labelFor(v) {
+  return { everyone: 'Everyone', contacts: 'Contacts', nobody: 'Nobody' }[v] || v;
+}
+
+// ---------- Font Size ----------
+window.openFontSizeOptions = () => {
+  const sizes = [12, 14, 16, 18, 20];
+  const html = `
+    <div class="setting-section">
+      <div class="setting-section-title">Preview</div>
+      <div class="font-preview" id="fontPreview" style="font-size:${userSettings.chat_fontSize}px">
+        This is how your chat messages will look.
+      </div>
+    </div>
+    <div class="setting-section">
+      <div class="setting-section-title">Choose Size</div>
+      <div class="setting-section-body">
+        ${sizes.map(s => `
+          <div class="radio-option ${userSettings.chat_fontSize === s ? 'selected' : ''}" onclick="setFontSize(${s})">
+            <div class="radio-text" style="font-size:${s}px">Aa · ${s}px</div>
+            <div class="radio-circle"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('settingContent').innerHTML = html;
+};
+
+window.setFontSize = (size) => {
+  userSettings.chat_fontSize = size;
+  saveSettings(userSettings);
+  document.documentElement.style.setProperty('--chat-font-size', size + 'px');
+  document.querySelectorAll('.bubble').forEach(b => b.style.fontSize = size + 'px');
+  toast('Font size: ' + size + 'px');
+  openFontSizeOptions(); // refresh
+};
+
+// ---------- Wallpaper ----------
+window.openWallpaperOptions = () => {
+  const papers = [
+    { id: 'default', css: '#eef3f8' },
+    { id: 'mint',    css: 'linear-gradient(135deg,#d4f5e0,#a7e8c1)' },
+    { id: 'sunset',  css: 'linear-gradient(135deg,#ffd9b3,#ffb37a)' },
+    { id: 'ocean',   css: 'linear-gradient(135deg,#c7e6ff,#8bc7ff)' },
+    { id: 'lavender',css: 'linear-gradient(135deg,#e0d4ff,#c3a7ff)' },
+    { id: 'dark',    css: '#1e293b' }
+  ];
+  const html = `
+    <div class="setting-section">
+      <div class="setting-section-title">Choose Wallpaper</div>
+      <div class="wallpaper-preview">
+        ${papers.map(p => `
+          <div class="wallpaper-thumb ${userSettings.chat_wallpaper === p.id ? 'selected' : ''}"
+               style="background:${p.css}" onclick="setWallpaper('${p.id}','${p.css}')"></div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('settingContent').innerHTML = html;
+};
+
+window.setWallpaper = (id, css) => {
+  userSettings.chat_wallpaper = id;
+  saveSettings(userSettings);
+  document.querySelectorAll('.messages').forEach(m => m.style.background = css);
+  toast('Wallpaper changed');
+  openWallpaperOptions();
+};
+
+// ---------- Language ----------
+window.setLanguage = (code) => {
+  userSettings.language = code;
+  saveSettings(userSettings);
+  const names = { en: 'English', bn: 'বাংলা', ar: 'العربية', hi: 'हिन्दी' };
+  toast('Language: ' + names[code]);
+  const label = document.getElementById('currentLangLabel');
+  if (label) label.textContent = names[code];
+  openSettingScreen('language');
+};
+
+// ---------- Theme ----------
+// Note: theme is currently just for reference; live theme toggle already exists via toggleDark
+// We add Theme selector inside Chat Settings -> Actually we'll add Theme in the same Chat settings
+// For now, theme stays as a system-wide setting that overrides toggleDark behavior.
+
+// ---------- Account Actions ----------
+window.editAccountName = () => {
+  openSettingScreen('account');
+  setTimeout(() => openEditProfile(), 100);
+};
+
+window.copyUid = async () => {
+  const uid = currentUser?.uid || '';
+  try {
+    await navigator.clipboard.writeText(uid);
+    toast('ID copied to clipboard');
+  } catch (e) { toast('Could not copy'); }
+};
+
+window.viewEmail = () => {
+  const email = currentUser?.email || 'guest@ittisal.app';
+  alert('Your email: ' + email);
+};
+
+window.sendPasswordReset = async () => {
+  if (!currentUser?.email) { toast('Guest accounts have no email'); return; }
+  if (!confirm('Send password reset email to ' + currentUser.email + '?')) return;
+  try {
+    const { sendPasswordResetEmail } = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js");
+    await sendPasswordResetEmail(auth, currentUser.email);
+    toast('Reset email sent!');
+  } catch (e) {
+    console.error(e);
+    toast('Could not send reset email');
+  }
+};
+
+window.deleteAccountConfirm = () => {
+  const ok = confirm(
+    'WARNING: This will permanently delete your account and all messages.\n\n' +
+    'This action cannot be undone.\n\n' +
+    'Are you sure?'
+  );
+  if (!ok) return;
+  const typed = prompt('Type DELETE to confirm:');
+  if (typed !== 'DELETE') { toast('Cancelled'); return; }
+  toast('Account deletion coming in a future update');
+  // Real implementation requires Firebase Cloud Function
+};
+
+// ---------- Storage ----------
+window.clearLocalCache = () => {
+  if (!confirm('Clear local cache? This will not delete your messages.')) return;
+  // Clear only our non-essential keys
+  localStorage.removeItem('ittisal_settings');
+  sessionStorage.clear();
+  toast('Local cache cleared');
+  setTimeout(() => location.reload(), 800);
+};
+
+// ---------- Initialize Settings on Load ----------
+function applyStoredSettings() {
+  // Chat font size
+  document.documentElement.style.setProperty('--chat-font-size', userSettings.chat_fontSize + 'px');
+  document.querySelectorAll('.bubble').forEach(b => b.style.fontSize = userSettings.chat_fontSize + 'px');
+
+  // Theme
+  if (userSettings.theme === 'dark') {
+    if (!document.body.classList.contains('dark')) toggleDark();
+  } else if (userSettings.theme === 'light') {
+    if (document.body.classList.contains('dark')) toggleDark();
+  }
+
+  // Language label in Settings main screen
+  const label = document.getElementById('currentLangLabel');
+  const names = { en: 'English', bn: 'বাংলা', ar: 'العربية', hi: 'हिन्दी' };
+  if (label) label.textContent = names[userSettings.language] || 'English';
+
+  // Wallpaper
+  const papers = {
+    default: '#eef3f8',
+    mint: 'linear-gradient(135deg,#d4f5e0,#a7e8c1)',
+    sunset: 'linear-gradient(135deg,#ffd9b3,#ffb37a)',
+    ocean: 'linear-gradient(135deg,#c7e6ff,#8bc7ff)',
+    lavender: 'linear-gradient(135deg,#e0d4ff,#c3a7ff)',
+    dark: '#1e293b'
+  };
+  const wp = papers[userSettings.chat_wallpaper] || papers.default;
+  document.querySelectorAll('.messages').forEach(m => m.style.background = wp);
+}
+
+// Apply on startup
+setTimeout(() => applyStoredSettings(), 1500);
+
+// ================================================================
+// END OF PART 4
+// ================================================================
 </script>
 </body>
 </html>
