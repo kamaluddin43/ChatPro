@@ -3222,7 +3222,10 @@ window.startVoiceRecording = async () => {
   if (mediaRecorder && mediaRecorder.state === 'recording') return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    mediaRecorder = new MediaRecorder(stream, { 
+      mimeType: 'audio/webm',
+      audioBitsPerSecond: 24000
+    });
     audioChunks = [];
     recordingSeconds = 0;
     const startTime = Date.now();
@@ -3248,18 +3251,26 @@ window.startVoiceRecording = async () => {
       }
 
       const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      if (blob.size < 1000) {
+      console.log('Voice blob size:', blob.size, 'bytes, duration:', recordingSeconds, 'sec');
+
+      if (blob.size < 500) {
         toast('Recording empty');
         return;
       }
-      if (blob.size > 150000) {
-        toast('Recording too long. Max 2 minutes.');
+      if (blob.size > 700000) {
+        toast('Too long. Max 45 seconds.');
         return;
       }
 
       const base64 = await blobToBase64(blob);
+      console.log('Base64 length:', base64.length);
+      
+      if (base64.length > 950000) {
+        toast('Recording too long for storage');
+        return;
+      }
+
       await sendVoiceMessage(base64, recordingSeconds);
-    };
 
     mediaRecorder.start();
     document.getElementById('voiceRecording').classList.add('show');
@@ -3271,7 +3282,10 @@ window.startVoiceRecording = async () => {
       const m = Math.floor(recordingSeconds / 60);
       const s = recordingSeconds % 60;
       document.getElementById('voiceTimer').textContent = `${m}:${s.toString().padStart(2, '0')}`;
-      if (recordingSeconds >= 120) stopVoiceRecording();
+      if (recordingSeconds >= 45) {
+        toast('Max 45 seconds reached');
+        stopVoiceRecording();
+      }
     }, 1000);
   } catch (e) {
     console.error(e);
