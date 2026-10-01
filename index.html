@@ -1478,6 +1478,41 @@ window.openChat = (chatId) => {
   setTimeout(() => document.getElementById('messageInput')?.focus(), 150);
 };
 
+function loadMessages(chatId) {
+  if (unsubMessages) unsubMessages();
+  const box = document.getElementById('messages');
+  if (!box) return;
+  box.innerHTML = '<div class="day">Loading...</div>';
+
+  const q = query(
+    collection(db, 'chats', chatId, 'messages'),
+    orderBy('createdAt', 'asc'),
+    limit(300)
+  );
+  unsubMessages = onSnapshot(q, (snap) => {
+    box.innerHTML = '<div class="day">Messages</div>';
+    if (snap.empty) {
+      box.innerHTML += '<div style="text-align:center;color:#8a94a5;font-size:13px;margin-top:20px">No messages yet. Say hi! 👋</div>';
+    }
+    snap.forEach(d => {
+      const m = d.data();
+      const msgId = d.id;
+      box.appendChild(window.buildMessageBubble(m, msgId));
+    });
+    box.scrollTop = box.scrollHeight;
+    // Mark as read
+    if (typeof markMessagesAsRead === 'function') {
+      markMessagesAsRead();
+    }
+  }, (err) => {
+    console.error(err);
+    box.innerHTML = '<div class="day">Could not load messages</div>';
+  });
+
+  // Listen for typing & pin
+  if (typeof listenTyping === 'function') listenTyping(chatId);
+  if (typeof listenPin === 'function') listenPin(chatId);
+}
 function buildMessageBubble(m) {
   const isMine = m.senderId === currentUser.uid;
   const b = document.createElement('div');
