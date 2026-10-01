@@ -3271,7 +3271,7 @@ window.startVoiceRecording = async () => {
       }
 
       await sendVoiceMessage(base64, recordingSeconds);
-
+    };
     mediaRecorder.start();
     document.getElementById('voiceRecording').classList.add('show');
     document.getElementById('messageInput').style.display = 'none';
