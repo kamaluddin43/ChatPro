@@ -3658,116 +3658,6 @@ function enterSelectionMode(messageId) {
   updateSelectionUI();
 }
 
-function exitSelectionMode() {
-  selectionMode = false;
-  selectedMessages.clear();
-  document.querySelectorAll('.bubble-wrapper.selected').forEach(el => el.classList.remove('selected'));
-  const bar = document.getElementById('selectionBar');
-  if (bar) bar.remove();
-  updateSelectionUI();
-}
-
-function toggleMessageSelection(messageId) {
-  if (selectedMessages.has(messageId)) {
-    selectedMessages.delete(messageId);
-  } else {
-    selectedMessages.add(messageId);
-  }
-  if (selectedMessages.size === 0) {
-    exitSelectionMode();
-  } else {
-    updateSelectionUI();
-  }
-}
-
-function updateSelectionUI() {
-  // Highlight selected
-  document.querySelectorAll('.bubble-wrapper').forEach(el => {
-    el.classList.toggle('selected', selectedMessages.has(el.dataset.msgId));
-  });
-  
-  // Remove old bar
-  const oldBar = document.getElementById('selectionBar');
-  if (oldBar) oldBar.remove();
-  
-  if (!selectionMode || selectedMessages.size === 0) return;
-  
-  // Add selection bar
-  const bar = document.createElement('div');
-  bar.id = 'selectionBar';
-  bar.className = 'selection-bar';
-  bar.innerHTML = `
-    <button class="sel-btn" onclick="exitSelectionMode()">✕</button>
-    <span class="sel-count">${selectedMessages.size} selected</span>
-    <div class="spacer"></div>
-    <button class="sel-btn" onclick="copySelectedMessages()" title="Copy">📋</button>
-    <button class="sel-btn danger" onclick="deleteSelectedMessages()" title="Delete">🗑️</button>
-  `;
-  document.querySelector('.app').appendChild(bar);
-}
-
-window.copySelectedMessages = () => {
-  const texts = [];
-  selectedMessages.forEach(id => {
-    const wrapper = document.querySelector(`[data-msg-id="${id}"]`);
-    if (wrapper) {
-      const text = wrapper.querySelector('.bubble')?.innerText || '';
-      if (text) texts.push(text.trim());
-    }
-  });
-  navigator.clipboard.writeText(texts.join('\n')).then(() => {
-    toast(`Copied ${texts.length} messages`);
-    exitSelectionMode();
-  }).catch(() => toast('Could not copy'));
-};
-
-window.deleteSelectedMessages = async () => {
-  const ids = Array.from(selectedMessages);
-  if (ids.length === 0) return;
-  if (!confirm(`Delete ${ids.length} messages?`)) return;
-  
-  let successCount = 0;
-  for (const id of ids) {
-    const wrapper = document.querySelector(`[data-msg-id="${id}"]`);
-    if (!wrapper) continue;
-    const isMine = wrapper.classList.contains('out');
-    
-    try {
-      if (isMine) {
-        await updateDoc(doc(db, 'chats', currentChatId, 'messages', id), {
-          deleted: true,
-          text: 'This message was deleted',
-          imageData: null,
-          fileData: null,
-          audioData: null,
-          reactions: {}
-        });
-      } else {
-        wrapper.remove();
-      }
-      successCount++;
-    } catch (e) {
-      console.warn('Delete failed for', id, e);
-    }
-  }
-  
-  toast(`Deleted ${successCount} messages`);
-  exitSelectionMode();
-};
-
-// ================================================================
-// MULTI-SELECT MESSAGES
-// ================================================================
-let selectedMessages = new Set();
-let selectionMode = false;
-
-function enterSelectionMode(messageId) {
-  selectionMode = true;
-  selectedMessages.clear();
-  selectedMessages.add(messageId);
-  updateSelectionUI();
-}
-
 window.exitSelectionMode = () => {
   selectionMode = false;
   selectedMessages.clear();
@@ -3803,11 +3693,11 @@ function updateSelectionUI() {
   bar.id = 'selectionBar';
   bar.className = 'selection-bar';
   bar.innerHTML = `
-    <button class="sel-btn" onclick="exitSelectionMode()">✕</button>
+    <button class="sel-btn" onclick="window.exitSelectionMode()">✕</button>
     <span class="sel-count">${selectedMessages.size} selected</span>
     <div class="spacer"></div>
-    <button class="sel-btn" onclick="copySelectedMessages()" title="Copy">📋</button>
-    <button class="sel-btn danger" onclick="deleteSelectedMessages()" title="Delete">🗑️</button>
+    <button class="sel-btn" onclick="window.copySelectedMessages()" title="Copy">📋</button>
+    <button class="sel-btn danger" onclick="window.deleteSelectedMessages()" title="Delete">🗑️</button>
   `;
   document.querySelector('.app').appendChild(bar);
 }
