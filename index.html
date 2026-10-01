@@ -537,6 +537,221 @@ body.dark .reaction-picker button:hover,
 body.dark .msg-options button:hover{background:#334155}
 body.dark .msg-options button{border-color:#334155}
 body.dark .bubble.deleted{background:#1e293b!important;color:#64748b!important}
+/* ============================================================ */
+/* PART 6: UI Polish + New Features CSS                          */
+/* ============================================================ */
+
+/* Fix image size in bubbles */
+.bubble img{
+  max-width:250px!important;
+  max-height:250px!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:10px;
+  cursor:pointer;
+  display:block;
+  margin-top:4px;
+  object-fit:cover;
+}
+
+/* Full-screen image viewer */
+.image-viewer{
+  position:fixed;inset:0;background:rgba(0,0,0,.95);
+  z-index:1000;display:none;align-items:center;justify-content:center;
+  padding:20px;cursor:zoom-out;
+}
+.image-viewer.show{display:flex}
+.image-viewer img{
+  max-width:95%;max-height:95%;border-radius:12px;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+.image-viewer .close{
+  position:absolute;top:20px;right:24px;color:#fff;
+  font-size:32px;cursor:pointer;width:44px;height:44px;
+  display:grid;place-items:center;border-radius:50%;
+  background:rgba(255,255,255,.15);
+}
+
+/* Read Receipts (Blue ticks) */
+.tick{
+  display:inline-block;margin-left:4px;
+  font-size:11px;opacity:.85;
+}
+.tick.read{color:#22c55e}
+.bubble.out .tick.read{color:#a7f3d0}
+
+/* Typing Indicator */
+.typing-indicator{
+  display:none;padding:6px 14px;color:var(--muted);
+  font-size:12px;font-style:italic;
+  background:#eef3f8;border-top:1px solid var(--line);
+  min-height:24px;
+}
+.typing-indicator.show{display:block}
+.typing-indicator .dots{
+  display:inline-block;margin-left:4px;
+}
+.typing-indicator .dots span{
+  display:inline-block;width:4px;height:4px;
+  background:var(--muted);border-radius:50%;
+  margin:0 1px;animation:typingBounce 1.4s infinite;
+}
+.typing-indicator .dots span:nth-child(2){animation-delay:.2s}
+.typing-indicator .dots span:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{
+  0%,60%,100%{transform:translateY(0);opacity:.4}
+  30%{transform:translateY(-4px);opacity:1}
+}
+
+/* Reply Preview (in composer) */
+.reply-preview{
+  display:none;background:#f1f5fb;border-left:3px solid var(--primary);
+  padding:8px 12px;border-radius:8px;margin-bottom:6px;
+  position:relative;
+}
+.reply-preview.show{display:block}
+.reply-preview .reply-name{
+  font-weight:700;font-size:12px;color:var(--primary);
+}
+.reply-preview .reply-text{
+  font-size:12px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-top:2px;
+}
+.reply-preview .reply-close{
+  position:absolute;top:6px;right:10px;
+  font-size:14px;color:var(--muted);cursor:pointer;
+}
+
+/* Reply content in bubble */
+.bubble .reply-quote{
+  display:block;background:rgba(255,255,255,.15);
+  border-left:3px solid currentColor;
+  padding:6px 10px;border-radius:6px;margin-bottom:6px;
+  font-size:12px;opacity:.9;
+}
+.bubble.in .reply-quote{background:#f1f5fb}
+
+/* Pin Message */
+.pin-banner{
+  display:none;background:#fff8e1;border-bottom:1px solid #ffe082;
+  padding:8px 14px;font-size:12px;color:#8a6d00;
+  position:relative;cursor:pointer;
+}
+.pin-banner.show{display:block}
+.pin-banner b{color:#d97706}
+.pin-banner .pin-icon{font-size:14px;margin-right:4px}
+.pinned-badge{
+  display:inline-block;font-size:10px;background:#fef3c7;
+  color:#92400e;padding:1px 6px;border-radius:8px;
+  margin-right:4px;font-weight:700;
+}
+
+/* Sticker picker */
+.sticker-panel{
+  position:absolute;bottom:70px;left:8px;right:8px;
+  background:#fff;border-radius:16px;
+  box-shadow:0 10px 40px rgba(0,0,0,.2);
+  padding:12px;display:none;z-index:60;
+  max-height:320px;overflow-y:auto;
+}
+.sticker-panel.show{display:block}
+.sticker-panel h4{
+  margin:0 0 10px;font-size:13px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.sticker-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+.sticker-item{
+  font-size:34px;text-align:center;padding:8px;
+  border-radius:12px;cursor:pointer;transition:.15s;
+  user-select:none;
+}
+.sticker-item:hover{
+  background:#f1f5fb;transform:scale(1.15);
+}
+.bubble.sticker-bubble{
+  background:transparent!important;
+  box-shadow:none!important;
+  padding:0!important;
+  font-size:64px;
+  line-height:1;
+}
+
+/* Profile viewer (other user's profile) */
+.profile-viewer{
+  position:absolute;inset:0;background:#fff;z-index:400;
+  display:none;flex-direction:column;overflow-y:auto;
+}
+.profile-viewer.show{display:flex}
+.profile-viewer .pv-header{
+  height:64px;background:linear-gradient(135deg,#1681ff,#075de0);
+  color:#fff;display:flex;align-items:center;padding:0 12px;gap:10px;
+  flex-shrink:0;
+}
+.profile-viewer .pv-body{
+  padding:30px 24px;text-align:center;
+  background:linear-gradient(160deg,#edf7ff,#fff 60%);
+}
+.profile-viewer .pv-avatar{
+  width:120px;height:120px;border-radius:50%;
+  background:linear-gradient(135deg,#dbeafe,#93c5fd);
+  font-size:56px;display:grid;place-items:center;
+  margin:0 auto 18px;border:4px solid #fff;
+  box-shadow:var(--shadow);
+}
+.profile-viewer .pv-name{
+  font-size:24px;font-weight:800;margin-bottom:6px;
+}
+.profile-viewer .pv-status{
+  color:var(--green);font-size:13px;font-weight:600;
+  margin-bottom:18px;
+}
+.profile-viewer .pv-info{
+  background:#fff;border-radius:16px;padding:16px;
+  margin-top:20px;box-shadow:var(--shadow);text-align:left;
+}
+.profile-viewer .pv-info-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--line);
+}
+.profile-viewer .pv-info-row:last-child{border-bottom:none}
+.profile-viewer .pv-info-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:#eef5ff;color:var(--primary);
+  display:grid;place-items:center;font-size:18px;
+}
+.profile-viewer .pv-info-text{flex:1;font-size:14px}
+.profile-viewer .pv-info-text b{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.profile-viewer .pv-actions{
+  display:flex;gap:10px;padding:20px;margin-top:auto;
+}
+.profile-viewer .pv-actions button{
+  flex:1;height:52px;border-radius:14px;
+  font-weight:700;font-size:15px;
+}
+.profile-viewer .pv-btn-msg{
+  background:var(--primary);color:#fff;
+}
+.profile-viewer .pv-btn-call{
+  background:#eef5ff;color:var(--primary);
+}
+
+/* Dark mode overrides */
+body.dark .reply-preview{background:#1e293b}
+body.dark .sticker-panel{background:#0f172a}
+body.dark .sticker-panel h4{color:#94a3b8}
+body.dark .sticker-item:hover{background:#1e293b}
+body.dark .pin-banner{background:#422006;border-color:#78350f;color:#fcd34d}
+body.dark .pin-banner b{color:#fbbf24}
+body.dark .pinned-badge{background:#78350f;color:#fde68a}
+body.dark .profile-viewer{background:#0f172a}
+body.dark .profile-viewer .pv-body{background:linear-gradient(160deg,#0f172a,#0b1220)}
+body.dark .profile-viewer .pv-info{background:#1e293b}
+body.dark .profile-viewer .pv-info-row{border-color:#334155}
+body.dark .typing-indicator{background:#0b1220}
 </style>
 </head>
 <body>
@@ -753,25 +968,43 @@ body.dark .bubble.deleted{background:#1e293b!important;color:#64748b!important}
       <button class="icon-btn" onclick="startVoiceCall()" title="Voice Call">📞</button>
       <button class="icon-btn" onclick="startVideoCall()" title="Video Call">🎥</button>
     </header>
-    <div class="messages" id="messages"></div>
-    <div class="composer">
-      <button class="round-btn" onclick="toggleAttachMenu()" title="Attach">📎</button>
-      <input id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage()}">
-      <div class="voice-recording" id="voiceRecording">
-        <div class="dot"></div>
-        <span class="timer" id="voiceTimer">0:00</span>
-        <span class="cancel-btn" onclick="cancelVoiceRecording()">✕</span>
-      </div>
-      <button class="round-btn" id="micBtn" onclick="startVoiceRecording()" title="Voice Message">🎤</button>
-      <button class="round-btn send" onclick="sendMessage()">➤</button>
+    <div class="pin-banner" id="pinBanner" onclick="scrollToPinned()">
+    <span class="pin-icon">📌</span>
+    <b>Pinned:</b> <span id="pinPreview">Message</span>
     </div>
-    <div class="attach-menu" id="attachMenu">
-      <div class="attach-item" onclick="attachImage()"><span class="ai">📸</span> Photo</div>
-      <div class="attach-item" onclick="attachFile()"><span class="ai">📄</span> Document</div>
-      <div class="attach-item" onclick="attachLink()"><span class="ai">🔗</span> Link</div>
-    </div>
-    <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
-    <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(event)">
+    <div class="typing-indicator" id="typingIndicator">
+  <span id="typingName">Someone</span> is typing<span class="dots"><span></span><span></span><span></span></span>
+</div>
+<div class="reply-preview" id="replyPreview">
+  <div class="reply-name" id="replyName">Reply</div>
+  <div class="reply-text" id="replyText"></div>
+  <span class="reply-close" onclick="cancelReply()">✕</span>
+</div>
+<div class="composer">
+  <button class="round-btn" onclick="toggleAttachMenu()" title="Attach">📎</button>
+  <button class="round-btn" onclick="toggleStickerPanel()" title="Stickers">😀</button>
+  <input id="messageInput" placeholder="Type a message..." 
+    onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage()}"
+    oninput="notifyTyping()">
+  <div class="voice-recording" id="voiceRecording">
+    <div class="dot"></div>
+    <span class="timer" id="voiceTimer">0:00</span>
+    <span class="cancel-btn" onclick="cancelVoiceRecording()">✕</span>
+  </div>
+    <button class="round-btn" id="micBtn" onclick="startVoiceRecording()" title="Voice Message">🎤</button>
+    <button class="round-btn send" onclick="sendMessage()">➤</button>
+  </div>
+  <div class="sticker-panel" id="stickerPanel">
+    <h4>😀 Stickers</h4>
+    <div class="sticker-grid" id="stickerGrid"></div>
+  </div>
+  <div class="attach-menu" id="attachMenu">
+    <div class="attach-item" onclick="attachImage()"><span class="ai">📸</span> Photo</div>
+    <div class="attach-item" onclick="attachFile()"><span class="ai">📄</span> Document</div>
+    <div class="attach-item" onclick="attachLink()"><span class="ai">🔗</span> Link</div>
+  </div>
+  <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+  <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(event)">
   </section>
 
   <!-- ========== CALL SCREEN ========== -->
@@ -840,6 +1073,29 @@ body.dark .bubble.deleted{background:#1e293b!important;color:#64748b!important}
       <button class="call-btn accept" onclick="acceptCall()">📞</button>
     </div>
   </div>
+  <!-- IMAGE VIEWER (full-screen) -->
+<div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
+  <span class="close">✕</span>
+  <img id="imageViewerImg" src="" alt="image">
+</div>
+
+<!-- PROFILE VIEWER (other user) -->
+<div class="profile-viewer" id="profileViewer">
+  <div class="pv-header">
+    <button class="icon-btn" style="background:rgba(255,255,255,.15)" onclick="closeProfileViewer()">‹</button>
+    <div class="brand">Profile</div>
+  </div>
+  <div class="pv-body">
+    <div class="pv-avatar" id="pvAvatar">👤</div>
+    <div class="pv-name" id="pvName">User</div>
+    <div class="pv-status" id="pvStatus">● Online</div>
+  </div>
+  <div class="pv-info" id="pvInfo"></div>
+  <div class="pv-actions">
+    <button class="pv-btn-call" onclick="callFromProfile()">📞 Call</button>
+    <button class="pv-btn-msg" onclick="msgFromProfile()">💬 Message</button>
+  </div>
+</div>
 </div>
 
 <script type="module">
@@ -1221,34 +1477,6 @@ window.openChat = (chatId) => {
   loadMessages(chatId);
   setTimeout(() => document.getElementById('messageInput')?.focus(), 150);
 };
-
-function loadMessages(chatId) {
-  if (unsubMessages) unsubMessages();
-  const box = document.getElementById('messages');
-  if (!box) return;
-  box.innerHTML = '<div class="day">Loading...</div>';
-
-  const q = query(
-    collection(db, 'chats', chatId, 'messages'),
-    orderBy('createdAt', 'asc'),
-    limit(300)
-  );
-  unsubMessages = onSnapshot(q, (snap) => {
-    box.innerHTML = '<div class="day">Messages</div>';
-    if (snap.empty) {
-      box.innerHTML += '<div style="text-align:center;color:#8a94a5;font-size:13px;margin-top:20px">No messages yet. Say hi! 👋</div>';
-    }
-    snap.forEach(d => {
-      const m = d.data();
-      const msgId = d.id;
-      box.appendChild(window.buildMessageBubble(m, msgId));
-    });
-    box.scrollTop = box.scrollHeight;
-  }, (err) => {
-    console.error(err);
-    box.innerHTML = '<div class="day">Could not load messages</div>';
-  });
-}
 
 function buildMessageBubble(m) {
   const isMine = m.senderId === currentUser.uid;
@@ -3264,6 +3492,437 @@ setTimeout(() => {
 
 // ================================================================
 // END OF PART 5
+// ================================================================
+
+// ================================================================
+// PART 6: UI POLISH + NEW FEATURES
+// Image size, Read Receipts, Typing, Reply, Pin, Stickers, Profile
+// ================================================================
+
+// ---------- 1. IMAGE VIEWER (Full-screen) ----------
+window.openImageViewer = (src) => {
+  document.getElementById('imageViewerImg').src = src;
+  document.getElementById('imageViewer').classList.add('show');
+};
+
+window.closeImageViewer = () => {
+  document.getElementById('imageViewer').classList.remove('show');
+};
+
+// ---------- 2. READ RECEIPTS (Blue Ticks) ----------
+async function markMessagesAsRead() {
+  if (!currentChatId || !currentUser) return;
+  try {
+    const q = query(
+      collection(db, 'chats', currentChatId, 'messages'),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    snap.forEach(async (d) => {
+      const m = d.data();
+      if (m.senderId !== currentUser.uid) {
+        if (!m.readBy) {
+          await updateDoc(doc(db, 'chats', currentChatId, 'messages', d.id), {
+            readBy: [currentUser.uid]
+          });
+        }
+      }
+    });
+  } catch (e) { /* silent */ }
+}
+
+function renderTicks(m, isMine) {
+  if (!isMine) return '';
+  const isRead = m.readBy && m.readBy.length > 0;
+  return `<span class="tick ${isRead ? 'read' : ''}">${isRead ? '✓✓' : '✓'}</span>`;
+}
+
+// ---------- 3. TYPING INDICATOR ----------
+let typingTimeout = null;
+let typingUnsub = null;
+
+window.notifyTyping = () => {
+  if (!currentChatId || !currentUser) return;
+  if (userSettings.privacy_typingIndicator === false) return;
+  const chatRef = doc(db, 'chats', currentChatId);
+  const field = 'typing_' + currentUser.uid;
+  updateDoc(chatRef, { [field]: Date.now() }).catch(() => {});
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    updateDoc(chatRef, { [field]: null }).catch(() => {});
+  }, 3000);
+};
+
+function listenTyping(chatId) {
+  if (typingUnsub) typingUnsub();
+  typingUnsub = onSnapshot(doc(db, 'chats', chatId), (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (!data.members) return;
+    const others = data.members.filter(uid => uid !== currentUser.uid);
+    let typingUser = null;
+    for (const uid of others) {
+      const ts = data['typing_' + uid];
+      if (ts && (Date.now() - ts) < 5000) {
+        typingUser = uid;
+        break;
+      }
+    }
+    const indicator = document.getElementById('typingIndicator');
+    if (typingUser) {
+      const u = allUsers.find(x => x.uid === typingUser);
+      document.getElementById('typingName').textContent = u?.name || 'Someone';
+      indicator.classList.add('show');
+    } else {
+      indicator.classList.remove('show');
+    }
+  });
+}
+
+// ---------- 4. MESSAGE REPLY ----------
+let replyingTo = null;
+
+window.startReply = (messageId, senderName, text) => {
+  replyingTo = { id: messageId, sender: senderName, text: text.slice(0, 80) };
+  document.getElementById('replyName').textContent = senderName;
+  document.getElementById('replyText').textContent = text.slice(0, 80);
+  document.getElementById('replyPreview').classList.add('show');
+  document.querySelectorAll('.msg-options').forEach(el => el.remove());
+  document.getElementById('messageInput').focus();
+};
+
+window.cancelReply = () => {
+  replyingTo = null;
+  document.getElementById('replyPreview').classList.remove('show');
+};
+
+// ---------- 5. PIN MESSAGE ----------
+let pinnedMessage = null;
+
+window.pinMessage = async (messageId, text, senderName) => {
+  if (!currentChatId) return;
+  try {
+    await updateDoc(doc(db, 'chats', currentChatId), {
+      pinnedMessageId: messageId,
+      pinnedText: text.slice(0, 100),
+      pinnedSender: senderName,
+      pinnedAt: serverTimestamp()
+    });
+    toast('Message pinned');
+  } catch (e) {
+    console.error(e);
+    toast('Could not pin');
+  }
+};
+
+window.unpinMessage = async () => {
+  if (!currentChatId) return;
+  try {
+    await updateDoc(doc(db, 'chats', currentChatId), {
+      pinnedMessageId: null,
+      pinnedText: null,
+      pinnedSender: null
+    });
+    toast('Message unpinned');
+  } catch (e) { toast('Could not unpin'); }
+};
+
+window.scrollToPinned = () => {
+  if (!pinnedMessage) return;
+  const el = document.querySelector(`[data-msg-id="${pinnedMessage}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.animation = 'pop .4s ease';
+  }
+};
+
+function listenPin(chatId) {
+  const unsub = onSnapshot(doc(db, 'chats', chatId), (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    const banner = document.getElementById('pinBanner');
+    if (data.pinnedMessageId) {
+      pinnedMessage = data.pinnedMessageId;
+      document.getElementById('pinPreview').textContent = 
+        (data.pinnedSender ? data.pinnedSender + ': ' : '') + (data.pinnedText || '');
+      banner.classList.add('show');
+    } else {
+      pinnedMessage = null;
+      banner.classList.remove('show');
+    }
+  });
+  // Store to avoid GC — reattached on each openChat
+  window._unsubPin = unsub;
+}
+
+// ---------- 6. STICKER PACK ----------
+const STICKERS = [
+  '😀','😂','🥰','😎','🤔','😴','🤗','😇','🤩','🥳',
+  '😢','😭','😡','🤯','😱','🥺','😏','🤤','🤠','🤡',
+  '👍','👎','👏','🙏','💪','🤝','✌️','🤞','👋','🫶',
+  '❤️','💔','💯','🔥','⭐','✨','🎉','🎁','🌈','☀️',
+  '🐶','🐱','🐼','🦁','🐯','🐸','🦊','🐻','🐨','🦄',
+  '🍕','🍔','🍟','🍦','🍰','☕','🍫','🍩','🍿','🥤'
+];
+
+function renderStickerPanel() {
+  const grid = document.getElementById('stickerGrid');
+  if (!grid) return;
+  grid.innerHTML = STICKERS.map(s => 
+    `<div class="sticker-item" onclick="sendSticker('${s}')">${s}</div>`
+  ).join('');
+}
+
+window.toggleStickerPanel = () => {
+  document.getElementById('stickerPanel').classList.toggle('show');
+  document.getElementById('attachMenu')?.classList.remove('show');
+};
+
+window.sendSticker = async (sticker) => {
+  if (!currentChatId) { toast('Open a chat first'); return; }
+  document.getElementById('stickerPanel').classList.remove('show');
+  try {
+    await sendSpecialMessage({
+      text: sticker,
+      type: 'sticker'
+    });
+  } catch (e) { toast('Could not send sticker'); }
+};
+
+// ---------- 7. PROFILE VIEWER ----------
+let viewingProfile = null;
+
+window.openProfileViewer = (uid) => {
+  const user = allUsers.find(u => u.uid === uid);
+  if (!user) { toast('User not found'); return; }
+  viewingProfile = user;
+  document.getElementById('pvAvatar').textContent = user.emoji || '🧑';
+  document.getElementById('pvName').textContent = user.name || 'User';
+  document.getElementById('pvStatus').textContent = '● Online';
+  
+  const shortUid = (user.uid || '').slice(0, 12) + '...';
+  document.getElementById('pvInfo').innerHTML = `
+    <div class="pv-info-row">
+      <div class="pv-info-icon">✉️</div>
+      <div class="pv-info-text"><b>Email</b>${escapeHtml(user.email || 'N/A')}</div>
+    </div>
+    <div class="pv-info-row">
+      <div class="pv-info-icon">🆔</div>
+      <div class="pv-info-text"><b>User ID</b>${shortUid}</div>
+    </div>
+    <div class="pv-info-row">
+      <div class="pv-info-icon">📅</div>
+      <div class="pv-info-text"><b>Joined</b>Recently</div>
+    </div>
+  `;
+  document.getElementById('profileViewer').classList.add('show');
+};
+
+window.closeProfileViewer = () => {
+  document.getElementById('profileViewer').classList.remove('show');
+  viewingProfile = null;
+};
+
+window.callFromProfile = () => {
+  if (!viewingProfile) return;
+  const uid = viewingProfile.uid;
+  closeProfileViewer();
+  const chat = allChats.find(c =>
+    !c.isGroup &&
+    c.members?.includes(currentUser.uid) &&
+    c.members?.includes(uid) &&
+    c.members.length === 2
+  );
+  if (chat) {
+    openChat(chat.id);
+    setTimeout(() => startVoiceCall(), 400);
+  } else {
+    toast('Start a chat first');
+  }
+};
+
+window.msgFromProfile = () => {
+  if (!viewingProfile) return;
+  const uid = viewingProfile.uid;
+  closeProfileViewer();
+  startPrivateChat(uid);
+};
+
+// ---------- OVERRIDE sendMessage (with reply) ----------
+window.sendMessage = async () => {
+  const input = document.getElementById('messageInput');
+  const text = input.value.trim();
+  if (!text || !currentChatId) return;
+  input.value = '';
+
+  const me = allUsers.find(u => u.uid === currentUser.uid);
+  const myName = me?.name || currentUser.displayName || 'Guest';
+
+  const msgPayload = {
+    text,
+    type: 'text',
+    senderId: currentUser.uid,
+    senderName: myName,
+    createdAt: serverTimestamp(),
+    readBy: []
+  };
+
+  if (replyingTo) {
+    msgPayload.replyTo = {
+      id: replyingTo.id,
+      sender: replyingTo.sender,
+      text: replyingTo.text
+    };
+  }
+
+  try {
+    await addDoc(collection(db, 'chats', currentChatId, 'messages'), msgPayload);
+    await updateDoc(doc(db, 'chats', currentChatId), {
+      lastMessage: text.slice(0, 60),
+      lastMessageType: 'text',
+      lastSenderId: currentUser.uid,
+      updatedAt: serverTimestamp()
+    });
+    cancelReply();
+    document.getElementById('stickerPanel')?.classList.remove('show');
+  } catch (e) {
+    console.error(e);
+    toast('Message not sent');
+  }
+};
+
+// ---------- OVERRIDE buildMessageBubble (with reply, pin, sticker, ticks) ----------
+window.buildMessageBubble = function(m, messageId) {
+  const isMine = m.senderId === currentUser.uid;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'bubble-wrapper ' + (isMine ? 'out' : 'in');
+  wrapper.dataset.msgId = messageId;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + (isMine ? 'out' : 'in');
+
+  const time = formatTime(m.createdAt);
+  const senderPrefix = (!isMine && currentChatInfo?.isGroup)
+    ? `<b>${escapeHtml(m.senderName || 'User')}:</b> ` : '';
+
+  // Deleted
+  if (m.deleted) {
+    bubble.classList.add('deleted');
+    bubble.innerHTML = '🚫 This message was deleted';
+    wrapper.appendChild(bubble);
+    return wrapper;
+  }
+
+  // Voice
+  if (m.type === 'voice' && m.audioData) {
+    const dur = m.duration || 0;
+    const mm = Math.floor(dur / 60);
+    const ss = (dur % 60).toString().padStart(2, '0');
+    bubble.innerHTML = `
+      ${senderPrefix}
+      <div class="voice-bubble">
+        <div class="voice-play" onclick="playVoice(this,'${messageId}')">▶</div>
+        <div class="voice-wave">${Array.from({length:20}).map(()=>`<span style="animation-delay:${Math.random()}s"></span>`).join('')}</div>
+        <div class="voice-duration">${mm}:${ss}</div>
+      </div>
+      <span class="time">${time}${renderTicks(m, isMine)}</span>
+    `;
+    if (!window._audioCache) window._audioCache = {};
+    window._audioCache[messageId] = m.audioData;
+  }
+  // Sticker
+  else if (m.type === 'sticker') {
+    bubble.classList.add('sticker-bubble');
+    bubble.innerHTML = `${senderPrefix}<div style="font-size:64px;line-height:1">${escapeHtml(m.text)}</div><span class="time" style="color:#718096">${time}${renderTicks(m, isMine)}</span>`;
+  }
+  // Image
+  else if (m.type === 'image' && m.imageData) {
+    bubble.innerHTML = `
+      ${senderPrefix}
+      ${m.replyTo ? `<div class="reply-quote"><b>${escapeHtml(m.replyTo.sender)}:</b> ${escapeHtml(m.replyTo.text)}</div>` : ''}
+      <img src="${m.imageData}" alt="image" onclick="openImageViewer('${m.imageData}')">
+      <span class="time">${time}${renderTicks(m, isMine)}</span>
+    `;
+  }
+  // File
+  else if (m.type === 'file') {
+    bubble.innerHTML = `
+      ${senderPrefix}
+      ${m.replyTo ? `<div class="reply-quote"><b>${escapeHtml(m.replyTo.sender)}:</b> ${escapeHtml(m.replyTo.text)}</div>` : ''}
+      <a class="file-link" href="${m.fileData}" download="${escapeHtml(m.fileName)}"><span class="file-icon">📄</span><span>${escapeHtml(m.fileName)}</span></a>
+      <span class="time">${time}${renderTicks(m, isMine)}</span>
+    `;
+  }
+  // Text (with reply)
+  else {
+    bubble.innerHTML = `
+      ${senderPrefix}
+      ${m.replyTo ? `<div class="reply-quote"><b>${escapeHtml(m.replyTo.sender)}:</b> ${escapeHtml(m.replyTo.text)}</div>` : ''}
+      ${escapeHtml(m.text || '')}
+      <span class="time">${time}${renderTicks(m, isMine)}</span>
+    `;
+  }
+
+  // Pinned badge
+  if (m.isPinned || m.messageId === pinnedMessage) {
+    const badge = `<span class="pinned-badge">📌 Pinned</span>`;
+    bubble.innerHTML = badge + bubble.innerHTML;
+  }
+
+  wrapper.appendChild(bubble);
+
+  // Reactions row
+  if (m.reactions && Object.keys(m.reactions).length > 0) {
+    const counts = {};
+    Object.values(m.reactions).forEach(r => counts[r] = (counts[r] || 0) + 1);
+    const row = document.createElement('div');
+    row.className = 'reactions-row';
+    row.innerHTML = Object.entries(counts).map(([r, n]) => 
+      `<span>${r}${n > 1 ? ' ' + n : ''}</span>`
+    ).join('');
+    wrapper.appendChild(row);
+  }
+
+  attachMessageHandlers(wrapper, messageId, m.senderId, isMine);
+  return wrapper;
+};
+
+// ---------- Profile click in chat header ----------
+const _origOpenChat = window.openChat;
+window.openChat = function(chatId) {
+  _origOpenChat(chatId);
+  // Attach profile viewer to avatar click in chat header
+  const headerAvatar = document.getElementById('chatAvatar');
+  if (headerAvatar) {
+    headerAvatar.style.cursor = 'pointer';
+    headerAvatar.onclick = () => {
+      if (currentChatInfo && !currentChatInfo.isGroup) {
+        const other = getOtherMember(currentChatInfo);
+        if (other) openProfileViewer(other.uid);
+      }
+    };
+  }
+  // Also in group, clicking avatar shows nothing special
+  cancelReply();
+  document.getElementById('pinBanner')?.classList.remove('show');
+};
+
+// ---------- Init stickers + prevent menu overlap ----------
+renderStickerPanel();
+
+// Close panels when clicking elsewhere
+document.addEventListener('click', (e) => {
+  const stickerPanel = document.getElementById('stickerPanel');
+  if (stickerPanel && stickerPanel.classList.contains('show')) {
+    if (!e.target.closest('.sticker-panel') && !e.target.closest('.round-btn')) {
+      stickerPanel.classList.remove('show');
+    }
+  }
+});
+
+// ================================================================
+// END OF PART 6
 // ================================================================
 </script>
 </body>
