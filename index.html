@@ -738,6 +738,15 @@ body.dark .bubble.deleted{background:#1e293b!important;color:#64748b!important}
 .profile-viewer .pv-btn-call{
   background:#eef5ff;color:var(--primary);
 }
+/* reCAPTCHA container (hidden) */
+#recaptcha-container{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
 
 /* Selection mode */
 .bubble-wrapper.selected .bubble{
@@ -1155,7 +1164,8 @@ body.dark .typing-indicator{background:#0b1220}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { 
   getAuth, onAuthStateChanged, createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, signOut, updateProfile, signInAnonymously 
+  signInWithEmailAndPassword, signOut, updateProfile, signInAnonymously,
+  RecaptchaVerifier, signInWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import { 
   getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, 
@@ -1284,6 +1294,105 @@ window.handleSignup = async () => {
     await updateProfile(res.user, { displayName: email.split('@')[0] });
     toast('Account created!');
   } catch (e) { toast(humanError(e.code)); }
+};
+
+// ================================================================
+// PHONE NUMBER LOGIN (OTP)
+// ================================================================
+let confirmationResult = null;
+let recaptchaVerifier = null;
+
+window.showPhoneLogin = () => {
+  document.getElementById('phoneLoginBox').style.display = 'block';
+};
+
+window.hidePhoneLogin = () => {
+  document.getElementById('phoneLoginBox').style.display = 'none';
+  document.getElementById('otpBox').style.display = 'none';
+};
+
+window.sendOTP = async () => {
+  const phoneNumber = document.getElementById('phoneNumber').value.trim();
+  if (!phoneNumber) { toast('Enter phone number'); return; }
+  if (!phoneNumber.startsWith('+')) { toast('Include country code (e.g. +880)'); return; }
+
+  try {
+    // Clean up any existing verifier
+    if (recaptchaVerifier) {
+      try { recaptchaVerifier.clear(); } catch (e) {}
+      recaptchaVerifier = null;
+    }
+
+    // Create a container for reCAPTCHA if not exists
+    let recaptchaContainer = document.getElementById('recaptcha-container');
+    if (!recaptchaContainer) {
+      recaptchaContainer = document.createElement('div');
+      recaptchaContainer.id = 'recaptcha-container';
+      document.querySelector('.app').appendChild(recaptchaContainer);
+    }
+
+    recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'invisible',
+      callback: () => { /* solved */ },
+      'expired-callback': () => { toast('reCAPTCHA expired. Try again.'); }
+    });
+
+    toast('Sending OTP...');
+    confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+    toast('OTP sent!');
+    document.getElementById('otpBox').style.display = 'block';
+  } catch (e) {
+    console.error(e);
+    if (e.code === 'auth/invalid-phone-number') {
+      toast('Invalid phone number format');
+    } else if (e.code === 'auth/too-many-requests') {
+      toast('Too many attempts. Try again later.');
+    } else {
+      toast('Could not send OTP: ' + (e.code || 'error'));
+    }
+  }
+};
+
+window.verifyOTP = async () => {
+  const code = document.getElementById('otpCode').value.trim();
+  if (!code || code.length !== 6) { toast('Enter 6-digit OTP'); return; }
+  if (!confirmationResult) { toast('Send OTP first'); return; }
+
+  try {
+    const result = await confirmationResult.confirm(code);
+    const user = result.user;
+    toast('Logged in with phone!');
+
+    // Create user profile if new
+    const userRef = doc(db, 'users', user.uid);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      const defaultName = 'User' + user.phoneNumber.slice(-4);
+      await setDoc(userRef, {
+        uid: user.uid,
+        name: defaultName,
+        emoji: '🧑',
+        phone: user.phoneNumber,
+        email: user.email || '',
+        lastSeen: serverTimestamp(),
+        createdAt: serverTimestamp()
+      });
+      await updateProfile(user, { displayName: defaultName });
+    } else {
+      await updateDoc(userRef, { lastSeen: serverTimestamp() });
+    }
+
+    // Hide phone login box
+    document.getElementById('phoneLoginBox').style.display = 'none';
+    document.getElementById('otpBox').style.display = 'none';
+  } catch (e) {
+    console.error(e);
+    if (e.code === 'auth/invalid-verification-code') {
+      toast('Wrong OTP. Try again.');
+    } else {
+      toast('Verification failed');
+    }
+  }
 };
 
 window.handleGuest = async () => {
