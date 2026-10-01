@@ -813,6 +813,17 @@ body.dark .typing-indicator{background:#0b1220}
     <button class="btn-primary" onclick="handleLogin()">Log In</button>
     <button class="btn-secondary" onclick="handleSignup()">Create New Account</button>
     <button class="btn-secondary" style="color:#64748b" onclick="handleGuest()">Continue as Guest</button>
+    <button class="btn-secondary" onclick="showPhoneLogin()" style="color:#1677ff;font-weight:700">📱 Continue with Phone</button>
+
+    <div id="phoneLoginBox" style="display:none;margin-top:16px">
+      <div class="field">📱<input id="phoneNumber" type="tel" placeholder="+8801XXXXXXXXX"></div>
+      <button class="btn-primary" onclick="sendOTP()">Send OTP</button>
+      <div id="otpBox" style="display:none;margin-top:12px">
+        <div class="field">🔢<input id="otpCode" type="tel" placeholder="Enter 6-digit OTP" maxlength="6"></div>
+        <button class="btn-primary" onclick="verifyOTP()">Verify & Login</button>
+      </div>
+      <button class="btn-link" onclick="hidePhoneLogin()">← Back</button>
+    </div>
   </section>
 
   <!-- ========== PROFILE SETUP ========== -->
