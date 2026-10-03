@@ -2500,6 +2500,7 @@ async function setupPeerConnection(otherUid, isCaller) {
       }
     }
   );
+}
 // -------- Incoming Call Listener --------
 let unsubIncomingCall = null;
 function listenIncomingCalls() {
@@ -2662,8 +2663,6 @@ function cleanupCall() {
   stopCallTimer();
   window._processedSignals = new Set();
   window._pendingCandidates = [];
-  stopRingtone();
-  stopCallTimer();
   if (unsubCall) { unsubCall(); unsubCall = null; }
   if (unsubSignals) { unsubSignals(); unsubSignals = null; }
   if (peerConnection) {
