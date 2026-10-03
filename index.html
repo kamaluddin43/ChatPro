@@ -1278,6 +1278,9 @@ import {
   signInWithEmailAndPassword, signOut, updateProfile, signInAnonymously,
   RecaptchaVerifier, signInWithPhoneNumber
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { 
+  getMessaging, getToken, onMessage 
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging.js";
 import { 
   getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, 
   serverTimestamp, doc, setDoc, getDoc, getDocs, updateDoc, limit, deleteDoc 
@@ -1298,6 +1301,66 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+let messaging = null;
+try {
+  messaging = getMessaging(app);
+} catch (e) {
+  console.warn('FCM not supported in this browser:', e);
+}
+
+// ================================================================
+// PUSH NOTIFICATION
+// ================================================================
+const VAPID_KEY = 'BArPGTbPF7KyBLdFVv-XVYb4rwDxbn2drZ8tLR46Qo9ZltrzvmIYDGvgDGbwruJGh6yLGtNSF3NI7vdO5VG7WrA';  // ⚠️ এখানে আপনার VAPID Key বসান
+
+async function requestNotificationPermission() {
+  if (!messaging) return;
+  if (!('Notification' in window)) {
+    console.warn('Notifications not supported');
+    return;
+  }
+  
+  try {
+    const permission = await Notification.requestPermission();
+    console.log('Notification permission:', permission);
+    
+    if (permission === 'granted') {
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+      console.log('FCM Token:', token);
+      
+      if (token && currentUser) {
+        // Save token to user doc
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+          fcmToken: token,
+          fcmUpdatedAt: serverTimestamp()
+        });
+        console.log('✅ FCM token saved to user profile');
+      }
+      return token;
+    }
+  } catch (e) {
+    console.error('Notification permission error:', e);
+  }
+}
+
+// Foreground message handler
+if (messaging) {
+  onMessage(messaging, (payload) => {
+    console.log('📬 Foreground message:', payload);
+    const title = payload.notification?.title || 'Ittisal';
+    const body = payload.notification?.body || 'New message';
+    toast(`📬 ${title}: ${body}`);
+    
+    // Play sound if enabled
+    if (userSettings.notif_messageSound) {
+      try {
+        const audio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQBvT18AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+      } catch (e) {}
+    }
+  });
+}
 
 // ================================================================
 // GLOBAL STATE
@@ -2766,6 +2829,10 @@ onAuthStateChanged(auth, async (user) => {
     await loadUsers();
     loadAllChats();
     await refreshProfileUI();
+    // Request notification permission
+    setTimeout(() => {
+      requestNotificationPermission();
+    }, 3000);
   } else {
     currentUser = null;
     if (unsubChats) unsubChats();
