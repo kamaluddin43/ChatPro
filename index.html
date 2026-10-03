@@ -2715,11 +2715,38 @@ let ringtoneAudio = null;
 function playRingtone() {
   stopRingtone();
   try {
-    ringtoneAudio = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQBvT18AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+    // Use an online ringtone URL (works reliably)
+    ringtoneAudio = new Audio('https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg');
     ringtoneAudio.loop = true;
-    ringtoneAudio.volume = 0.3;
-    ringtoneAudio.play().catch(() => {});
-  } catch (e) { /* silent */ }
+    ringtoneAudio.volume = 0.5;
+    ringtoneAudio.play().catch(err => {
+      console.warn('Ringtone autoplay blocked:', err);
+      // Fallback: create a beep using Web Audio API
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 800;
+        gainNode.gain.value = 0.3;
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
+        ringtoneAudio = {
+          pause: () => { oscillator.stop(); audioCtx.close(); },
+          _osc: oscillator
+        };
+        // Stop after 30 seconds
+        setTimeout(() => {
+          try { oscillator.stop(); audioCtx.close(); } catch (e) {}
+        }, 30000);
+      } catch (e2) {
+        console.warn('Web Audio fallback failed:', e2);
+      }
+    });
+  } catch (e) {
+    console.error('Ringtone error:', e);
+  }
 }
 
 function stopRingtone() {
