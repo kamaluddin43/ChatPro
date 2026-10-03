@@ -1163,7 +1163,7 @@ body.dark .typing-indicator{background:#0b1220}
       <span></span><span></span><span></span><span></span><span></span>
     </div>
     <button class="vr-icon" id="voiceStopBtn" onclick="stopVoiceRecording()" title="Stop">⏸️</button>
-    <button class="vr-icon send" id="voiceSendBtn" onclick="sendRecordedVoice()" title="Send" style="display:none">➤</button>
+    <button class="vr-icon send" id="voiceSendBtn" onclick="sendRecordedVoice()" title="Send">➤</button>
   </div>
     <button class="round-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Voice Message">🎤</button>
     <button class="round-btn send" onclick="sendMessage()">➤</button>
@@ -3720,8 +3720,15 @@ window.startVoiceRecording = async () => {
       pendingVoiceDuration = recordingSeconds;
       voiceRecordState = 'stopped';
 
-      document.getElementById('voiceStopBtn').style.display = 'none';
-      document.getElementById('voiceSendBtn').style.display = 'grid';
+      // Auto-send if user pressed Send while recording
+      if (window._autoSendVoice) {
+        window._autoSendVoice = false;
+        resetVoiceUI();
+        await sendVoiceMessage(base64, recordingSeconds);
+        return;
+      }
+      
+      document.getElementById('voiceStopBtn').style.display = 'grid';
       document.getElementById('voiceTimer').textContent = formatVoiceTime(recordingSeconds);
       
       const dot = document.querySelector('#voiceRecording .dot');
@@ -3733,7 +3740,6 @@ window.startVoiceRecording = async () => {
     document.getElementById('messageInput').style.display = 'none';
     document.getElementById('micBtn').style.display = 'none';
     document.getElementById('voiceStopBtn').style.display = 'grid';
-    document.getElementById('voiceSendBtn').style.display = 'none';
     const dot = document.querySelector('#voiceRecording .dot');
     if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
 
@@ -3776,11 +3782,24 @@ function resetVoiceUI() {
 }
 
 window.sendRecordedVoice = async () => {
-  if (!pendingVoiceBase64) { toast('No recording'); return; }
-  const b64 = pendingVoiceBase64;
-  const dur = pendingVoiceDuration;
-  resetVoiceUI();
-  await sendVoiceMessage(b64, dur);
+  // Case 1: Already recorded and stopped
+  if (pendingVoiceBase64) {
+    const b64 = pendingVoiceBase64;
+    const dur = pendingVoiceDuration;
+    resetVoiceUI();
+    await sendVoiceMessage(b64, dur);
+    return;
+  }
+  
+  // Case 2: Recording in progress — stop it and send
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    // Set a flag so onstop knows to auto-send
+    window._autoSendVoice = true;
+    mediaRecorder.stop();
+    return;
+  }
+  
+  toast('No recording');
 };
 window.toggleVoiceRecording = () => {
   // If in stopped state (reviewing), ignore mic click
