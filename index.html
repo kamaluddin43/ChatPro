@@ -1157,13 +1157,12 @@ body.dark .typing-indicator{background:#0b1220}
     <button class="vr-icon" onclick="cancelVoiceRecording()" title="Delete">🗑️</button>
     <div class="dot"></div>
     <span class="timer" id="voiceTimer">0:00</span>
-    <div class="voice-wave-preview" id="voiceWavePreview">
+    <div class="voice-wave-preview">
       <span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span><span></span><span></span>
     </div>
-    <button class="vr-icon" id="voiceStopBtn" onclick="stopVoiceRecording()" title="Stop">⏸️</button>
-    <button class="vr-icon send" id="voiceSendBtn" onclick="sendRecordedVoice()" title="Send">➤</button>
+    <button class="vr-icon send" onclick="sendRecordedVoice()" title="Send">➤</button>
   </div>
     <button class="round-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Voice Message">🎤</button>
     <button class="round-btn send" onclick="sendMessage()">➤</button>
@@ -3716,7 +3715,7 @@ window.startVoiceRecording = async () => {
         return;
       }
 
-      pendingVoiceBase64 = base64;
+          pendingVoiceBase64 = base64;
       pendingVoiceDuration = recordingSeconds;
       voiceRecordState = 'stopped';
 
@@ -3727,8 +3726,8 @@ window.startVoiceRecording = async () => {
         await sendVoiceMessage(base64, recordingSeconds);
         return;
       }
-      
-      document.getElementById('voiceStopBtn').style.display = 'grid';
+
+      // Otherwise keep showing the recording (user can review or send)
       document.getElementById('voiceTimer').textContent = formatVoiceTime(recordingSeconds);
       
       const dot = document.querySelector('#voiceRecording .dot');
@@ -3739,7 +3738,6 @@ window.startVoiceRecording = async () => {
     document.getElementById('voiceRecording').classList.add('show');
     document.getElementById('messageInput').style.display = 'none';
     document.getElementById('micBtn').style.display = 'none';
-    document.getElementById('voiceStopBtn').style.display = 'grid';
     const dot = document.querySelector('#voiceRecording .dot');
     if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
 
@@ -3748,6 +3746,7 @@ window.startVoiceRecording = async () => {
       document.getElementById('voiceTimer').textContent = formatVoiceTime(recordingSeconds);
       if (recordingSeconds >= 45) {
         toast('Max 45 seconds reached');
+        window._autoSendVoice = true;
         stopVoiceRecording();
       }
     }, 1000);
@@ -3771,10 +3770,6 @@ function resetVoiceUI() {
   document.getElementById('voiceRecording')?.classList.remove('show');
   document.getElementById('messageInput').style.display = '';
   document.getElementById('micBtn').style.display = '';
-  const stopBtn = document.getElementById('voiceStopBtn');
-  const sendBtn = document.getElementById('voiceSendBtn');
-  if (stopBtn) stopBtn.style.display = 'grid';
-  if (sendBtn) sendBtn.style.display = 'none';
   const dot = document.querySelector('#voiceRecording .dot');
   if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
   const timer = document.getElementById('voiceTimer');
@@ -3782,20 +3777,19 @@ function resetVoiceUI() {
 }
 
 window.sendRecordedVoice = async () => {
-  // Case 1: Already recorded and stopped
+  // If recording is still running — stop and auto-send
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    window._autoSendVoice = true;
+    mediaRecorder.stop();
+    return;
+  }
+  
+  // If already stopped — send the pending recording
   if (pendingVoiceBase64) {
     const b64 = pendingVoiceBase64;
     const dur = pendingVoiceDuration;
     resetVoiceUI();
     await sendVoiceMessage(b64, dur);
-    return;
-  }
-  
-  // Case 2: Recording in progress — stop it and send
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
-    // Set a flag so onstop knows to auto-send
-    window._autoSendVoice = true;
-    mediaRecorder.stop();
     return;
   }
   
