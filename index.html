@@ -1325,11 +1325,20 @@ async function requestNotificationPermission() {
     console.log('Notification permission:', permission);
     
     if (permission === 'granted') {
-      const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+      // ✅ Explicitly provide the service worker registration path
+      const swRegistration = await navigator.serviceWorker.register(
+        './firebase-messaging-sw.js',
+        { scope: './firebase-cloud-messaging-push-scope' }
+      );
+      
+      const token = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: swRegistration
+      });
+      
       console.log('FCM Token:', token);
       
       if (token && currentUser) {
-        // Save token to user doc
         await updateDoc(doc(db, 'users', currentUser.uid), {
           fcmToken: token,
           fcmUpdatedAt: serverTimestamp()
@@ -1342,7 +1351,6 @@ async function requestNotificationPermission() {
     console.error('Notification permission error:', e);
   }
 }
-
 // Foreground message handler
 if (messaging) {
   onMessage(messaging, (payload) => {
