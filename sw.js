@@ -1,7 +1,7 @@
 // ================================================================
 // Ittisal Service Worker — PWA offline caching
 // ================================================================
-const CACHE_NAME = 'ittisal-v2';
+const CACHE_NAME = 'ittisal-v3';
 const ASSETS = [
   './',
   './index.html',
