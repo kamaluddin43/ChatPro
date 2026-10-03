@@ -2424,26 +2424,59 @@ async function setupPeerConnection(otherUid, isCaller) {
     });
   }
 
-  // Listen for signals
-  unsubSignals = onSnapshot(
+    unsubSignals = onSnapshot(
     query(collection(db, 'calls', currentCallId, 'signals'), orderBy('createdAt')),
     async (snap) => {
       for (const d of snap.docs) {
+        // Skip already-processed signals
+        if (!window._processedSignals) window._processedSignals = new Set();
+        if (window._processedSignals.has(d.id)) continue;
+        window._processedSignals.add(d.id);
+
         const sig = d.data();
         if (sig.from === currentUser.uid) continue;
+
+        // ICE candidate
         if (sig.candidate) {
           try {
-            await peerConnection.addIceCandidate(new RTCIceCandidate(sig.candidate));
-          } catch (e) { console.warn('ICE error', e); }
+            if (peerConnection && peerConnection.remoteDescription) {
+              await peerConnection.addIceCandidate(new RTCIceCandidate(sig.candidate));
+              console.log('✅ ICE candidate added');
+            } else {
+              // Queue — remote description not set yet
+              if (!window._pendingCandidates) window._pendingCandidates = [];
+              window._pendingCandidates.push(sig.candidate);
+              console.log('📥 ICE candidate queued (waiting for remote desc)');
+            }
+          } catch (e) { 
+            console.warn('ICE error', e); 
+          }
         }
-        if (sig.answer && isCaller) {
+
+        // Answer (for caller)
+        if (sig.answer && isCaller && peerConnection && !peerConnection.currentRemoteDescription) {
           try {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(sig.answer));
-          } catch (e) { console.warn('Answer error', e); }
+            console.log('✅ Answer set');
+            // Apply all queued candidates
+            if (window._pendingCandidates) {
+              for (const c of window._pendingCandidates) {
+                try { 
+                  await peerConnection.addIceCandidate(new RTCIceCandidate(c)); 
+                } catch (e) { console.warn(e); }
+              }
+              window._pendingCandidates = [];
+            }
+          } catch (e) { 
+            console.warn('Answer error', e); 
+          }
         }
-        if (sig.offer && !isCaller) {
+
+        // Offer (for callee)
+        if (sig.offer && !isCaller && peerConnection && !peerConnection.currentRemoteDescription) {
           try {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(sig.offer));
+            console.log('✅ Offer set');
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
             await addDoc(collection(db, 'calls', currentCallId, 'signals'), {
@@ -2451,13 +2484,22 @@ async function setupPeerConnection(otherUid, isCaller) {
               answer: { type: answer.type, sdp: answer.sdp },
               createdAt: serverTimestamp()
             });
-          } catch (e) { console.warn('Offer error', e); }
+            // Apply all queued candidates
+            if (window._pendingCandidates) {
+              for (const c of window._pendingCandidates) {
+                try { 
+                  await peerConnection.addIceCandidate(new RTCIceCandidate(c)); 
+                } catch (e) { console.warn(e); }
+              }
+              window._pendingCandidates = [];
+            }
+          } catch (e) { 
+            console.warn('Offer error', e); 
+          }
         }
       }
     }
   );
-}
-
 // -------- Incoming Call Listener --------
 let unsubIncomingCall = null;
 function listenIncomingCalls() {
@@ -2616,6 +2658,10 @@ function stopRingtone() {
 }
 
 function cleanupCall() {
+  stopRingtone();
+  stopCallTimer();
+  window._processedSignals = new Set();
+  window._pendingCandidates = [];
   stopRingtone();
   stopCallTimer();
   if (unsubCall) { unsubCall(); unsubCall = null; }
