@@ -1165,7 +1165,7 @@ body.dark .typing-indicator{background:#0b1220}
     <button class="vr-icon send" onclick="sendRecordedVoice()" title="Send">➤</button>
   </div>
     <button class="round-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Voice Message">🎤</button>
-    <button class="round-btn send" onclick="sendMessage()">➤</button>
+    <button class="round-btn send" id="mainSendBtn" onclick="sendMessage()">➤</button>
   </div>
   <div class="sticker-panel" id="stickerPanel">
     <h4>😀 Stickers</h4>
@@ -3738,6 +3738,8 @@ window.startVoiceRecording = async () => {
     document.getElementById('voiceRecording').classList.add('show');
     document.getElementById('messageInput').style.display = 'none';
     document.getElementById('micBtn').style.display = 'none';
+    const mainSend = document.getElementById('mainSendBtn');
+    if (mainSend) mainSend.style.display = 'none';
     const dot = document.querySelector('#voiceRecording .dot');
     if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
 
@@ -3770,6 +3772,8 @@ function resetVoiceUI() {
   document.getElementById('voiceRecording')?.classList.remove('show');
   document.getElementById('messageInput').style.display = '';
   document.getElementById('micBtn').style.display = '';
+  const mainSend = document.getElementById('mainSendBtn');
+  if (mainSend) mainSend.style.display = '';
   const dot = document.querySelector('#voiceRecording .dot');
   if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
   const timer = document.getElementById('voiceTimer');
