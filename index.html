@@ -3662,7 +3662,7 @@ let voiceRecordState = 'idle'; // 'idle' | 'recording' | 'stopped'
 
 window.startVoiceRecording = async () => {
   if (!currentChatId) { toast('Open a chat first'); return; }
-  if (mediaRecorder && mediaRecorder.state === 'recording') return;
+  if (voiceRecordState === 'recording') return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream, { 
@@ -3671,6 +3671,9 @@ window.startVoiceRecording = async () => {
     });
     audioChunks = [];
     recordingSeconds = 0;
+    pendingVoiceBase64 = null;
+    pendingVoiceDuration = 0;
+    voiceRecordState = 'recording';
     const startTime = Date.now();
 
     mediaRecorder.ondataavailable = (e) => {
@@ -3680,16 +3683,13 @@ window.startVoiceRecording = async () => {
     mediaRecorder.onstop = async () => {
       stream.getTracks().forEach(t => t.stop());
       clearInterval(recordingTimer);
-      document.getElementById('voiceRecording').classList.remove('show');
-      document.getElementById('messageInput').style.display = '';
-      document.getElementById('micBtn').style.display = '';
 
-      // Use real elapsed time instead of interval counter
       const elapsed = Math.round((Date.now() - startTime) / 1000);
       recordingSeconds = Math.max(recordingSeconds, elapsed);
 
       if (recordingSeconds < 1 || audioChunks.length === 0) {
         toast('Recording too short');
+        resetVoiceUI();
         return;
       }
 
@@ -3698,10 +3698,12 @@ window.startVoiceRecording = async () => {
 
       if (blob.size < 500) {
         toast('Recording empty');
+        resetVoiceUI();
         return;
       }
       if (blob.size > 700000) {
         toast('Too long. Max 45 seconds.');
+        resetVoiceUI();
         return;
       }
 
@@ -3710,21 +3712,34 @@ window.startVoiceRecording = async () => {
       
       if (base64.length > 950000) {
         toast('Recording too long for storage');
+        resetVoiceUI();
         return;
       }
 
-      await sendVoiceMessage(base64, recordingSeconds);
+      pendingVoiceBase64 = base64;
+      pendingVoiceDuration = recordingSeconds;
+      voiceRecordState = 'stopped';
+
+      document.getElementById('voiceStopBtn').style.display = 'none';
+      document.getElementById('voiceSendBtn').style.display = 'grid';
+      document.getElementById('voiceTimer').textContent = formatVoiceTime(recordingSeconds);
+      
+      const dot = document.querySelector('#voiceRecording .dot');
+      if (dot) { dot.style.animation = 'none'; dot.style.opacity = '0.5'; }
     };
+
     mediaRecorder.start();
     document.getElementById('voiceRecording').classList.add('show');
     document.getElementById('messageInput').style.display = 'none';
     document.getElementById('micBtn').style.display = 'none';
+    document.getElementById('voiceStopBtn').style.display = 'grid';
+    document.getElementById('voiceSendBtn').style.display = 'none';
+    const dot = document.querySelector('#voiceRecording .dot');
+    if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
 
     recordingTimer = setInterval(() => {
       recordingSeconds++;
-      const m = Math.floor(recordingSeconds / 60);
-      const s = recordingSeconds % 60;
-      document.getElementById('voiceTimer').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+      document.getElementById('voiceTimer').textContent = formatVoiceTime(recordingSeconds);
       if (recordingSeconds >= 45) {
         toast('Max 45 seconds reached');
         stopVoiceRecording();
@@ -3733,9 +3748,46 @@ window.startVoiceRecording = async () => {
   } catch (e) {
     console.error(e);
     toast('Could not access microphone');
+    resetVoiceUI();
   }
 };
+
+function formatVoiceTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function resetVoiceUI() {
+  voiceRecordState = 'idle';
+  pendingVoiceBase64 = null;
+  pendingVoiceDuration = 0;
+  document.getElementById('voiceRecording')?.classList.remove('show');
+  document.getElementById('messageInput').style.display = '';
+  document.getElementById('micBtn').style.display = '';
+  const stopBtn = document.getElementById('voiceStopBtn');
+  const sendBtn = document.getElementById('voiceSendBtn');
+  if (stopBtn) stopBtn.style.display = 'grid';
+  if (sendBtn) sendBtn.style.display = 'none';
+  const dot = document.querySelector('#voiceRecording .dot');
+  if (dot) { dot.style.animation = 'blink 1s infinite'; dot.style.opacity = '1'; }
+  const timer = document.getElementById('voiceTimer');
+  if (timer) timer.textContent = '0:00';
+}
+
+window.sendRecordedVoice = async () => {
+  if (!pendingVoiceBase64) { toast('No recording'); return; }
+  const b64 = pendingVoiceBase64;
+  const dur = pendingVoiceDuration;
+  resetVoiceUI();
+  await sendVoiceMessage(b64, dur);
+};
 window.toggleVoiceRecording = () => {
+  // If in stopped state (reviewing), ignore mic click
+  if (voiceRecordState === 'stopped') {
+    toast('Press ➤ to send or 🗑️ to delete');
+    return;
+  }
   if (mediaRecorder && mediaRecorder.state === 'recording') {
     stopVoiceRecording();
   } else {
@@ -3759,9 +3811,7 @@ window.cancelVoiceRecording = () => {
     mediaRecorder.stop();
   }
   clearInterval(recordingTimer);
-  document.getElementById('voiceRecording').classList.remove('show');
-  document.getElementById('messageInput').style.display = '';
-  document.getElementById('micBtn').style.display = '';
+  resetVoiceUI();
 };
 
 function blobToBase64(blob) {
