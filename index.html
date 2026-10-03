@@ -1115,9 +1115,16 @@ body.dark .typing-indicator{background:#0b1220}
     onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage()}"
     oninput="notifyTyping()">
   <div class="voice-recording" id="voiceRecording">
+    <button class="vr-icon" onclick="cancelVoiceRecording()" title="Delete">🗑️</button>
     <div class="dot"></div>
     <span class="timer" id="voiceTimer">0:00</span>
-    <span class="cancel-btn" onclick="cancelVoiceRecording()">✕</span>
+    <div class="voice-wave-preview" id="voiceWavePreview">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <button class="vr-icon" id="voiceStopBtn" onclick="stopVoiceRecording()" title="Stop">⏸️</button>
+    <button class="vr-icon send" id="voiceSendBtn" onclick="sendRecordedVoice()" title="Send" style="display:none">➤</button>
   </div>
     <button class="round-btn" id="micBtn" onclick="toggleVoiceRecording()" title="Voice Message">🎤</button>
     <button class="round-btn send" onclick="sendMessage()">➤</button>
