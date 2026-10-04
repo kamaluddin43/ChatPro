@@ -5321,6 +5321,157 @@ document.addEventListener('click', (e) => {
 });
 
 // ================================================================
+// ================================================================
+// CHAT OPTIONS (Long-press / Right-click on chat row)
+// ================================================================
+
+window.showChatOptions = (event, chatId) => {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  document.querySelectorAll('.chat-options-menu').forEach(el => el.remove());
+  
+  const chat = allChats.find(c => c.id === chatId);
+  if (!chat) return;
+  
+  const muted = JSON.parse(localStorage.getItem('ittisal_muted_chats') || '[]');
+  const pinned = JSON.parse(localStorage.getItem('ittisal_pinned_chats') || '[]');
+  const isMuted = muted.includes(chatId);
+  const isPinned = pinned.includes(chatId);
+  const other = getOtherMember(chat);
+  const title = chat.isGroup ? (chat.groupName || 'Group') : (other?.name || 'Chat');
+  
+  const menu = document.createElement('div');
+  menu.className = 'chat-options-menu';
+  menu.innerHTML = `
+    <div style="padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:13px;color:var(--muted)">
+      ${escapeHtml(title)}
+    </div>
+    <button onclick="togglePinChat('${chatId}');this.closest('.chat-options-menu').remove()">
+      <span class="icon">${isPinned ? '📌' : '📍'}</span>
+      ${isPinned ? 'Unpin chat' : 'Pin to top'}
+    </button>
+    <button onclick="muteChat('${chatId}');this.closest('.chat-options-menu').remove()">
+      <span class="icon">${isMuted ? '🔔' : '🔕'}</span>
+      ${isMuted ? 'Unmute' : 'Mute notifications'}
+    </button>
+    <button onclick="markChatRead('${chatId}');this.closest('.chat-options-menu').remove()">
+      <span class="icon">✓✓</span> Mark as read
+    </button>
+    <button class="danger" onclick="deleteChatConfirm('${chatId}');this.closest('.chat-options-menu').remove()">
+      <span class="icon">🗑️</span> Delete chat
+    </button>
+  `;
+  
+  const x = Math.min(event.clientX || 100, window.innerWidth - 220);
+  const y = Math.min(event.clientY || 100, window.innerHeight - 300);
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+  document.body.appendChild(menu);
+  
+  setTimeout(() => {
+    document.addEventListener('click', function closeChatMenu(ev) {
+      if (!menu.contains(ev.target)) {
+        menu.remove();
+        document.removeEventListener('click', closeChatMenu);
+      }
+    });
+  }, 50);
+};
+
+window.togglePinChat = (chatId) => {
+  const pinned = JSON.parse(localStorage.getItem('ittisal_pinned_chats') || '[]');
+  const idx = pinned.indexOf(chatId);
+  if (idx === -1) {
+    pinned.push(chatId);
+    toast('Chat pinned 📌');
+  } else {
+    pinned.splice(idx, 1);
+    toast('Chat unpinned');
+  }
+  localStorage.setItem('ittisal_pinned_chats', JSON.stringify(pinned));
+  renderChats(filteredChats());
+};
+
+window.markChatRead = async (chatId) => {
+  try {
+    const q = query(
+      collection(db, 'chats', chatId, 'messages'),
+      where('senderId', '!=', currentUser.uid)
+    );
+    const snap = await getDocs(q);
+    for (const d of snap.docs) {
+      const m = d.data();
+      const readBy = m.readBy || [];
+      if (!readBy.includes(currentUser.uid)) {
+        readBy.push(currentUser.uid);
+        await updateDoc(doc(db, 'chats', chatId, 'messages', d.id), { readBy });
+      }
+    }
+    toast('Marked as read ✓✓');
+    renderChats(filteredChats());
+  } catch (e) {
+    console.error(e);
+    toast('Could not mark as read');
+  }
+};
+
+window.deleteChatConfirm = async (chatId) => {
+  if (!confirm('Delete this chat? This cannot be undone.')) return;
+  try {
+    const msgs = await getDocs(collection(db, 'chats', chatId, 'messages'));
+    for (const d of msgs.docs) {
+      await deleteDoc(doc(db, 'chats', chatId, 'messages', d.id));
+    }
+    await deleteDoc(doc(db, 'chats', chatId));
+    
+    const drafts = JSON.parse(localStorage.getItem('ittisal_drafts') || '{}');
+    delete drafts[chatId];
+    localStorage.setItem('ittisal_drafts', JSON.stringify(drafts));
+    
+    const muted = JSON.parse(localStorage.getItem('ittisal_muted_chats') || '[]');
+    const mIdx = muted.indexOf(chatId);
+    if (mIdx > -1) {
+      muted.splice(mIdx, 1);
+      localStorage.setItem('ittisal_muted_chats', JSON.stringify(muted));
+    }
+    
+    toast('Chat deleted');
+  } catch (e) {
+    console.error(e);
+    toast('Could not delete chat');
+  }
+};
+
+// ================================================================
+// TOUCH LONG-PRESS for mobile
+// ================================================================
+let chatLongPressTimer = null;
+
+document.addEventListener('touchstart', (e) => {
+  const row = e.target.closest('.row[data-chat-id]');
+  if (!row) return;
+  
+  const chatId = row.dataset.chatId;
+  chatLongPressTimer = setTimeout(() => {
+    if (navigator.vibrate) navigator.vibrate(30);
+    const rect = row.getBoundingClientRect();
+    showChatOptions({
+      preventDefault: () => {},
+      stopPropagation: () => {},
+      clientX: rect.right - 220,
+      clientY: rect.top
+    }, chatId);
+  }, 500);
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  clearTimeout(chatLongPressTimer);
+});
+document.addEventListener('touchmove', () => {
+  clearTimeout(chatLongPressTimer);
+});
+
 // PWA — Register Service Worker
 // ================================================================
 if ('serviceWorker' in navigator) {
