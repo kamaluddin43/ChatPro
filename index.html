@@ -1162,6 +1162,7 @@ body.dark .date-separator{
     <b>Pinned:</b> <span id="pinPreview">Message</span>
     </div>
     <div class="messages" id="messages"></div>
+    <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollToBottom()">↓</button>
     <div class="typing-indicator" id="typingIndicator">
   <span id="typingName">Someone</span> is typing<span class="dots"><span></span><span></span><span></span></span>
 </div>
@@ -1175,7 +1176,7 @@ body.dark .date-separator{
   <button class="round-btn" onclick="toggleStickerPanel()" title="Stickers">😀</button>
   <input id="messageInput" placeholder="Type a message..." 
     onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendMessage()}"
-    oninput="notifyTyping()">
+    oninput="notifyTyping(); saveDraft()"> 
   <div class="voice-recording" id="voiceRecording">
     <button class="vr-icon" onclick="cancelVoiceRecording()" title="Delete">🗑️</button>
     <div class="dot"></div>
@@ -2074,6 +2075,15 @@ window.sendMessage = async () => {
   }
 };
 
+window.scrollToBottom = () => {
+  const box = document.getElementById('messages');
+  if (box) {
+    box.scrollTop = box.scrollHeight;
+    const scrollBtn = document.getElementById('scrollBottomBtn');
+    if (scrollBtn) scrollBtn.classList.remove('show');
+  }
+};
+  
 window.goBackFromChat = () => {
   if (unsubMessages) { unsubMessages(); unsubMessages = null; }
   currentChatId = null;
