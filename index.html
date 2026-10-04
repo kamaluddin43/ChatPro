@@ -2896,25 +2896,41 @@ async function startCall(type) {
       document.getElementById('videoToggleBtn').style.display = 'none';
     }
 
-// Listen for answer/reject
+    // Listen for answer/reject
     unsubCall = onSnapshot(doc(db, 'calls', currentCallId), (snap) => {
       if (!snap.exists()) return;
       const data = snap.data();
+      
       if (data.status === 'accepted') {
         document.getElementById('callStatus').textContent = 'Connected';
+        document.getElementById('voStatus').textContent = 'Connected';
         stopRingtone();
         startCallTimer();
         setupPeerConnection(other.uid, true);
+        
       } else if (data.status === 'rejected') {
-        const statusEl = document.getElementById('callStatus') || document.getElementById('voStatus');
+        const statusEl = document.getElementById('callStatus');
         if (statusEl) statusEl.textContent = 'Declined';
+        const voStatus = document.getElementById('voStatus');
+        if (voStatus) voStatus.textContent = 'Declined';
+        stopRingtone();
         toast('Call declined');
-        cleanupCall();
-        showScreen('screen-chat');
+        setTimeout(() => {
+          cleanupCall();
+          showScreen('screen-chat');
+        }, 800);
+        
       } else if (data.status === 'ended') {
+        const statusEl = document.getElementById('callStatus');
+        if (statusEl) statusEl.textContent = 'Call ended';
+        const voStatus = document.getElementById('voStatus');
+        if (voStatus) voStatus.textContent = 'Call ended';
+        stopRingtone();
         toast('Call ended');
-        cleanupCall();
-        showScreen('screen-chat');
+        setTimeout(() => {
+          cleanupCall();
+          showScreen('screen-chat');
+        }, 800);
       }
     });
 
