@@ -1900,38 +1900,127 @@ window.handleCallHistoryClick = (otherUid, callId) => {
 function renderChats(chats) {
   const el = document.getElementById('chatList');
   if (!el) return;
+  
+  // ---- Empty state ----
   if (chats.length === 0) {
-    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
-      <div style="font-size:50px">💬</div>
-      <p style="margin-top:10px">No chats yet</p>
-      <p style="font-size:13px;margin-top:6px">Tap 👥 to find people</p>
-    </div>`;
+    el.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:#718096">
+        <div style="font-size:50px">💬</div>
+        <p style="margin-top:10px">No chats yet</p>
+        <p style="font-size:13px;margin-top:6px">Tap 👥 to find people</p>
+      </div>
+    `;
     return;
   }
   
   const drafts = JSON.parse(localStorage.getItem('ittisal_drafts') || '{}');
   const muted = JSON.parse(localStorage.getItem('ittisal_muted_chats') || '[]');
+  const pinned = JSON.parse(localStorage.getItem('ittisal_pinned_chats') || '[]');
   
-  el.innerHTML = chats.map(c => {
+  // Pinned chats উপরে
+  const sorted = [...chats].sort((a, b) => {
+    const aPin = pinned.includes(a.id) ? 1 : 0;
+    const bPin = pinned.includes(b.id) ? 1 : 0;
+    if (aPin !== bPin) return bPin - aPin;
+    return 0; // already sorted by updatedAt from Firestore
+  });
+  
+  el.innerHTML = sorted.map(c => {
     const other = getOtherMember(c);
-    const title = c.isGroup ? (c.groupName || 'Group') : (other?.name || 'Chat');
-    const emoji = c.isGroup ? '👥' : (other?.emoji || '🧑');
-    let preview = 'Tap to start chatting';
-    let previewIcon = '';
+    const isGroup = !!c.isGroup;
+    const isPinned = pinned.includes(c.id);
+    const isMuted = muted.includes(c.id);
     
-    if (drafts[c.id]) {
-      preview = 'Draft: ' + drafts[c.id].slice(0, 40);
-    } else if (c.lastMessage) {
-      if (c.lastMessageType === 'image') { preview = 'Photo'; previewIcon = '📸 '; }
-      else if (c.lastMessageType === 'file') { preview = 'File'; previewIcon = '📄 '; }
-      else if (c.lastMessageType === 'voice') { preview = 'Voice message'; previewIcon = '🎤 '; }
-      else preview = c.lastMessage;
+    // ---- Title & Avatar ----
+    const title = isGroup 
+      ? (c.groupName || 'Group') 
+      : (other?.name || 'Chat');
+    const emoji = isGroup ? '👥' : (other?.emoji || '🧑');
+    
+    // ---- Online status ----
+    let isOnline = false;
+    if (!isGroup && other?.lastSeen) {
+      const last = other.lastSeen.toMillis ? other.lastSeen.toMillis() : 0;
+      isOnline = (Date.now() - last) < 60000;
     }
     
-    const isMuted = muted.includes(c.id);
-    const muteIcon = isMuted ? '🔕 ' : '';
+    // ---- Preview message ----
+    let preview = 'Tap to start chatting';
+    let previewPrefix = '';
+    let previewStyle = '';
     
-    return `...`;
+    if (drafts[c.id]) {
+      preview = drafts[c.id].slice(0, 45);
+      previewPrefix = '<span style="color:#ef4444;font-weight:600">Draft: </span>';
+    } else if (c.lastMessage) {
+      // Group-এ sender name দেখাবে
+      if (isGroup && c.lastSenderId) {
+        if (c.lastSenderId === currentUser.uid) {
+          previewPrefix = '<span style="color:#718096">You: </span>';
+        } else {
+          const sender = allUsers.find(u => u.uid === c.lastSenderId);
+          if (sender) {
+            previewPrefix = `<span style="color:#1677ff;font-weight:600">${escapeHtml(sender.name)}: </span>`;
+          }
+        }
+      }
+      
+      // Last message type icon
+      if (c.lastMessageType === 'image') {
+        preview = '📸 Photo';
+      } else if (c.lastMessageType === 'file') {
+        preview = '📄 File';
+      } else if (c.lastMessageType === 'voice') {
+        preview = '🎤 Voice message';
+      } else if (c.lastMessageType === 'sticker') {
+        preview = '😀 Sticker';
+      } else {
+        preview = escapeHtml(c.lastMessage);
+      }
+      
+      // Sent tick (for my own last message)
+      if (c.lastSenderId === currentUser.uid && c.lastMessageType === 'text') {
+        preview = preview + ' <span style="color:#22c55e;font-size:11px">✓✓</span>';
+      }
+    }
+    
+    // ---- Time formatting ----
+    const timeStr = timeAgo(c.updatedAt);
+    
+    // ---- Unread badge (simple: if last message not mine & not muted) ----
+    // (আপনি চাইলে Firestore-এ unreadCount ফিল্ড যোগ করতে পারেন)
+    const unreadCount = 0; // placeholder — পরে implement করতে পারেন
+    const badge = unreadCount > 0 && !isMuted
+      ? `<div class="badge">${unreadCount > 99 ? '99+' : unreadCount}</div>`
+      : '';
+    
+    // ---- Pin & Mute icons ----
+    const pinIcon = isPinned ? '<span style="font-size:12px">📌</span> ' : '';
+    const muteIcon = isMuted ? '<span style="font-size:12px">🔕</span> ' : '';
+    
+    return `
+      <div class="row" 
+           onclick="openChat('${c.id}')"
+           oncontextmenu="event.preventDefault(); showChatOptions(event, '${c.id}')"
+           data-chat-id="${c.id}">
+        <div class="avatar">
+          ${emoji}
+          ${isOnline ? '<span class="dot"></span>' : ''}
+        </div>
+        <div class="info">
+          <div class="name">
+            ${pinIcon}${muteIcon}${escapeHtml(title)}
+          </div>
+          <div class="preview" style="${previewStyle}">
+            ${previewPrefix}${preview}
+          </div>
+        </div>
+        <div class="meta">
+          <div>${timeStr}</div>
+          ${badge}
+        </div>
+      </div>
+    `;
   }).join('');
 }
 
