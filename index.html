@@ -1717,56 +1717,95 @@ function renderCallHistory() {
   const el = document.getElementById('chatList');
   if (!el) return;
   
-  const calls = allChats.filter(c => false); // placeholder
-  // Fetch call records
-  getDocs(query(collection(db, 'calls'), where('from', '==', currentUser.uid), orderBy('createdAt', 'desc'), limit(50)))
-    .then(snapOut => {
-      getDocs(query(collection(db, 'calls'), where('to', '==', currentUser.uid), orderBy('createdAt', 'desc'), limit(50)))
-        .then(snapIn => {
-          const allCalls = [];
-          snapOut.forEach(d => allCalls.push({ id: d.id, ...d.data(), direction: 'outgoing' }));
-          snapIn.forEach(d => allCalls.push({ id: d.id, ...d.data(), direction: 'incoming' }));
-          allCalls.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
-          
-          if (allCalls.length === 0) {
-            el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
-              <div style="font-size:50px">📞</div>
-              <p style="margin-top:10px">No calls yet</p>
-            </div>`;
-            return;
-          }
-          
-          el.innerHTML = allCalls.map(c => {
-            const isOutgoing = c.direction === 'outgoing';
-            const otherUid = isOutgoing ? c.to : c.from;
-            const otherUser = allUsers.find(u => u.uid === otherUid);
-            const name = otherUser?.name || c.fromName || 'Unknown';
-            const emoji = otherUser?.emoji || c.fromEmoji || '🧑';
-            const missed = !isOutgoing && c.outcome === 'rejected';
-            const icon = isOutgoing ? '↗️' : (missed ? '↙️' : '↙️');
-            const status = c.outcome === 'completed' ? 'Completed' : (c.outcome === 'rejected' ? 'Missed' : 'Cancelled');
-            
-            return `
-              <div class="row" onclick="startPrivateChat('${otherUid}')">
-                <div class="avatar">${emoji}</div>
-                <div class="info">
-                  <div class="name">${escapeHtml(name)}</div>
-                  <div class="preview">${icon} ${c.type === 'video' ? 'Video' : 'Voice'} · ${status}</div>
-                </div>
-                <div class="meta">${timeAgo(c.createdAt)}</div>
-              </div>
-            `;
-          }).join('');
-        });
-    })
-    .catch(err => {
-      console.error(err);
+  el.innerHTML = '<div style="text-align:center;padding:40px;color:#718096">Loading calls...</div>';
+  
+  Promise.all([
+    getDocs(query(collection(db, 'calls'), where('from', '==', currentUser.uid), orderBy('createdAt', 'desc'), limit(50))),
+    getDocs(query(collection(db, 'calls'), where('to', '==', currentUser.uid), orderBy('createdAt', 'desc'), limit(50)))
+  ]).then(([snapOut, snapIn]) => {
+    const allCalls = [];
+    snapOut.forEach(d => allCalls.push({ id: d.id, ...d.data(), direction: 'outgoing' }));
+    snapIn.forEach(d => allCalls.push({ id: d.id, ...d.data(), direction: 'incoming' }));
+    allCalls.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+    
+    if (allCalls.length === 0) {
       el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
         <div style="font-size:50px">📞</div>
-        <p style="margin-top:10px">Could not load calls</p>
+        <p style="margin-top:10px">No calls yet</p>
+        <p style="font-size:13px;margin-top:6px">Start a call from any chat</p>
       </div>`;
-    });
+      return;
+    }
+    
+    el.innerHTML = allCalls.map(c => {
+      const isOutgoing = c.direction === 'outgoing';
+      const otherUid = isOutgoing ? c.to : c.from;
+      const otherUser = allUsers.find(u => u.uid === otherUid);
+      const name = otherUser?.name || (isOutgoing ? c.toName : c.fromName) || 'Unknown';
+      const emoji = otherUser?.emoji || (isOutgoing ? c.toEmoji : c.fromEmoji) || '🧑';
+      
+      let icon, statusText, statusColor;
+      
+      if (isOutgoing) {
+        // Outgoing call
+        if (c.outcome === 'received' || c.outcome === 'completed' || c.duration > 0) {
+          icon = '↗️';
+          statusText = 'Dialed';
+          statusColor = '#1677ff';
+        } else {
+          icon = '↗️';
+          statusText = 'Missed (outgoing)';
+          statusColor = '#ef4444';
+        }
+      } else {
+        // Incoming call
+        if (c.status === 'rejected' || c.outcome === 'missed') {
+          icon = '↙️';
+          statusText = 'Missed';
+          statusColor = '#ef4444';
+        } else if (c.duration > 0 || c.status === 'ended') {
+          icon = '↙️';
+          statusText = 'Received';
+          statusColor = '#20c77a';
+        } else {
+          icon = '↙️';
+          statusText = 'Missed';
+          statusColor = '#ef4444';
+        }
+      }
+      
+      const durationText = c.duration > 0 ? ` · ${Math.floor(c.duration/60)}:${(c.duration%60).toString().padStart(2,'0')}` : '';
+      
+      return `
+        <div class="row" onclick="handleCallHistoryClick('${otherUid}', '${c.id}')">
+          <div class="avatar">${emoji}</div>
+          <div class="info">
+            <div class="name">${escapeHtml(name)}</div>
+            <div class="preview" style="color:${statusColor}">
+              ${icon} ${c.type === 'video' ? '🎥' : '📞'} ${statusText}${durationText}
+            </div>
+          </div>
+          <div class="meta">${timeAgo(c.createdAt)}</div>
+        </div>
+      `;
+    }).join('');
+  }).catch(err => {
+    console.error(err);
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
+      <div style="font-size:50px">📞</div>
+      <p style="margin-top:10px">Could not load calls</p>
+    </div>`;
+  });
 }
+
+window.handleCallHistoryClick = (otherUid, callId) => {
+  if (!otherUid || otherUid === 'undefined') {
+    toast('User not found');
+    return;
+  }
+  // Start a new chat
+  startPrivateChat(otherUid);
+};
 
 function renderChats(chats) {
   const el = document.getElementById('chatList');
@@ -1784,17 +1823,21 @@ function renderChats(chats) {
     const title = c.isGroup ? (c.groupName || 'Group') : (other?.name || 'Chat');
     const emoji = c.isGroup ? '👥' : (other?.emoji || '🧑');
     let preview = 'Tap to start chatting';
+    let previewIcon = '';
+    
     if (c.lastMessage) {
-      if (c.lastMessageType === 'image') preview = '📸 Photo';
-      else if (c.lastMessageType === 'file') preview = '📄 File';
+      if (c.lastMessageType === 'image') { preview = 'Photo'; previewIcon = '📸 '; }
+      else if (c.lastMessageType === 'file') { preview = 'File'; previewIcon = '📄 '; }
+      else if (c.lastMessageType === 'voice') { preview = 'Voice message'; previewIcon = '🎤 '; }
       else preview = c.lastMessage;
     }
+    
     return `
       <div class="row" onclick="openChat('${c.id}')">
         <div class="avatar">${emoji}</div>
         <div class="info">
           <div class="name">${escapeHtml(title)}</div>
-          <div class="preview">${escapeHtml(preview)}</div>
+          <div class="preview">${previewIcon}${escapeHtml(preview)}</div>
         </div>
         <div class="meta">${timeAgo(c.updatedAt)}</div>
       </div>
@@ -2669,7 +2712,13 @@ window.rejectCall = async () => {
   document.getElementById('incomingCall').classList.remove('show');
   stopRingtone();
   if (callId) {
-    try { await updateDoc(doc(db, 'calls', callId), { status: 'rejected', outcome: 'rejected' }); } catch (e) {}
+    try { 
+      await updateDoc(doc(db, 'calls', callId), { 
+        status: 'rejected', 
+        outcome: 'missed',
+        duration: 0
+      }); 
+    } catch (e) {}
   }
   cleanupCall();
 };
