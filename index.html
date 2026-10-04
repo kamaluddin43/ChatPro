@@ -2596,6 +2596,29 @@ function listenIncomingCalls() {
         // Store for accept/reject
         window._incomingCallId = callId;
         window._incomingType = callData.type;
+        
+        // ✅ Listen for status changes on this specific call
+        if (window._incomingCallUnsub) {
+          try { window._incomingCallUnsub(); } catch (e) {}
+        }
+        window._incomingCallUnsub = onSnapshot(doc(db, 'calls', callId), (callSnap) => {
+          if (!callSnap.exists()) return;
+          const callStatus = callSnap.data();
+          
+          // ✅ If caller ends the call while we're still ringing
+          if (callStatus.status === 'ended' || callStatus.status === 'rejected') {
+            console.log('📞 Incoming call cancelled by caller');
+            document.getElementById('incomingCall').classList.remove('show');
+            stopRingtone();
+            toast('Call ended');
+            if (window._incomingCallUnsub) {
+              try { window._incomingCallUnsub(); } catch (e) {}
+              window._incomingCallUnsub = null;
+            }
+            window._incomingCallId = null;
+            window._incomingType = null;
+          }
+        });
       }
     });
   });
