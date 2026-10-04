@@ -911,6 +911,24 @@ body.dark .typing-indicator{background:#0b1220}
   font-weight:700;font-size:15px;
   border-radius:14px;
 }
+/* Date Separator */
+.date-separator{
+  text-align: center;
+  color: #8a94a5;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 12px 0 8px;
+  padding: 4px 12px;
+  background: rgba(255,255,255,.7);
+  border-radius: 12px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+body.dark .date-separator{
+  background: rgba(30,41,59,.7);
+  color: #94a3b8;
+}
 </style>
 </head>
 <body>
@@ -1437,6 +1455,21 @@ function timeAgo(ts) {
   return date.toLocaleDateString();
 }
 
+function formatDateSeparator(date) {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (date.toDateString() === today.toDateString()) return 'Today';
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  
+  const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+  if (diffDiff < 7) {
+    return date.toLocaleDateString('en', { weekday: 'long' });
+  }
+  
+  return date.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 function formatTime(ts) {
   if (!ts) return '';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -1941,15 +1974,41 @@ function loadMessages(chatId) {
     limit(300)
   );
   unsubMessages = onSnapshot(q, (snap) => {
-    box.innerHTML = '<div class="day">Messages</div>';
+    box.innerHTML = '';
     if (snap.empty) {
-      box.innerHTML += '<div style="text-align:center;color:#8a94a5;font-size:13px;margin-top:20px">No messages yet. Say hi! 👋</div>';
+      box.innerHTML = '<div style="text-align:center;color:#8a94a5;font-size:13px;margin-top:20px">No messages yet. Say hi! 👋</div>';
     }
+    
+    let lastDate = null;
+    
     snap.forEach(d => {
       const m = d.data();
       const msgId = d.id;
+      
+      // ✅ Add date separator if day changed
+      const msgDate = m.createdAt?.toDate ? m.createdAt.toDate() : new Date();
+      const dateKey = msgDate.toDateString();
+      
+      if (dateKey !== lastDate) {
+        lastDate = dateKey;
+        const separator = document.createElement('div');
+        separator.className = 'date-separator';
+        separator.textContent = formatDateSeparator(msgDate);
+        box.appendChild(separator);
+      }
+      
       box.appendChild(window.buildMessageBubble(m, msgId));
     });
+    
+    box.scrollTop = box.scrollHeight;
+    
+    if (typeof markMessagesAsRead === 'function') {
+      markMessagesAsRead();
+    }
+  }, (err) => {
+    console.error(err);
+    box.innerHTML = '<div class="day">Could not load messages</div>';
+  });
     box.scrollTop = box.scrollHeight;
     // Mark as read
     if (typeof markMessagesAsRead === 'function') {
