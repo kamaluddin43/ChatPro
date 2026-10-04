@@ -4023,6 +4023,11 @@ function attachMessageHandlers(wrapper, messageId, senderId, isMine) {
   const bubble = wrapper.querySelector('.bubble');
   
   const startPress = (e) => {
+    // ⚠️ Ignore taps on voice-play button
+    if (e.target.closest('.voice-play')) return;
+    // ⚠️ Ignore taps on file-link, img, etc.
+    if (e.target.closest('a, img, .voice-bubble')) return;
+    
     e.preventDefault();
     longPressTimer = setTimeout(() => {
       showMessageOptions(e, wrapper, messageId, senderId);
@@ -4047,6 +4052,10 @@ function attachMessageHandlers(wrapper, messageId, senderId, isMine) {
   });
 
   bubble.addEventListener('click', (e) => {
+    // ⚠️ Ignore clicks on voice-play, file-link, img
+    if (e.target.closest('.voice-play')) return;
+    if (e.target.closest('a, img')) return;
+    
     if (selectionMode) {
       e.preventDefault();
       e.stopPropagation();
@@ -4319,7 +4328,9 @@ window.buildMessageBubble = function(m, messageId) {
     bubble.innerHTML = `
       ${senderPrefix}
       <div class="voice-bubble">
-        <div class="voice-play" onclick="playVoice(this,'${messageId}')">▶</div>
+        <div class="voice-play" 
+             onclick="playVoice(this,'${messageId}')" 
+             ontouchstart="event.preventDefault(); playVoice(this,'${messageId}')">▶</div>
         <div class="voice-wave">
           ${Array.from({length:20}).map(()=>`<span style="animation-delay:${Math.random()}s"></span>`).join('')}
         </div>
@@ -4368,19 +4379,35 @@ window.buildMessageBubble = function(m, messageId) {
 
 // ---------- Voice play/pause ----------
 window.playVoice = function(el, messageId) {
+  // Prevent tap from triggering long-press or message-options
+  if (window.event) {
+    window.event.stopPropagation();
+    window.event.preventDefault();
+  }
+  
   const data = window._audioCache?.[messageId];
-  if (!data) { toast('Audio not available'); return; }
+  if (!data) { 
+    toast('Audio not available'); 
+    return; 
+  }
+  
   if (el._audio && !el._audio.paused) {
     el._audio.pause();
     el.textContent = '▶';
     return;
   }
+  
   if (!el._audio) {
     el._audio = new Audio(data);
     el._audio.onended = () => { el.textContent = '▶'; };
   }
-  el._audio.play();
-  el.textContent = '⏸';
+  
+  el._audio.play().then(() => {
+    el.textContent = '⏸';
+  }).catch(err => {
+    console.warn('Audio play blocked:', err);
+    toast('Tap again to play');
+  });
 };
 
 // ---------- Apply translation on startup ----------
@@ -4721,7 +4748,9 @@ window.buildMessageBubble = function(m, messageId) {
     bubble.innerHTML = `
       ${senderPrefix}
       <div class="voice-bubble">
-        <div class="voice-play" onclick="playVoice(this,'${messageId}')">▶</div>
+        <div class="voice-play" 
+             onclick="playVoice(this,'${messageId}')" 
+             ontouchstart="event.preventDefault(); playVoice(this,'${messageId}')">▶</div>
         <div class="voice-wave">${Array.from({length:20}).map(()=>`<span style="animation-delay:${Math.random()}s"></span>`).join('')}</div>
         <div class="voice-duration">${mm}:${ss}</div>
       </div>
