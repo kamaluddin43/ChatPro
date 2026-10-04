@@ -3011,7 +3011,7 @@ async function setupPeerConnection(otherUid, isCaller) {
         // Hide avatar/info in video mode
         document.getElementById('callInfoBox').classList.add('hide');
         document.getElementById('videoOverlay').classList.add('show');
-        document.querySelector('.call-screen').classList.add('video-mode');
+        document.getElementById('screen-call').classList.add('video-mode');
       }
     }
   };
@@ -3673,6 +3673,16 @@ setInterval(async () => {
 document.getElementById('loading').classList.add('hide');
 document.getElementById('screen-login').classList.add('active');
 renderEmojiPicker();
+
+// ================================================================
+// FORCE HIDE CALL SCREEN ON STARTUP
+// ================================================================
+document.getElementById('screen-call')?.classList.remove('active');
+document.getElementById('incomingCall')?.classList.remove('show');
+document.getElementById('remoteVideo')?.classList.remove('show');
+document.getElementById('localVideo')?.classList.remove('show');
+document.getElementById('videoOverlay')?.classList.remove('show');
+
 // ================================================================
 // PART 4: SETTINGS SYSTEM (WhatsApp/imo style)
 // ================================================================
