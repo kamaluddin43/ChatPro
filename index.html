@@ -1027,6 +1027,153 @@ body.dark .chat-options-menu button:hover {
 body.dark .chat-options-menu button.danger:hover {
   background: #7f1d1d;
 }
+/* ============================================================ */
+/* VIDEO CALL STYLES                                             */
+/* ============================================================ */
+
+/* Remote video — full screen */
+#remoteVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  z-index: 1;
+  display: none;
+}
+#remoteVideo.show {
+  display: block;
+}
+
+/* Local video — small PiP */
+#localVideo {
+  position: absolute;
+  top: 80px;
+  right: 16px;
+  width: 110px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,.5);
+  box-shadow: 0 6px 20px rgba(0,0,0,.4);
+  z-index: 10;
+  background: #1e293b;
+  display: none;
+  cursor: pointer;
+  transition: transform .2s;
+}
+#localVideo.show {
+  display: block;
+}
+#localVideo:hover {
+  transform: scale(1.05);
+}
+
+/* Voice call info box */
+.call-info {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+.call-info.hide {
+  display: none;
+}
+
+/* Video call top overlay */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 24px 60px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(0,0,0,.6) 0%, transparent 100%);
+  z-index: 15;
+  color: #fff;
+}
+.video-overlay.show {
+  display: flex;
+}
+.video-overlay .vo-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.video-overlay .vo-info {
+  flex: 1;
+  min-width: 0;
+}
+.video-overlay .vo-name {
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.video-overlay .vo-status {
+  font-size: 12px;
+  opacity: .85;
+  margin-top: 2px;
+}
+
+/* Video toggle button (top right) */
+.video-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 20px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: .2s;
+  border: none;
+  backdrop-filter: blur(10px);
+}
+.video-toggle:hover {
+  background: rgba(255,255,255,.3);
+  transform: scale(1.08);
+}
+
+/* Camera off button state */
+.call-btn.camera-off {
+  background: #ef4444 !important;
+}
+
+/* Video call mode — call-actions over video */
+.call-screen.video-mode .call-actions {
+  background: linear-gradient(0deg, rgba(0,0,0,.6) 0%, transparent 100%);
+  padding-top: 60px;
+  padding-bottom: 30px;
+}
+
+/* Call screen layout adjustments */
+.call-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.call-screen.video-mode {
+  padding: 0;
+}
 </style>
 </head>
 <body>
@@ -1307,20 +1454,40 @@ body.dark .chat-options-menu button.danger:hover {
   <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(event)">
   </section>
 
-  <!-- ========== CALL SCREEN ========== -->
+    <!-- ========== CALL SCREEN ========== -->
   <section id="screen-call" class="screen call-screen">
-    <div>
+    <!-- Video Elements (hidden for voice calls) -->
+    <video id="remoteVideo" autoplay playsinline></video>
+    <video id="localVideo" autoplay playsinline muted></video>
+
+    <!-- Voice Call Info (shown for voice calls) -->
+    <div class="call-info" id="callInfoBox">
       <div class="call-avatar" id="callAvatar">👤</div>
       <div class="call-name" id="callName">Calling...</div>
       <div class="call-status" id="callStatus">Connecting...</div>
     </div>
+
+    <!-- Video Call Overlay (top info bar for video calls) -->
+    <div class="video-overlay" id="videoOverlay">
+      <div class="vo-avatar" id="voAvatar">👤</div>
+      <div class="vo-info">
+        <div class="vo-name" id="voName">User</div>
+        <div class="vo-status" id="voStatus">Connecting...</div>
+      </div>
+    </div>
+
+    <!-- Local video toggle button -->
+    <button class="video-toggle" id="videoToggleBtn" onclick="toggleVideoMode()" title="Toggle video">🎥</button>
+
+    <!-- Call Actions -->
     <div class="call-actions">
       <button class="call-btn" onclick="toggleMute()" id="muteBtn" title="Mute">🎤</button>
+      <button class="call-btn" onclick="toggleCamera()" id="cameraBtn" title="Camera On/Off">📹</button>
       <button class="call-btn end" onclick="endCall()" title="End Call">📞</button>
       <button class="call-btn" onclick="toggleSpeaker()" title="Speaker">🔊</button>
+      <button class="call-btn" onclick="switchCamera()" id="switchCamBtn" title="Flip Camera">🔄</button>
     </div>
   </section>
-
   <!-- ========== NEW CHAT SHEET ========== -->
   <div class="modal" id="sheet" onclick="if(event.target===this)closeSheet('sheet')">
     <div class="sheet">
@@ -2695,6 +2862,7 @@ async function startCall(type) {
     currentCallRole = 'caller';
 
     const callRef = await addDoc(collection(db, 'calls'), {
+      attachLocalVideo(localStream, type);
       from: currentUser.uid,
       fromName: currentUser.displayName || 'User',
       fromEmoji: allUsers.find(u => u.uid === currentUser.uid)?.emoji || '🧑',
@@ -2715,6 +2883,18 @@ async function startCall(type) {
     document.getElementById('callStatus').textContent = 'Ringing...';
     showScreen('screen-call');
     playRingtone();
+
+    // Set video overlay info too
+    document.getElementById('voAvatar').textContent = other.emoji || '🧑';
+    document.getElementById('voName').textContent = other.name || 'User';
+    document.getElementById('voStatus').textContent = 'Ringing...';
+    
+    // If voice call, show video toggle button
+    if (type === 'voice') {
+      document.getElementById('videoToggleBtn').style.display = 'grid';
+    } else {
+      document.getElementById('videoToggleBtn').style.display = 'none';
+    }
 
     // Listen for answer/reject
     unsubCall = onSnapshot(doc(db, 'calls', currentCallId), (snap) => {
@@ -2778,6 +2958,8 @@ async function setupPeerConnection(otherUid, isCaller) {
   peerConnection.ontrack = (event) => {
     const remoteStream = event.streams[0];
     console.log('Remote stream received', remoteStream);
+    
+    // Attach to remote audio (always)
     const remoteAudio = document.getElementById('remoteAudio');
     if (remoteAudio) {
       remoteAudio.srcObject = remoteStream;
@@ -2788,6 +2970,24 @@ async function setupPeerConnection(otherUid, isCaller) {
           remoteAudio.play().catch(() => {});
         }, { once: true });
       });
+    }
+    
+    // Attach to remote video (if video call)
+    const remoteVideo = document.getElementById('remoteVideo');
+    if (remoteVideo) {
+      // Only show if remote stream has video
+      const hasVideo = remoteStream.getVideoTracks().length > 0;
+      if (hasVideo) {
+        remoteVideo.srcObject = remoteStream;
+        remoteVideo.classList.add('show');
+        remoteVideo.play().catch(err => {
+          console.warn('Remote video play error:', err);
+        });
+        // Hide avatar/info in video mode
+        document.getElementById('callInfoBox').classList.add('hide');
+        document.getElementById('videoOverlay').classList.add('show');
+        document.querySelector('.call-screen').classList.add('video-mode');
+      }
     }
   };
 
@@ -2945,6 +3145,7 @@ window.acceptCall = async () => {
 
     const callSnap = await getDoc(doc(db, 'calls', callId));
     const callData = callSnap.data();
+    attachLocalVideo(localStream, window._incomingType);
 
     document.getElementById('callAvatar').textContent = callData.fromEmoji || '🧑';
     document.getElementById('callName').textContent = callData.fromName || 'User';
@@ -3111,6 +3312,30 @@ function cleanupCall() {
     localStream = null;
   }
   const remoteAudio = document.getElementById('remoteAudio');
+    // Reset video elements
+  const remoteVideo = document.getElementById('remoteVideo');
+  if (remoteVideo) {
+    remoteVideo.srcObject = null;
+    remoteVideo.classList.remove('show');
+  }
+  const localVideo = document.getElementById('localVideo');
+  if (localVideo) {
+    localVideo.srcObject = null;
+    localVideo.classList.remove('show');
+    localVideo.style.opacity = '1';
+  }
+  document.getElementById('screen-call').classList.remove('video-mode');
+  document.getElementById('videoOverlay').classList.remove('show');
+  document.getElementById('callInfoBox').classList.remove('hide');
+  
+  // Reset camera button
+  isCameraOn = true;
+  const camBtn = document.getElementById('cameraBtn');
+  if (camBtn) {
+    camBtn.classList.remove('camera-off');
+    camBtn.textContent = '📹';
+  }
+  currentFacingMode = 'user';
   if (remoteAudio) remoteAudio.srcObject = null;
   currentCallId = null;
   currentCallRole = null;
@@ -3123,6 +3348,163 @@ function cleanupCall() {
   window._incomingCallId = null;
   window._incomingType = null;
 }
+
+// ================================================================
+// VIDEO CALL HELPERS
+// ================================================================
+
+function attachLocalVideo(stream, callType) {
+  const localVideo = document.getElementById('localVideo');
+  if (!localVideo) return;
+  
+  if (callType === 'video' && stream.getVideoTracks().length > 0) {
+    localVideo.srcObject = stream;
+    localVideo.classList.add('show');
+    localVideo.play().catch(err => {
+      console.warn('Local video play error:', err);
+    });
+    // Add video mode class
+    document.getElementById('screen-call').classList.add('video-mode');
+    document.getElementById('videoOverlay').classList.add('show');
+    document.getElementById('callInfoBox').classList.add('hide');
+  } else {
+    localVideo.classList.remove('show');
+    document.getElementById('videoToggleBtn').style.display = 'none';
+  }
+}
+
+// ---- Toggle video mode during voice call ----
+window.toggleVideoMode = async () => {
+  if (!localStream) return;
+  const hasVideo = localStream.getVideoTracks().length > 0;
+  
+  if (hasVideo) {
+    // Turn off video
+    localStream.getVideoTracks().forEach(t => t.stop());
+    // Remove from peer connection
+    if (peerConnection) {
+      const senders = peerConnection.getSenders();
+      senders.forEach(s => {
+        if (s.track && s.track.kind === 'video') {
+          peerConnection.removeTrack(s);
+        }
+      });
+    }
+    document.getElementById('localVideo').classList.remove('show');
+    document.getElementById('remoteVideo').classList.remove('show');
+    document.querySelector('.call-screen').classList.remove('video-mode');
+    document.getElementById('videoOverlay').classList.remove('show');
+    document.getElementById('callInfoBox').classList.remove('hide');
+    toast('Video off');
+  } else {
+    // Turn on video
+    try {
+      const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const videoTrack = newStream.getVideoTracks()[0];
+      localStream.addTrack(videoTrack);
+      
+      // Add to peer connection
+      if (peerConnection) {
+        peerConnection.addTrack(videoTrack, localStream);
+        
+        // Renegotiate
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await updateDoc(doc(db, 'calls', currentCallId), {
+          offer: { type: offer.type, sdp: offer.sdp }
+        });
+      }
+      
+      document.getElementById('localVideo').srcObject = localStream;
+      document.getElementById('localVideo').classList.add('show');
+      document.getElementById('screen-call').classList.add('video-mode');
+      document.getElementById('videoOverlay').classList.add('show');
+      document.getElementById('callInfoBox').classList.add('hide');
+      toast('Video on');
+    } catch (e) {
+      console.error(e);
+      toast('Could not access camera');
+    }
+  }
+};
+
+// ---- Toggle camera on/off ----
+let isCameraOn = true;
+window.toggleCamera = () => {
+  if (!localStream) return;
+  const videoTracks = localStream.getVideoTracks();
+  if (videoTracks.length === 0) {
+    toast('No camera active');
+    return;
+  }
+  
+  isCameraOn = !isCameraOn;
+  videoTracks.forEach(t => { t.enabled = isCameraOn; });
+  
+  const btn = document.getElementById('cameraBtn');
+  if (btn) {
+    btn.classList.toggle('camera-off', !isCameraOn);
+    btn.textContent = isCameraOn ? '📹' : '🚫';
+  }
+  
+  // Show placeholder if camera off
+  const localVideo = document.getElementById('localVideo');
+  if (localVideo) {
+    localVideo.style.opacity = isCameraOn ? '1' : '0.3';
+  }
+  
+  toast(isCameraOn ? '📹 Camera on' : '🚫 Camera off');
+};
+
+// ---- Switch front/back camera (mobile) ----
+let currentFacingMode = 'user';
+window.switchCamera = async () => {
+  if (!localStream) return;
+  const videoTracks = localStream.getVideoTracks();
+  if (videoTracks.length === 0) {
+    toast('No camera active');
+    return;
+  }
+  
+  try {
+    // Try to flip camera
+    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: currentFacingMode }
+    });
+    const newTrack = newStream.getVideoTracks()[0];
+    
+    // Replace the track
+    if (peerConnection) {
+      const sender = peerConnection.getSenders().find(s => 
+        s.track && s.track.kind === 'video'
+      );
+      if (sender) {
+        await sender.replaceTrack(newTrack);
+      }
+    }
+    
+    // Update local stream
+    const oldTrack = localStream.getVideoTracks()[0];
+    if (oldTrack) {
+      localStream.removeTrack(oldTrack);
+      oldTrack.stop();
+    }
+    localStream.addTrack(newTrack);
+    
+    // Update local video preview
+    const localVideo = document.getElementById('localVideo');
+    if (localVideo) {
+      localVideo.srcObject = localStream;
+    }
+    
+    toast('🔄 Camera flipped');
+  } catch (e) {
+    console.error(e);
+    toast('Could not switch camera');
+  }
+};
 
 // ================================================================
 // ENSURE AUDIO AUTOPLAY UNLOCK
