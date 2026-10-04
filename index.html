@@ -929,24 +929,6 @@ body.dark .date-separator{
   background: rgba(30,41,59,.7);
   color: #94a3b8;
 }
-/* Date Separator */
-.date-separator{
-  text-align: center;
-  color: #8a94a5;
-  font-size: 11px;
-  font-weight: 600;
-  margin: 12px 0 8px;
-  padding: 4px 12px;
-  background: rgba(255,255,255,.7);
-  border-radius: 12px;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-}
-body.dark .date-separator{
-  background: rgba(30,41,59,.7);
-  color: #94a3b8;
-}
 
 /* Scroll to Bottom Button */
 .scroll-bottom-btn{
@@ -1532,12 +1514,13 @@ function formatDateSeparator(date) {
   if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
   
   const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-  if (diffDiff < 7) {
+  if (diffDays < 7) {
     return date.toLocaleDateString('en', { weekday: 'long' });
   }
   
   return date.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' });
 }
+  
 function formatTime(ts) {
   if (!ts) return '';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
@@ -1935,12 +1918,7 @@ function renderChats(chats) {
     const emoji = c.isGroup ? '👥' : (other?.emoji || '🧑');
     let preview = 'Tap to start chatting';
     let previewIcon = '';
-    // ✅ Show draft if exists
-    const drafts = JSON.parse(localStorage.getItem('ittisal_drafts') || '{}');
-    if (drafts[c.id]) {
-      preview = 'Draft: ' + drafts[c.id].slice(0, 40);
-    }
-
+    
     if (drafts[c.id]) {
       preview = 'Draft: ' + drafts[c.id].slice(0, 40);
     } else if (c.lastMessage) {
@@ -1953,16 +1931,7 @@ function renderChats(chats) {
     const isMuted = muted.includes(c.id);
     const muteIcon = isMuted ? '🔕 ' : '';
     
-    return `
-      <div class="row" onclick="openChat('${c.id}')">
-        <div class="avatar">${emoji}</div>
-        <div class="info">
-          <div class="name">${muteIcon}${escapeHtml(title)}</div>
-          <div class="preview">${previewIcon}${escapeHtml(preview)}</div>
-        </div>
-        <div class="meta">${timeAgo(c.updatedAt)}</div>
-      </div>
-    `;
+    return `...`;
   }).join('');
 }
 
@@ -4905,37 +4874,6 @@ function renderStickerPanel() {
 }
 
 // ================================================================
-// DATE SEPARATOR
-// ================================================================
-function formatDateSeparator(date) {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  
-  if (date.toDateString() === today.toDateString()) return 'Today';
-  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
-  
-  const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-  if (diffDays < 7) {
-    return date.toLocaleDateString('en', { weekday: 'long' });
-  }
-  
-  return date.toLocaleDateString('en', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-// ================================================================
-// SCROLL TO BOTTOM
-// ================================================================
-window.scrollToBottom = () => {
-  const box = document.getElementById('messages');
-  if (box) {
-    box.scrollTop = box.scrollHeight;
-    const scrollBtn = document.getElementById('scrollBottomBtn');
-    if (scrollBtn) scrollBtn.classList.remove('show');
-  }
-};
-
-// ================================================================
 // DRAFT MESSAGES
 // ================================================================
 function saveDraft() {
@@ -4966,59 +4904,6 @@ function clearDraft(chatId) {
   delete drafts[chatId];
   localStorage.setItem('ittisal_drafts', JSON.stringify(drafts));
 }
-
-// ================================================================
-// CHAT SEARCH
-// ================================================================
-window.toggleChatSearch = () => {
-  const box = document.getElementById('chatSearch');
-  if (!box) return;
-  const isHidden = box.style.display === 'none';
-  box.style.display = isHidden ? 'flex' : 'none';
-  if (isHidden) document.getElementById('chatSearchInput').focus();
-  else closeChatSearch();
-};
-
-window.closeChatSearch = () => {
-  const box = document.getElementById('chatSearch');
-  if (box) box.style.display = 'none';
-  const input = document.getElementById('chatSearchInput');
-  if (input) input.value = '';
-  searchInChat();
-};
-
-window.searchInChat = () => {
-  const query = (document.getElementById('chatSearchInput')?.value || '').toLowerCase();
-  document.querySelectorAll('.bubble-wrapper').forEach(w => {
-    const text = (w.textContent || '').toLowerCase();
-    if (!query || text.includes(query)) {
-      w.style.display = '';
-      w.style.background = (query && text.includes(query)) ? 'rgba(255, 235, 59, 0.2)' : '';
-    } else {
-      w.style.display = 'none';
-    }
-  });
-};
-
-// ================================================================
-// MUTE CHAT
-// ================================================================
-window.muteChat = (chatId) => {
-  if (!chatId) return;
-  const muted = JSON.parse(localStorage.getItem('ittisal_muted_chats') || '[]');
-  const idx = muted.indexOf(chatId);
-  
-  if (idx === -1) {
-    muted.push(chatId);
-    toast('Chat muted 🔕');
-  } else {
-    muted.splice(idx, 1);
-    toast('Chat unmuted 🔔');
-  }
-  
-  localStorage.setItem('ittisal_muted_chats', JSON.stringify(muted));
-  if (currentHomeTab === 'chats') renderChats(filteredChats());
-};
 
 // ================================================================
 // MESSAGE SEARCH IN CHAT
