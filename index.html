@@ -3165,9 +3165,11 @@ window.acceptCall = async () => {
     const callData = callSnap.data();
     attachLocalVideo(localStream, window._incomingType);
 
-    document.getElementById('callAvatar').textContent = callData.fromEmoji || '🧑';
-    document.getElementById('callName').textContent = callData.fromName || 'User';
-    document.getElementById('callStatus').textContent = 'Connected';
+    updateCallUI(
+      callData.fromEmoji || '🧑',
+      callData.fromName || 'User',
+      'Connected'
+    );
     showScreen('screen-call');
     startCallTimer();
 
@@ -3370,6 +3372,31 @@ function cleanupCall() {
   }
   window._incomingCallId = null;
   window._incomingType = null;
+}
+
+// ================================================================
+// CALL UI HELPER — update both voice & video elements at once
+// ================================================================
+function updateCallUI(avatar, name, status) {
+  // Voice call info box
+  const callAvatar = document.getElementById('callAvatar');
+  if (callAvatar && avatar !== undefined) callAvatar.textContent = avatar;
+  
+  const callName = document.getElementById('callName');
+  if (callName && name !== undefined) callName.textContent = name;
+  
+  const callStatus = document.getElementById('callStatus');
+  if (callStatus && status !== undefined) callStatus.textContent = status;
+  
+  // Video call overlay
+  const voAvatar = document.getElementById('voAvatar');
+  if (voAvatar && avatar !== undefined) voAvatar.textContent = avatar;
+  
+  const voName = document.getElementById('voName');
+  if (voName && name !== undefined) voName.textContent = name;
+  
+  const voStatus = document.getElementById('voStatus');
+  if (voStatus && status !== undefined) voStatus.textContent = status;
 }
 
 // ================================================================
