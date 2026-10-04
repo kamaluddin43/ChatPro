@@ -2862,7 +2862,6 @@ async function startCall(type) {
     currentCallRole = 'caller';
 
     const callRef = await addDoc(collection(db, 'calls'), {
-      attachLocalVideo(localStream, type);
       from: currentUser.uid,
       fromName: currentUser.displayName || 'User',
       fromEmoji: allUsers.find(u => u.uid === currentUser.uid)?.emoji || '🧑',
@@ -2876,6 +2875,7 @@ async function startCall(type) {
       createdAt: serverTimestamp()
     });
     currentCallId = callRef.id;
+    attachLocalVideo(localStream, type);
 
     // Show call screen
     document.getElementById('callAvatar').textContent = other.emoji || '🧑';
