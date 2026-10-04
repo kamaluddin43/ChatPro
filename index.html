@@ -2896,7 +2896,7 @@ async function startCall(type) {
       document.getElementById('videoToggleBtn').style.display = 'none';
     }
 
-    // Listen for answer/reject
+// Listen for answer/reject
     unsubCall = onSnapshot(doc(db, 'calls', currentCallId), (snap) => {
       if (!snap.exists()) return;
       const data = snap.data();
@@ -2906,6 +2906,8 @@ async function startCall(type) {
         startCallTimer();
         setupPeerConnection(other.uid, true);
       } else if (data.status === 'rejected') {
+        const statusEl = document.getElementById('callStatus') || document.getElementById('voStatus');
+        if (statusEl) statusEl.textContent = 'Declined';
         toast('Call declined');
         cleanupCall();
         showScreen('screen-chat');
@@ -3237,8 +3239,13 @@ function startCallTimer() {
     const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
     const m = Math.floor(elapsed / 60).toString().padStart(2, '0');
     const s = (elapsed % 60).toString().padStart(2, '0');
+    const timeStr = `Connected · ${m}:${s}`;
+    
     const statusEl = document.getElementById('callStatus');
-    if (statusEl) statusEl.textContent = `Connected · ${m}:${s}`;
+    if (statusEl) statusEl.textContent = timeStr;
+    
+    const voStatus = document.getElementById('voStatus');
+    if (voStatus) voStatus.textContent = timeStr;
   }, 1000);
 }
 
