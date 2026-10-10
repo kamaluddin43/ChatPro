@@ -13,19 +13,176 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiB2aWV3Qm94PSIwIDAgMTkyIDE5MiI+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSI0MiIgZmlsbD0iIzE2NzdmZiIvPjx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtc2l6ZT0iOTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIj7wn5KsPC90ZXh0Pjwvc3ZnPg==">
 <style>
 :root{
-  --primary:#1677ff; --primary-dark:#0d5ee8;
-  --bg:#eef3fb; --card:#fff;
-  --text:#172033; --muted:#718096;
-  --line:#e5ebf4; --green:#20c77a; --danger:#ef4444;
-  --shadow:0 8px 30px rgba(22,119,255,.12);
+  /* WhatsApp 2024 Colors */
+  --primary:#00a884;
+  --primary-dark:#008069;
+  --primary-light:#d9fdd3;
+  --accent:#25d366;
+  --blue-tick:#53bdeb;
+  
+  /* Backgrounds */
+  --bg:#efeae2;
+  --bg-dark:#0b141a;
+  --panel:#ffffff;
+  --panel-dark:#111b21;
+  --header:#008069;
+  --header-dark:#202c33;
+  
+  /* Text */
+  --text:#111b21;
+  --text-dark:#e9edef;
+  --muted:#667781;
+  --muted-dark:#8696a0;
+  
+  /* Bubbles */
+  --bubble-in:#ffffff;
+  --bubble-out:#d9fdd3;
+  --bubble-in-dark:#202c33;
+  --bubble-out-dark:#005c4b;
+  
+  /* Lines & UI */
+  --line:#e9edef;
+  --line-dark:#2a3942;
+  --danger:#ea0038;
+  --green:#00a884;
+  --shadow:0 1px 3px rgba(11,20,26,.13);
+  
+  /* Sizing */
+  --radius:8px;
+  --radius-lg:12px;
+  --header-h:59px;
+  --tab-h:48px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Segoe UI',Helvetica Neue,Helvetica,Inter,system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  height:100dvh;
+  overflow:hidden;
+  font-size:15px;
+  line-height:1.35;
+  -webkit-tap-highlight-color:transparent;
+}
 button,input,textarea{font:inherit;outline:none;border:none;background:none}
 button{cursor:pointer}
 .app{max-width:480px;height:100dvh;margin:auto;background:var(--card);position:relative;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.08);display:flex;flex-direction:column}
 .screen{display:none;height:100%;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
+
+/* ============================================================ */
+/* WHATSAPP-STYLE UI                                             */
+/* ============================================================ */
+
+/* Round icon buttons in header */
+.wa-icon-btn{
+  width:40px;height:40px;border-radius:50%;
+  background:transparent;color:#fff;
+  display:grid;place-items:center;
+  transition:background .15s;
+}
+.wa-icon-btn:hover{background:rgba(255,255,255,.1)}
+.wa-icon-btn:active{background:rgba(255,255,255,.2)}
+
+
+/* Main menu dropdown */
+.wa-main-menu{
+  position:absolute;
+  top:60px;
+  right:12px;
+  background:#fff;
+  border-radius:8px;
+  box-shadow:0 4px 20px rgba(11,20,26,.2);
+  z-index:500;
+  min-width:180px;
+  overflow:hidden;
+  animation:fadeIn .15s ease;
+}
+.wa-main-menu button{
+  display:flex;align-items:center;gap:12px;
+  width:100%;padding:13px 18px;
+  font-size:15px;text-align:left;
+  color:#111b21;background:#fff;
+  border-bottom:1px solid #e9edef;
+  transition:.15s;
+}
+.wa-main-menu button:last-child{border-bottom:none}
+.wa-main-menu button:hover{background:#f5f6f6}
+.wa-main-menu .mm-icon{font-size:18px;width:22px;text-align:center}
+
+body.dark .wa-main-menu{background:#233138}
+body.dark .wa-main-menu button{background:#233138;color:#e9edef;border-color:#2a3942}
+body.dark .wa-main-menu button:hover{background:#2a3942}
+
+/* Bottom tabs (Camera / Chats / Calls) */
+.wa-tab{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:2px;font-size:11px;font-weight:500;
+  color:#54656f;background:#fff;
+  transition:.15s;position:relative;
+  padding-top:4px;
+}
+.wa-tab.active{color:#00a884;font-weight:600}
+.wa-tab.active::before{
+  content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);
+  width:60%;height:3px;background:#00a884;
+  border-top-left-radius:3px;border-top-right-radius:3px;
+}
+.wa-tab span{font-size:11px;margin-top:2px}
+.wa-tab svg{width:24px;height:24px}
+
+/* Chat row (WhatsApp style) */
+.row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 16px;cursor:pointer;
+  transition:background .1s;border-radius:0;
+}
+.row:hover{background:#f5f6f6}
+.row:active{background:#e9edef}
+
+.row .avatar{
+  width:49px;height:49px;border-radius:50%;
+  background:#dfe5e7;display:grid;place-items:center;
+  font-size:24px;flex-shrink:0;position:relative;
+  color:#54656f;
+}
+.row .avatar .dot{
+  position:absolute;width:13px;height:13px;
+  border:2px solid #fff;background:#25d366;
+  border-radius:50%;right:0;bottom:1px;
+}
+.row .info{flex:1;min-width:0}
+.row .name{
+  font-weight:400;font-size:16px;color:#111b21;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.row .preview{
+  font-size:14px;color:#667781;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-top:2px;display:flex;align-items:center;gap:4px;
+}
+.row .meta{
+  text-align:right;font-size:12px;color:#667781;
+  flex-shrink:0;display:flex;flex-direction:column;
+  align-items:flex-end;gap:4px;
+}
+.row .badge{
+  background:#25d366;color:#fff;border-radius:50%;
+  min-width:20px;height:20px;padding:0 6px;
+  display:grid;place-items:center;
+  font-size:11px;font-weight:600;
+}
+
+/* Dark mode adjustments */
+body.dark .wa-tab{background:var(--panel-dark);color:#8696a0}
+body.dark .wa-tab.active{color:#00a884}
+body.dark .row:hover{background:#202c33}
+body.dark .row:active{background:#2a3942}
+body.dark .row .name{color:#e9edef}
+body.dark .row .preview{color:#8696a0}
+body.dark .row .avatar{background:#2a3942}
 
 /* ===== AUTH ===== */
 .auth{padding:30px 24px;justify-content:center;background:linear-gradient(160deg,#edf7ff,#fff 60%);overflow-y:auto}
@@ -96,12 +253,49 @@ button{cursor:pointer}
 .round-btn.send{background:var(--primary);color:#fff}
 .round-btn.send:hover{background:var(--primary-dark)}
 
-/* ===== ATTACHMENT MENU ===== */
-.attach-menu{position:absolute;bottom:70px;left:8px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:8px;display:none;z-index:50;min-width:180px}
+/* ===== ATTACHMENT MENU (WhatsApp Style) ===== */
+.attach-menu{
+  position:absolute;
+  bottom:80px;
+  left:16px;
+  background:#fff;
+  border-radius:12px;
+  box-shadow:0 6px 24px rgba(11,20,26,.2);
+  padding:6px;
+  display:none;
+  z-index:60;
+  min-width:180px;
+}
 .attach-menu.show{display:block;animation:fadeIn .15s ease}
-.attach-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600}
-.attach-item:hover{background:#f1f5fb}
-.attach-item .ai{font-size:20px}
+.attach-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:12px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:400;
+  color:#111b21;
+  transition:.15s;
+}
+.attach-item:hover{background:#f0f2f5}
+.attach-item .ai{
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:14px;
+  flex-shrink:0;
+}
+.attach-item:nth-child(1) .ai{background:#d9fdd3;color:#00a884}
+.attach-item:nth-child(2) .ai{background:#e7f3ff;color:#1677ff}
+.attach-item:nth-child(3) .ai{background:#fef3c7;color:#d97706}
+
+body.dark .attach-menu{background:#233138}
+body.dark .attach-item{color:#e9edef}
+body.dark .attach-item:hover{background:#2a3942}
 
 /* ===== PROFILE ===== */
 .profile-header{text-align:center;padding:30px 20px 24px;background:linear-gradient(135deg,#edf6ff,#fff)}
@@ -130,16 +324,53 @@ button{cursor:pointer}
 .sheet-text b{font-size:15px;display:block}
 .sheet-text small{color:var(--muted);font-size:12px;display:block;margin-top:2px}
 
-/* ===== TOAST ===== */
-.toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#172033;color:#fff;padding:12px 20px;border-radius:24px;font-size:13px;opacity:0;pointer-events:none;transition:.3s;z-index:500;max-width:90%;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ===== TOAST (WhatsApp Style) ===== */
+.toast{
+  position:absolute;
+  left:50%;
+  bottom:80px;
+  transform:translateX(-50%) translateY(20px);
+  background:#202c33;
+  color:#e9edef;
+  padding:12px 20px;
+  border-radius:8px;
+  font-size:14px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+  z-index:900;
+  max-width:90%;
+  text-align:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
 
-/* ===== LOADING ===== */
-.loading{position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:600;flex-direction:column;gap:14px}
+/* ===== LOADING (WhatsApp Green) ===== */
+.loading{
+  position:absolute;
+  inset:0;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:600;
+  flex-direction:column;
+  gap:14px;
+}
 .loading.hide{display:none}
-.spinner{width:40px;height:40px;border:4px solid #dceaff;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
+.spinner{
+  width:40px;
+  height:40px;
+  border:4px solid #d9fdd3;
+  border-top-color:#00a884;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading p{color:var(--muted);font-size:13px}
+.loading p{color:#667781;font-size:13px}
 
 /* ===== PROFILE SETUP ===== */
 .setup-card{background:#fff;padding:24px;border-radius:20px;box-shadow:var(--shadow);margin:0 auto;max-width:400px;width:100%}
@@ -1181,220 +1412,1095 @@ body.dark .chat-options-menu button.danger:hover {
 #screen-call.video-mode {
   padding: 0;
 }
+/* ============================================================ */
+/* SETTINGS DETAIL SCREEN (WhatsApp Style)                       */
+/* ============================================================ */
+
+/* Section group */
+.wa-section{
+  background:#fff;
+  margin-bottom:12px;
+  border-top:1px solid #f0f2f5;
+  border-bottom:1px solid #f0f2f5;
+}
+.wa-section-title{
+  font-size:14px;
+  font-weight:500;
+  color:#00a884;
+  padding:16px 20px 8px;
+  letter-spacing:.3px;
+}
+
+/* Setting row */
+.wa-setting-row{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 20px;
+  cursor:pointer;
+  transition:.15s;
+  border-bottom:1px solid #f0f2f5;
+  background:#fff;
+}
+.wa-setting-row:last-child{border-bottom:none}
+.wa-setting-row:hover{background:#f5f6f6}
+.wa-setting-row:active{background:#e9edef}
+
+.wa-setting-icon{
+  width:24px;
+  text-align:center;
+  color:#54656f;
+  font-size:18px;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+}
+.wa-setting-icon svg{width:22px;height:22px;fill:#54656f}
+
+.wa-setting-text{
+  flex:1;
+  min-width:0;
+}
+.wa-setting-text b{
+  font-size:16px;
+  font-weight:400;
+  color:#111b21;
+  display:block;
+  margin-bottom:2px;
+}
+.wa-setting-text small{
+  font-size:13px;
+  color:#667781;
+  display:block;
+  line-height:1.4;
+}
+
+.wa-setting-value{
+  color:#667781;
+  font-size:14px;
+  margin-right:6px;
+  white-space:nowrap;
+}
+
+.wa-setting-arrow{
+  color:#c7c7c7;
+  font-size:22px;
+  flex-shrink:0;
+  line-height:1;
+}
+
+/* iOS-style Toggle Switch (WhatsApp green) */
+.wa-switch{
+  position:relative;
+  display:inline-block;
+  width:44px;
+  height:24px;
+  flex-shrink:0;
+}
+.wa-switch input{opacity:0;width:0;height:0}
+.wa-switch .wa-slider{
+  position:absolute;
+  cursor:pointer;
+  top:0;left:0;right:0;bottom:0;
+  background:#c7c7c7;
+  border-radius:24px;
+  transition:.25s;
+}
+.wa-switch .wa-slider:before{
+  position:absolute;
+  content:"";
+  height:20px;
+  width:20px;
+  left:2px;
+  bottom:2px;
+  background:#fff;
+  border-radius:50%;
+  transition:.25s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.wa-switch input:checked + .wa-slider{background:#00a884}
+.wa-switch input:checked + .wa-slider:before{transform:translateX(20px)}
+
+/* Radio option */
+.wa-radio-row{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 20px;
+  cursor:pointer;
+  transition:.15s;
+  border-bottom:1px solid #f0f2f5;
+  background:#fff;
+}
+.wa-radio-row:last-child{border-bottom:none}
+.wa-radio-row:hover{background:#f5f6f6}
+
+.wa-radio-text{
+  flex:1;
+  font-size:16px;
+  font-weight:400;
+  color:#111b21;
+}
+.wa-radio-text small{
+  display:block;
+  color:#667781;
+  font-size:13px;
+  margin-top:2px;
+}
+.wa-radio-circle{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:2px solid #8696a0;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  transition:.15s;
+}
+.wa-radio-row.selected .wa-radio-circle{
+  border-color:#00a884;
+  background:#00a884;
+}
+.wa-radio-row.selected .wa-radio-circle::after{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#fff;
+}
+
+/* Storage bar */
+.wa-storage-bar{
+  margin:0 20px 16px;
+  height:8px;
+  background:#e9edef;
+  border-radius:4px;
+  overflow:hidden;
+}
+.wa-storage-fill{
+  height:100%;
+  background:linear-gradient(90deg,#00a884,#25d366);
+  border-radius:4px;
+  transition:width .3s;
+}
+
+/* Info card at top */
+.wa-info-card{
+  background:#fff;
+  padding:24px 20px;
+  text-align:center;
+  border-bottom:8px solid #f0f2f5;
+}
+.wa-info-card .wa-big-avatar{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:#dfe5e7;
+  display:grid;
+  place-items:center;
+  font-size:52px;
+  margin:0 auto 14px;
+  color:#54656f;
+  position:relative;
+}
+.wa-info-card h2{
+  font-size:22px;
+  font-weight:500;
+  color:#111b21;
+  margin-bottom:4px;
+}
+.wa-info-card p{
+  font-size:14px;
+  color:#667781;
+}
+.wa-info-card .wa-uid{
+  display:inline-block;
+  margin-top:10px;
+  padding:4px 12px;
+  background:#f0f2f5;
+  border-radius:12px;
+  font-size:12px;
+  color:#667781;
+  font-family:monospace;
+}
+
+/* Link row (for Help/About) */
+.wa-link-row{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 20px;
+  cursor:pointer;
+  transition:.15s;
+  border-bottom:1px solid #f0f2f5;
+  background:#fff;
+  text-decoration:none;
+  color:inherit;
+}
+.wa-link-row:last-child{border-bottom:none}
+.wa-link-row:hover{background:#f5f6f6}
+.wa-link-row .wa-link-text{
+  flex:1;
+  font-size:16px;
+  color:#111b21;
+}
+
+/* About logo */
+.wa-about-logo{
+  text-align:center;
+  padding:40px 20px 30px;
+  background:#fff;
+  border-bottom:8px solid #f0f2f5;
+}
+.wa-about-logo .logo{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  background:#00a884;
+  display:grid;
+  place-items:center;
+  margin:0 auto 18px;
+  color:#fff;
+}
+.wa-about-logo h2{
+  font-size:24px;
+  font-weight:500;
+  color:#111b21;
+  margin-bottom:6px;
+}
+.wa-about-logo p{
+  font-size:14px;
+  color:#667781;
+}
+.wa-about-logo .wa-version{
+  display:inline-block;
+  margin-top:14px;
+  padding:5px 14px;
+  background:#f0f2f5;
+  border-radius:16px;
+  font-size:12px;
+  font-weight:500;
+  color:#54656f;
+}
+
+/* Font preview */
+.wa-font-preview{
+  margin:0 20px 16px;
+  padding:16px;
+  background:#f0f2f5;
+  border-radius:10px;
+  color:#111b21;
+  transition:font-size .2s;
+}
+
+/* Wallpaper grid */
+.wa-wallpaper-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:0 20px 20px;
+}
+.wa-wallpaper-thumb{
+  aspect-ratio:9/16;
+  border-radius:10px;
+  cursor:pointer;
+  border:3px solid transparent;
+  background-size:cover;
+  background-position:center;
+  transition:.2s;
+}
+.wa-wallpaper-thumb.selected{
+  border-color:#00a884;
+  transform:scale(1.02);
+}
+.wa-wallpaper-thumb:hover{transform:scale(1.04)}
+
+/* Danger zone */
+.wa-danger-row{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:14px 20px;
+  cursor:pointer;
+  transition:.15s;
+  background:#fff;
+  border-bottom:1px solid #f0f2f5;
+}
+.wa-danger-row:hover{background:#fff5f5}
+.wa-danger-row .wa-setting-text b{color:#ea0038}
+.wa-danger-row .wa-setting-icon svg{fill:#ea0038}
+
+/* Dark mode */
+body.dark .wa-section{background:#111b21;border-color:#2a3942}
+body.dark .wa-setting-row{background:#111b21;border-color:#2a3942}
+body.dark .wa-setting-row:hover{background:#202c33}
+body.dark .wa-setting-row:active{background:#2a3942}
+body.dark .wa-setting-text b{color:#e9edef}
+body.dark .wa-setting-text small{color:#8696a0}
+body.dark .wa-setting-value{color:#8696a0}
+body.dark .wa-setting-icon svg{fill:#8696a0}
+body.dark .wa-radio-row{background:#111b21;border-color:#2a3942}
+body.dark .wa-radio-row:hover{background:#202c33}
+body.dark .wa-radio-text{color:#e9edef}
+body.dark .wa-radio-text small{color:#8696a0}
+body.dark .wa-radio-circle{border-color:#8696a0}
+body.dark .wa-info-card{background:#111b21}
+body.dark .wa-info-card h2{color:#e9edef}
+body.dark .wa-info-card p{color:#8696a0}
+body.dark .wa-info-card .wa-uid{background:#202c33;color:#8696a0}
+body.dark .wa-link-row{background:#111b21;border-color:#2a3942}
+body.dark .wa-link-row:hover{background:#202c33}
+body.dark .wa-link-row .wa-link-text{color:#e9edef}
+body.dark .wa-about-logo{background:#111b21}
+body.dark .wa-about-logo h2{color:#e9edef}
+body.dark .wa-about-logo p{color:#8696a0}
+body.dark .wa-about-logo .wa-version{background:#202c33;color:#8696a0}
+body.dark .wa-font-preview{background:#202c33;color:#e9edef}
+body.dark .wa-storage-bar{background:#2a3942}
+body.dark .wa-danger-row{background:#111b21;border-color:#2a3942}
+body.dark .wa-danger-row:hover{background:#2a1b1b}
+/* ============================================================ */
+/* CALL SCREEN ANIMATIONS                                        */
+/* ============================================================ */
+
+@keyframes wa-call-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(0, 168, 132, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 30px rgba(0, 168, 132, 0);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes wa-accept-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Ensure call screen is properly positioned */
+#screen-call {
+  position: relative;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#screen-call.active {
+  display: flex;
+}
+
+/* Video mode adjustments */
+#screen-call.video-mode #callInfoBox {
+  display: none;
+}
+
+#screen-call.video-mode #remoteVideo.show {
+  display: block;
+}
+
+#screen-call.video-mode #videoOverlay {
+  display: flex;
+}
+
+/* Incoming call show */
+#incomingCall.show {
+  display: flex !important;
+}
+
+/* Call button hover */
+#screen-call button:hover {
+  transform: scale(1.08);
+}
+
+#screen-call button:active {
+  transform: scale(0.95);
+}
+
+/* Camera off state */
+#cameraBtn.camera-off {
+  background: #ea0038 !important;
+}
+
+/* Mute active state */
+#muteBtn.muted {
+  background: #ea0038 !important;
+}
 </style>
 </head>
 <body>
 <div class="app">
   <audio id="remoteAudio" autoplay playsinline></audio>
   <!-- LOADING -->
-  <div id="loading" class="loading">
+  <div id="loading" class="loading hide">
     <div class="spinner"></div>
     <p>Connecting to Ittisal...</p>
   </div>
   <div id="toast" class="toast"></div>
 
-  <!-- ========== LOGIN SCREEN ========== -->
-  <section id="screen-login" class="screen auth">
-    <div class="logo">💬</div>
-    <h1>Ittisal</h1>
-    <p class="tagline">Connect · Chat · Share</p>
-    <div class="field">✉️<input id="email" type="email" placeholder="Email address" autocomplete="email"></div>
-    <div class="field">🔒<input id="password" type="password" placeholder="Password" autocomplete="current-password"></div>
-    <button class="btn-primary" onclick="handleLogin()">Log In</button>
-    <button class="btn-secondary" onclick="handleSignup()">Create New Account</button>
-    <button class="btn-secondary" onclick="showPhoneLogin()" style="color:#1677ff;font-weight:700">📱 Continue with Phone</button>
-
-    <div id="phoneLoginBox" style="display:none;margin-top:16px">
-      <div class="field">📱<input id="phoneNumber" type="tel" placeholder="+8801XXXXXXXXX"></div>
-      <button class="btn-primary" onclick="sendOTP()">Send OTP</button>
-      <div id="otpBox" style="display:none;margin-top:12px">
-        <div class="field">🔢<input id="otpCode" type="tel" placeholder="Enter 6-digit OTP" maxlength="6"></div>
-        <button class="btn-primary" onclick="verifyOTP()">Verify & Login</button>
+  <!-- ========== SPLASH SCREEN ========== -->
+  <section id="screen-splash" class="screen active" style="background:#fff;align-items:center;justify-content:center;text-align:center;padding:40px">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div style="width:80px;height:80px;border-radius:50%;background:#00a884;display:grid;place-items:center;font-size:44px;color:#fff;margin-bottom:26px">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.83 14.12c-.25.7-1.45 1.33-2 1.39-.55.06-1.05.25-3.55-.75s-4.1-3.65-4.22-3.82c-.12-.17-.99-1.31-.99-2.5 0-1.19.62-1.78.84-2.02.22-.24.49-.3.65-.3.16 0 .33.01.47.01.15 0 .35-.06.55.42.2.48.68 1.65.74 1.77.06.12.1.26.02.42-.08.16-.12.26-.24.4-.12.14-.25.31-.36.42-.12.12-.24.25-.1.49.14.24.62 1.03 1.33 1.67.91.82 1.68 1.07 1.92 1.19.24.12.38.1.52-.06.14-.16.6-.7.76-.94.16-.24.32-.2.54-.12.22.08 1.4.66 1.64.78.24.12.4.18.46.28.06.1.06.6-.19 1.29z"/></svg>
       </div>
-      <button class="btn-link" onclick="hidePhoneLogin()">← Back</button>
+      <h1 style="font-size:26px;font-weight:600;color:#111b21;margin-bottom:6px">Ittisal</h1>
+      <p style="color:#8696a0;font-size:13px">End-to-end encrypted</p>
+    </div>
+    <div style="padding-bottom:20px">
+      <div class="spinner" style="border-color:#d9fdd3;border-top-color:#00a884;width:34px;height:34px"></div>
+    </div>
+  </section>
+
+  <!-- ========== WELCOME / LANGUAGE ========== -->
+  <section id="screen-welcome" class="screen" style="background:#fff">
+    <div style="flex:1;display:flex;flex-direction:column;padding:36px 24px 24px">
+      
+      <div style="text-align:center;margin-top:20px">
+        <div style="width:72px;height:72px;border-radius:50%;background:#00a884;display:grid;place-items:center;font-size:40px;color:#fff;margin:0 auto 22px">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.83 14.12c-.25.7-1.45 1.33-2 1.39-.55.06-1.05.25-3.55-.75s-4.1-3.65-4.22-3.82c-.12-.17-.99-1.31-.99-2.5 0-1.19.62-1.78.84-2.02.22-.24.49-.3.65-.3.16 0 .33.01.47.01.15 0 .35-.06.55.42.2.48.68 1.65.74 1.77.06.12.1.26.02.42-.08.16-.12.26-.24.4-.12.14-.25.31-.36.42-.12.12-.24.25-.1.49.14.24.62 1.03 1.33 1.67.91.82 1.68 1.07 1.92 1.19.24.12.38.1.52-.06.14-.16.6-.7.76-.94.16-.24.32-.2.54-.12.22.08 1.4.66 1.64.78.24.12.4.18.46.28.06.1.06.6-.19 1.29z"/></svg>
+        </div>
+        <h2 style="font-size:22px;font-weight:600;color:#111b21;margin-bottom:10px">Welcome to Ittisal</h2>
+        <p style="color:#667781;font-size:14px;line-height:1.5">
+          Read our <span style="color:#00a884;font-weight:500">Privacy Policy</span>. Tap "Agree and continue" to accept the <span style="color:#00a884;font-weight:500">Terms of Service</span>.
+        </p>
+      </div>
+      
+      <div style="margin-top:auto;padding-top:20px">
+        <label style="font-size:12px;color:#667781;font-weight:600;display:block;margin-bottom:8px;letter-spacing:.5px">SELECT LANGUAGE</label>
+        <select id="welcomeLang" style="width:100%;padding:13px 14px;border:1px solid #e9edef;border-radius:8px;font-size:15px;background:#fff;color:#111b21;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22%23667781%22><path d=%22M7 10l5 5 5-5z%22/></svg>');background-repeat:no-repeat;background-position:right 14px center;padding-right:36px">
+          <option value="en">English</option>
+          <option value="bn">বাংলা (Bangla)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ar">العربية (Arabic)</option>
+          <option value="ur">اردو (Urdu)</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="pt">Português</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="tr">Türkçe</option>
+        </select>
+        
+        <button onclick="acceptWelcome()" 
+          style="width:100%;margin-top:22px;padding:14px;background:#00a884;color:#fff;border-radius:8px;font-size:15px;font-weight:600;transition:.15s">
+          Agree and continue
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LOGIN ========== -->
+  <section id="screen-login" class="screen" style="background:#fff">
+    <div style="padding:24px 20px;flex:1;display:flex;flex-direction:column;overflow-y:auto">
+      
+      <div style="text-align:center;margin:20px 0 32px">
+        <div style="width:60px;height:60px;border-radius:50%;background:#00a884;display:grid;place-items:center;font-size:32px;color:#fff;margin:0 auto 16px">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+        </div>
+        <h2 style="font-size:20px;font-weight:600;color:#111b21">Enter your phone number</h2>
+        <p style="color:#667781;font-size:13px;margin-top:6px">Ittisal will send an SMS to verify your account.</p>
+      </div>
+      
+      <!-- Country + Phone -->
+      <label style="font-size:11px;color:#00a884;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block">Phone number</label>
+      <div style="display:flex;gap:8px;margin-bottom:18px">
+        <select id="countryCode" style="width:105px;padding:13px 8px;border:1px solid #e9edef;border-radius:8px;font-size:15px;background:#fff;color:#111b21">
+          <option value="+880">🇧🇩 +880</option>
+          <option value="+91">🇮🇳 +91</option>
+          <option value="+1">🇺🇸 +1</option>
+          <option value="+44">🇬🇧 +44</option>
+          <option value="+971">🇦🇪 +971</option>
+          <option value="+966">🇸🇦 +966</option>
+          <option value="+92">🇵🇰 +92</option>
+          <option value="+60">🇲🇾 +60</option>
+          <option value="+62">🇮🇩 +62</option>
+          <option value="+90">🇹🇷 +90</option>
+        </select>
+        <input id="phoneNumber" type="tel" inputmode="numeric" placeholder="1XXXXXXXXX"
+          style="flex:1;padding:13px 14px;border:1px solid #e9edef;border-radius:8px;font-size:15px"
+          oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      </div>
+      
+      <button onclick="sendOTP()"
+        style="width:100%;padding:14px;background:#00a884;color:#fff;border-radius:8px;font-size:15px;font-weight:600;margin-bottom:14px">
+        Send code via SMS
+      </button>
+      
+      <!-- OTP Box -->
+      <div id="otpBox" style="display:none;margin-top:6px">
+        <label style="font-size:11px;color:#00a884;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block">Enter 6-digit code</label>
+        <input id="otpCode" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••"
+          style="width:100%;padding:14px;border:1px solid #e9edef;border-radius:8px;font-size:22px;letter-spacing:10px;text-align:center;margin-bottom:12px;font-family:monospace"
+          oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <button onclick="verifyOTP()"
+          style="width:100%;padding:14px;background:#00a884;color:#fff;border-radius:8px;font-size:15px;font-weight:600">
+          Verify
+        </button>
+        <button onclick="resendOTP()"
+          style="width:100%;padding:12px;background:transparent;color:#00a884;font-size:14px;margin-top:6px;font-weight:500">
+          Resend code
+        </button>
+      </div>
+      
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:12px;margin:26px 0 18px">
+        <div style="flex:1;height:1px;background:#e9edef"></div>
+        <span style="color:#8696a0;font-size:12px;font-weight:500">OR</span>
+        <div style="flex:1;height:1px;background:#e9edef"></div>
+      </div>
+      
+      <!-- Email toggle -->
+      <button onclick="showEmailLogin()"
+        style="width:100%;padding:14px;background:#fff;color:#00a884;border:1.5px solid #00a884;border-radius:8px;font-size:15px;font-weight:600">
+        ✉️ Continue with Email
+      </button>
+      
+      <!-- Email box -->
+      <div id="emailLoginBox" style="display:none;margin-top:16px">
+        <input id="email" type="email" placeholder="Email address"
+          style="width:100%;padding:13px 14px;border:1px solid #e9edef;border-radius:8px;font-size:15px;margin-bottom:10px">
+        <input id="password" type="password" placeholder="Password"
+          style="width:100%;padding:13px 14px;border:1px solid #e9edef;border-radius:8px;font-size:15px;margin-bottom:14px">
+        <button onclick="handleLogin()"
+          style="width:100%;padding:14px;background:#00a884;color:#fff;border-radius:8px;font-size:15px;font-weight:600;margin-bottom:8px">
+          Log In
+        </button>
+        <button onclick="handleSignup()"
+          style="width:100%;padding:12px;background:transparent;color:#00a884;font-size:14px;font-weight:500">
+          Create new account
+        </button>
+      </div>
+      
+      <!-- reCAPTCHA (invisible) -->
+      <div id="recaptcha-container" style="position:absolute;bottom:0;left:0;opacity:0;pointer-events:none;z-index:-1"></div>
     </div>
   </section>
 
   <!-- ========== PROFILE SETUP ========== -->
-  <section id="screen-setup" class="screen auth">
-    <h2 style="text-align:center;margin-bottom:6px;font-size:26px">Welcome to Ittisal!</h2>
-    <p class="tagline">Let's set up your profile</p>
-    <div class="setup-card">
-      <label style="font-size:13px;color:#718096;font-weight:600">Your Name</label>
-      <div class="field">👤<input id="setupName" placeholder="Enter your name" maxlength="30"></div>
-      <label style="font-size:13px;color:#718096;font-weight:600;display:block;margin-top:18px">Choose Avatar</label>
-      <div class="emoji-picker" id="emojiPicker"></div>
-      <button class="btn-primary" onclick="saveProfile()">Continue</button>
+  <section id="screen-setup" class="screen" style="background:#fff">
+    <div style="flex:1;display:flex;flex-direction:column;padding:36px 24px 24px;overflow-y:auto">
+      
+      <div style="text-align:center;margin:30px 0 40px">
+        <div style="font-size:22px;font-weight:500;color:#111b21;margin-bottom:8px">Profile info</div>
+        <p style="color:#667781;font-size:14px;line-height:1.5">Please provide your name and an optional profile photo</p>
+      </div>
+      
+      <!-- Avatar picker -->
+      <div style="text-align:center;margin-bottom:24px">
+        <div id="setupAvatarPreview" 
+          style="width:120px;height:120px;border-radius:50%;background:#dfe5e7;display:grid;place-items:center;font-size:60px;color:#54656f;margin:0 auto;cursor:pointer;position:relative"
+          onclick="toggleSetupEmojiPicker()">
+          🧑
+          <div style="position:absolute;bottom:0;right:0;width:36px;height:36px;border-radius:50%;background:#00a884;color:#fff;display:grid;place-items:center;border:3px solid #fff">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Emoji picker (hidden) -->
+      <div id="setupEmojiPicker" style="display:none;margin-bottom:20px">
+        <div class="emoji-picker" id="emojiPicker"></div>
+      </div>
+      
+      <!-- Name input -->
+      <div style="display:flex;align-items:center;gap:14px;border-bottom:2px solid #00a884;padding:8px 0 10px;margin-bottom:30px">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="#667781">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <input id="setupName" placeholder="Type your name here" maxlength="30"
+          style="flex:1;font-size:16px;background:transparent;color:#111b21;padding:6px 0">
+      </div>
+      
+      <!-- Continue button -->
+      <button onclick="saveProfile()"
+        style="width:100%;padding:14px;background:#00a884;color:#fff;border-radius:8px;font-size:15px;font-weight:600;margin-top:auto">
+        Next
+      </button>
+      
+      <p style="text-align:center;color:#8696a0;font-size:12px;margin-top:16px">
+        Your name will be visible to other Ittisal users
+      </p>
     </div>
   </section>
 
-  <!-- ========== HOME (INBOX) ========== -->
-  <section id="screen-home" class="screen">
-    <header class="header">
-      <div class="brand">Ittisal</div>
-      <div class="spacer"></div>
-      <button class="icon-btn" onclick="showScreen('screen-users')" title="Users">👥</button>
-      <button class="icon-btn" onclick="handleLogout()" title="Logout">↪</button>
+  <!-- ========== HOME (CHATS) ========== -->
+  <section id="screen-home" class="screen" style="background:#fff">
+
+    <!-- Header -->
+    <header style="height:59px;background:#008069;color:#fff;display:flex;align-items:center;padding:0 8px 0 16px;gap:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(11,20,26,.15)">
+      <div style="font-size:20px;font-weight:600;letter-spacing:.3px">Ittisal</div>
+      <div style="flex:1"></div>
+
+      <!-- New chat icon -->
+      <button onclick="showScreen('screen-users')" class="wa-icon-btn" title="New chat">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.83 14.12c-.25.7-1.45 1.33-2 1.39-.55.06-1.05.25-3.55-.75s-4.1-3.65-4.22-3.82c-.12-.17-.99-1.31-.99-2.5 0-1.19.62-1.78.84-2.02.22-.24.49-.3.65-.3.16 0 .33.01.47.01.15 0 .35-.06.55.42.2.48.68 1.65.74 1.77.06.12.1.26.02.42-.08.16-.12.26-.24.4-.12.14-.25.31-.36.42-.12.12-.24.25-.1.49.14.24.62 1.03 1.33 1.67.91.82 1.68 1.07 1.92 1.19.24.12.38.1.52-.06.14-.16.6-.7.76-.94.16-.24.32-.2.54-.12.22.08 1.4.66 1.64.78.24.12.4.18.46.28.06.1.06.6-.19 1.29z"/>
+        </svg>
+      </button>
+
+      <!-- Menu (3 dots) -->
+      <button onclick="openMenuSheet()" class="wa-icon-btn" title="Menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12 7c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 7c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+      </button>
     </header>
-    <div class="search-bar">🔎<input id="searchChats" placeholder="Search chats..." oninput="filterChats()"></div>
-    <div class="tabs">
-      <button class="tab active" onclick="switchHomeTab(this,'chats')">Chats</button>
-      <button class="tab" onclick="switchHomeTab(this,'groups')">Groups</button>
-      <button class="tab" onclick="switchHomeTab(this,'calls')">Calls</button>
-    </div>
-    <div class="list" id="chatList">
-      <div style="text-align:center;padding:60px 20px;color:#718096">
-        <div style="font-size:50px">💬</div>
-        <p style="margin-top:10px">No chats yet</p>
-        <p style="font-size:13px;margin-top:6px">Tap 👥 to find people</p>
+
+    <!-- Search bar -->
+    <div style="padding:8px 12px;background:#fff;border-bottom:1px solid #e9edef;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;background:#f0f2f5;border-radius:8px;padding:6px 12px">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#8696a0">
+          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input id="searchChats" placeholder="Search" oninput="filterChats()" style="flex:1;background:transparent;font-size:15px;padding:4px 0">
       </div>
     </div>
-    <button class="icon-btn" onclick="openNewChatSheet()" style="position:absolute;right:18px;bottom:80px;width:58px;height:58px;background:var(--primary);box-shadow:0 10px 25px rgba(22,119,255,.35);font-size:26px;z-index:10">＋</button>
-    <nav class="bottom-nav">
-      <button class="nav-btn active" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
-      <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn" onclick="showScreen('screen-settings');setNav(this)"><span class="icon">⚙️</span>Settings</button>
+
+    <!-- Chats list -->
+    <div class="list" id="chatList" style="flex:1;overflow-y:auto;background:#fff"></div>
+
+    <!-- FAB (New chat) -->
+    <button onclick="openNewChatSheet()"
+      style="position:absolute;right:16px;bottom:84px;width:56px;height:56px;border-radius:16px;background:#00a884;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25);display:grid;place-items:center;z-index:10;transition:.15s">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+      </svg>
+    </button>
+
+    <!-- Bottom tabs (Camera / Chats / Calls) -->
+    <nav style="height:60px;background:#fff;border-top:1px solid #e9edef;display:flex;flex-shrink:0;position:relative">
+      <button class="wa-tab" onclick="toast('Camera coming soon')">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M12 15.2c1.77 0 3.2-1.43 3.2-3.2s-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2 1.43 3.2 3.2 3.2zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+        </svg>
+        <span>Camera</span>
+      </button>
+      <button class="wa-tab active">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <span>Chats</span>
+      </button>
+      <button class="wa-tab" onclick="switchHomeTab(null,'calls')">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+        <span>Calls</span>
+      </button>
     </nav>
   </section>
 
-  <!-- ========== USERS ========== -->
-  <section id="screen-users" class="screen">
-    <header class="header">
-      <div class="brand">All Users</div>
-      <div class="spacer"></div>
-      <button class="icon-btn" onclick="loadUsers()" title="Refresh">🔄</button>
+    <!-- ========== USERS (Contacts) ========== -->
+  <section id="screen-users" class="screen" style="background:#fff">
+
+    <!-- Header -->
+    <header style="height:59px;background:#008069;color:#fff;display:flex;align-items:center;padding:0 8px 0 6px;gap:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(11,20,26,.15)">
+      <button onclick="goHome()" class="wa-icon-btn">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </button>
+      <div style="font-size:18px;font-weight:500;margin-left:4px">Select contact</div>
+      <div style="flex:1"></div>
+      <button onclick="loadUsers()" class="wa-icon-btn" title="Refresh">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+      </button>
     </header>
-    <div class="search-bar">🔎<input id="searchUsers" placeholder="Search users..." oninput="filterUsers()"></div>
-    <div class="list" id="userList"></div>
-    <nav class="bottom-nav">
-      <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn active" onclick="setNav(this)"><span class="icon">👥</span>Users</button>
-      <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn" onclick="showScreen('screen-settings');setNav(this)"><span class="icon">⚙️</span>Settings</button>
+
+    <!-- Search bar -->
+    <div style="padding:8px 12px;background:#fff;border-bottom:1px solid #e9edef;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;background:#f0f2f5;border-radius:8px;padding:6px 12px">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#8696a0">
+          <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
+        <input id="searchUsers" placeholder="Search contacts" oninput="filterUsers()" style="flex:1;background:transparent;font-size:15px;padding:4px 0">
+      </div>
+    </div>
+
+    <!-- Contact list -->
+    <div class="list" id="userList" style="flex:1;overflow-y:auto;background:#fff"></div>
+
+    <!-- Bottom tabs -->
+    <nav style="height:60px;background:#fff;border-top:1px solid #e9edef;display:flex;flex-shrink:0">
+      <button class="wa-tab" onclick="toast('Camera coming soon')">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M12 15.2c1.77 0 3.2-1.43 3.2-3.2s-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2 1.43 3.2 3.2 3.2zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+        </svg>
+        <span>Camera</span>
+      </button>
+      <button class="wa-tab" onclick="goHome()">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <span>Chats</span>
+      </button>
+      <button class="wa-tab active">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+        <span>Contacts</span>
+      </button>
     </nav>
   </section>
 
-  <!-- ========== PROFILE ========== -->
-  <section id="screen-profile" class="screen">
-    <header class="header">
-      <div class="brand">My Profile</div>
-      <div class="spacer"></div>
-      <button class="icon-btn" onclick="openEditProfile()" title="Edit">✎</button>
-    </header>
-    <div class="profile-header">
-      <div class="big-avatar" id="profileAvatar">🧑</div>
-      <h2 id="profileName">Loading...</h2>
-      <p id="profileEmail">...</p>
-      <p style="margin-top:6px;font-size:12px;color:var(--green)">● Online</p>
+<!-- ========== PROFILE (My Profile) ========== -->
+<section id="screen-profile" class="screen" style="background:#fff">
+
+  <!-- Header -->
+  <header style="height:59px;background:#008069;color:#fff;display:flex;align-items:center;padding:0 8px 0 6px;gap:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(11,20,26,.15)">
+    <button onclick="goHome()" class="wa-icon-btn">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </button>
+    <div style="font-size:18px;font-weight:500;margin-left:4px">Profile</div>
+    <div style="flex:1"></div>
+    <button onclick="openEditProfile()" class="wa-icon-btn" title="Edit">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Profile info card -->
+  <div style="padding:24px;background:#fff;border-bottom:8px solid #f0f2f5;text-align:center">
+    <div class="big-avatar" id="profileAvatar" 
+      style="width:110px;height:110px;border-radius:50%;margin:0 auto 16px;background:#dfe5e7;display:grid;place-items:center;font-size:56px;color:#54656f;border:none;box-shadow:none;position:relative">
+      🧑
+      <div style="position:absolute;bottom:6px;right:6px;width:26px;height:26px;border-radius:50%;background:#00a884;border:3px solid #fff;display:grid;place-items:center">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="#fff">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+      </div>
     </div>
-    <div class="menu">
-      <div class="menu-item" onclick="toast('Coming soon')"><div class="menu-icon">📱</div><div class="menu-text"><b>Phone</b><small>Add your phone number</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toast('Coming soon')"><div class="menu-icon">📝</div><div class="menu-text"><b>About</b><small>Tell people about you</small></div><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="shareInvite()"><div class="menu-icon">🔗</div><div class="menu-text"><b>Invite Friends</b><small>Share Ittisal with friends</small></div><span class="menu-arrow">›</span></div>
+    <h2 id="profileName" style="font-size:22px;font-weight:500;color:#111b21;margin-bottom:6px">Loading...</h2>
+    <p id="profileEmail" style="font-size:14px;color:#667781">...</p>
+    <p id="profilePhone" style="font-size:14px;color:#667781;margin-top:4px"></p>
+  </div>
+
+  <!-- Menu items -->
+  <div style="flex:1;overflow-y:auto;background:#fff;padding-bottom:80px">
+
+    <!-- About -->
+    <div onclick="editAbout()" 
+      style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f0f2f5;cursor:pointer;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#54656f">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:#667781;margin-bottom:2px">About</div>
+        <div id="profileAbout" style="font-size:15px;color:#111b21">Hey there! I am using Ittisal.</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:20px">›</div>
     </div>
-    <nav class="bottom-nav">
-      <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
-      <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
-      <button class="nav-btn active" onclick="setNav(this)"><span class="icon">👤</span>Profile</button>
-      <button class="nav-btn" onclick="showScreen('screen-settings');setNav(this)"><span class="icon">⚙️</span>Settings</button>
-    </nav>
-  </section>
+
+    <!-- Phone -->
+    <div onclick="editPhone()"
+      style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f0f2f5;cursor:pointer;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#54656f">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:#667781;margin-bottom:2px">Phone</div>
+        <div id="profilePhoneFull" style="font-size:15px;color:#111b21">+880 1XXX-XXXXXX</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:20px">›</div>
+    </div>
+
+    <!-- Email -->
+    <div onclick="editEmail()"
+      style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f0f2f5;cursor:pointer;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#54656f">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;color:#667781;margin-bottom:2px">Email</div>
+        <div id="profileEmailFull" style="font-size:15px;color:#111b21;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">example@email.com</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:20px">›</div>
+    </div>
+
+    <!-- QR / Share ID -->
+    <div onclick="shareInvite()"
+      style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f0f2f5;cursor:pointer;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#54656f">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;color:#111b21;font-weight:500">Invite friends</div>
+        <div style="font-size:13px;color:#667781;margin-top:2px">Share your Ittisal link</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:20px">›</div>
+    </div>
+
+    <!-- Change avatar -->
+    <div onclick="changeAvatar()"
+      style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f0f2f5;cursor:pointer;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#54656f">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;color:#111b21;font-weight:500">Change avatar</div>
+        <div style="font-size:13px;color:#667781;margin-top:2px">Pick a new emoji</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:20px">›</div>
+    </div>
+
+  </div>
+</section>
 
 <!-- ========== SETTINGS (MAIN) ========== -->
-<section id="screen-settings" class="screen">
-  <header class="header">
-    <div class="brand">Settings</div>
-    <div class="spacer"></div>
-    <button class="icon-btn" onclick="showScreen('screen-profile')">👤</button>
+<section id="screen-settings" class="screen" style="background:#f0f2f5">
+
+  <!-- Header -->
+  <header style="height:59px;background:#008069;color:#fff;display:flex;align-items:center;padding:0 8px 0 6px;gap:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(11,20,26,.15)">
+    <button onclick="goHome()" class="wa-icon-btn">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </button>
+    <div style="font-size:18px;font-weight:500;margin-left:4px">Settings</div>
   </header>
-  <div class="menu">
-    
-    <!-- ACCOUNT -->
-    <div class="menu-item" onclick="openSettingScreen('account')">
-      <div class="menu-icon">👤</div>
-      <div class="menu-text"><b>Account</b><small>Security notifications, change number</small></div>
-      <span class="menu-arrow">›</span>
+
+  <!-- Scrollable content -->
+  <div style="flex:1;overflow-y:auto;padding-bottom:20px">
+
+    <!-- Profile card -->
+    <div onclick="showScreen('screen-profile')" 
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:70px;height:70px;border-radius:50%;background:#dfe5e7;display:grid;place-items:center;font-size:34px;color:#54656f;position:relative;flex-shrink:0"
+           id="settingsAvatar">🧑
+        <div style="position:absolute;bottom:2px;right:2px;width:20px;height:20px;border-radius:50%;background:#00a884;border:3px solid #fff;display:grid;place-items:center">
+          <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+        </div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div id="settingsProfileName" style="font-size:18px;font-weight:500;color:#111b21;margin-bottom:4px">Loading...</div>
+        <div id="settingsProfileAbout" style="font-size:14px;color:#667781;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Hey there! I am using Ittisal.</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- PRIVACY -->
-    <div class="menu-item" onclick="openSettingScreen('privacy')">
-      <div class="menu-icon">🔒</div>
-      <div class="menu-text"><b>Privacy</b><small>Block contacts, disappearing messages</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Account section -->
+    <div onclick="openSettingScreen('account')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s;margin-top:10px"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Account</div>
+        <div style="font-size:13px;color:#667781">Security notifications, account info</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- NOTIFICATIONS -->
-    <div class="menu-item" onclick="openSettingScreen('notifications')">
-      <div class="menu-icon">🔔</div>
-      <div class="menu-text"><b>Notifications</b><small>Message, group & call tones</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Privacy section -->
+    <div onclick="openSettingScreen('privacy')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Privacy</div>
+        <div style="font-size:13px;color:#667781">Block contacts, disappearing messages</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- CHAT SETTINGS -->
-    <div class="menu-item" onclick="openSettingScreen('chat')">
-      <div class="menu-icon">💬</div>
-      <div class="menu-text"><b>Chats</b><small>Theme, wallpaper, chat history</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Notifications -->
+    <div onclick="openSettingScreen('notifications')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Notifications</div>
+        <div style="font-size:13px;color:#667781">Message, group & call tones</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- STORAGE -->
-    <div class="menu-item" onclick="openSettingScreen('storage')">
-      <div class="menu-icon">💾</div>
-      <div class="menu-text"><b>Storage and Data</b><small>Network usage, auto-download</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Chats -->
+    <div onclick="openSettingScreen('chat')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Chats</div>
+        <div style="font-size:13px;color:#667781">Theme, wallpaper, chat history</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- LANGUAGE -->
-    <div class="menu-item" onclick="openSettingScreen('language')">
-      <div class="menu-icon">🌐</div>
-      <div class="menu-text"><b>App Language</b><small id="currentLangLabel">English</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Storage -->
+    <div onclick="openSettingScreen('storage')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Storage and data</div>
+        <div style="font-size:13px;color:#667781">Network usage, auto-download</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- HELP -->
-    <div class="menu-item" onclick="openSettingScreen('help')">
-      <div class="menu-icon">❓</div>
-      <div class="menu-text"><b>Help</b><small>Help center, contact us, privacy policy</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- App Language -->
+    <div onclick="openSettingScreen('language')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">App language</div>
+        <div id="currentLangLabel" style="font-size:13px;color:#667781">English</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- INVITE -->
-    <div class="menu-item" onclick="shareInvite()">
-      <div class="menu-icon">🔗</div>
-      <div class="menu-text"><b>Invite a friend</b><small>Share Ittisal with friends</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Help -->
+    <div onclick="openSettingScreen('help')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s;margin-top:10px"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Help</div>
+        <div style="font-size:13px;color:#667781">Help center, contact us, privacy policy</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- ABOUT -->
-    <div class="menu-item" onclick="openSettingScreen('about')">
-      <div class="menu-icon">ℹ️</div>
-      <div class="menu-text"><b>About Ittisal</b><small>Version 4.5 · International</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- Invite friend -->
+    <div onclick="shareInvite()"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm1 4h-2v3H8v2h3v3h2v-3h3v-2h-3v-3z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">Invite a friend</div>
+        <div style="font-size:13px;color:#667781">Share Ittisal with friends</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
-    
-    <!-- LOGOUT -->
-    <div class="menu-item" onclick="handleLogout()" style="color:#ef4444">
-      <div class="menu-icon" style="background:#fee2e2;color:#ef4444">↪</div>
-      <div class="menu-text"><b>Log Out</b><small>Sign out of Ittisal</small></div>
-      <span class="menu-arrow">›</span>
+
+    <!-- About -->
+    <div onclick="openSettingScreen('about')"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#00a884">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#111b21;margin-bottom:2px">About Ittisal</div>
+        <div style="font-size:13px;color:#667781">Version 4.5 · International</div>
+      </div>
+      <div style="color:#c7c7c7;font-size:22px">›</div>
     </div>
+
+    <!-- Logout -->
+    <div onclick="handleLogout()"
+      style="background:#fff;padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border-bottom:1px solid #f0f2f5;transition:.15s;margin-top:10px"
+      onmouseover="this.style.background='#f5f6f6'" 
+      onmouseout="this.style.background='#fff'">
+      <div style="width:24px;text-align:center;color:#ea0038">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:16px;color:#ea0038;margin-bottom:2px">Log out</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align:center;padding:30px 20px;color:#8696a0;font-size:12px">
+      Ittisal · Version 4.5<br>
+      Made with ❤️ in Bangladesh
+    </div>
+
   </div>
-  <nav class="bottom-nav">
-    <button class="nav-btn" onclick="goHome(this)"><span class="icon">💬</span>Chats</button>
-    <button class="nav-btn" onclick="showScreen('screen-users');setNav(this)"><span class="icon">👥</span>Users</button>
-    <button class="nav-btn" onclick="showScreen('screen-profile');setNav(this)"><span class="icon">👤</span>Profile</button>
-    <button class="nav-btn active" onclick="setNav(this)"><span class="icon">⚙️</span>Settings</button>
-  </nav>
 </section>
 
 <!-- ========== SETTINGS DETAIL SCREEN (Dynamic) ========== -->
-<section id="screen-setting-detail" class="screen">
-  <header class="header">
-    <button class="icon-btn" style="background:rgba(255,255,255,.12)" onclick="closeSettingScreen()">‹</button>
-    <div class="brand" id="settingTitle">Settings</div>
+<section id="screen-setting-detail" class="screen" style="background:#f0f2f5">
+
+  <!-- Header -->
+  <header style="height:59px;background:#008069;color:#fff;display:flex;align-items:center;padding:0 8px 0 6px;gap:4px;flex-shrink:0;box-shadow:0 1px 3px rgba(11,20,26,.15)">
+    <button onclick="closeSettingScreen()" class="wa-icon-btn">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+    </button>
+    <div id="settingTitle" style="font-size:18px;font-weight:500;margin-left:4px">Settings</div>
   </header>
-  <div class="menu" id="settingContent"></div>
+
+  <!-- Dynamic content -->
+  <div id="settingContent" style="flex:1;overflow-y:auto;padding-bottom:20px"></div>
 </section>
 
   <!-- ========== CHAT SCREEN ========== -->
@@ -1418,7 +2524,7 @@ body.dark .chat-options-menu button.danger:hover {
       <input id="chatSearchInput" placeholder="Search in chat..." oninput="searchInChat()">
       <span class="close" onclick="closeChatSearch()">✕</span>
     </div>
-    <div class="messages" id="messages"></div>
+    <div class="messages" id="messages" style="flex:1;overflow-y:auto;padding:12px 16px 8px;background-color:#efeae2;background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22><g fill=%22%23d8d2c8%22 opacity=%220.15%22><circle cx=%2210%22 cy=%2210%22 r=%221%22/><circle cx=%2230%22 cy=%2225%22 r=%221%22/><circle cx=%2250%22 cy=%2240%22 r=%221%22/><circle cx=%2220%22 cy=%2250%22 r=%221%22/><circle cx=%2245%22 cy=%2215%22 r=%221%22/></g></svg>')"></div>
     <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollToBottom()">↓</button>
     <div class="typing-indicator" id="typingIndicator">
   <span id="typingName">Someone</span> is typing<span class="dots"><span></span><span></span><span></span></span>
@@ -1461,40 +2567,89 @@ body.dark .chat-options-menu button.danger:hover {
   <input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(event)">
   </section>
 
-    <!-- ========== CALL SCREEN ========== -->
-  <section id="screen-call" class="screen">
-    <!-- Video Elements (hidden for voice calls) -->
-    <video id="remoteVideo" autoplay playsinline></video>
-    <video id="localVideo" autoplay playsinline muted></video>
+  <!-- ========== CALL SCREEN ========== -->
+<section id="screen-call" class="screen" style="background:#0b141a;position:relative;color:#fff">
 
-    <!-- Voice Call Info (shown for voice calls) -->
-    <div class="call-info" id="callInfoBox">
-      <div class="call-avatar" id="callAvatar">👤</div>
-      <div class="call-name" id="callName">Calling...</div>
-      <div class="call-status" id="callStatus">Connecting...</div>
+  <!-- Video elements -->
+  <video id="remoteVideo" autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;z-index:1;display:none"></video>
+  <video id="localVideo" autoplay playsinline muted style="position:absolute;top:80px;right:16px;width:110px;height:150px;object-fit:cover;border-radius:12px;border:2px solid rgba(255,255,255,.3);box-shadow:0 6px 20px rgba(0,0,0,.5);z-index:10;background:#1e293b;display:none;cursor:pointer"></video>
+
+  <!-- Voice call info -->
+  <div id="callInfoBox" style="position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 24px;text-align:center">
+    
+    <!-- Avatar -->
+    <div id="callAvatar" style="width:140px;height:140px;border-radius:50%;background:#2a3942;font-size:64px;display:grid;place-items:center;margin-bottom:28px;animation:wa-call-pulse 2s ease-in-out infinite">👤</div>
+    
+    <!-- Name -->
+    <div id="callName" style="font-size:26px;font-weight:400;color:#e9edef;margin-bottom:10px">Calling...</div>
+    
+    <!-- Status -->
+    <div id="callStatus" style="color:#8696a0;font-size:15px">Connecting...</div>
+    
+  </div>
+
+  <!-- Video call top overlay -->
+  <div id="videoOverlay" style="position:absolute;top:0;left:0;right:0;padding:20px 24px 60px;display:none;align-items:center;gap:12px;background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 100%);z-index:15;color:#fff">
+    <div id="voAvatar" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:22px;flex-shrink:0">👤</div>
+    <div style="flex:1;min-width:0">
+      <div id="voName" style="font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">User</div>
+      <div id="voStatus" style="font-size:12px;opacity:.85;margin-top:2px">Connecting...</div>
     </div>
+  </div>
 
-    <!-- Video Call Overlay (top info bar for video calls) -->
-    <div class="video-overlay" id="videoOverlay">
-      <div class="vo-avatar" id="voAvatar">👤</div>
-      <div class="vo-info">
-        <div class="vo-name" id="voName">User</div>
-        <div class="vo-status" id="voStatus">Connecting...</div>
-      </div>
-    </div>
+  <!-- Video toggle button (top right) -->
+  <button id="videoToggleBtn" onclick="toggleVideoMode()" title="Toggle video"
+    style="position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:20px;display:none;place-items:center;cursor:pointer;z-index:20;backdrop-filter:blur(10px);border:none;transition:.2s">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+      <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+    </svg>
+  </button>
 
-    <!-- Local video toggle button -->
-    <button class="video-toggle" id="videoToggleBtn" onclick="toggleVideoMode()" title="Toggle video">🎥</button>
+  <!-- Call actions (bottom) -->
+  <div style="position:relative;z-index:20;display:flex;justify-content:center;gap:20px;padding:30px 24px 40px;flex-wrap:wrap">
+    
+    <!-- Mute -->
+    <button id="muteBtn" onclick="toggleMute()" title="Mute"
+      style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:grid;place-items:center;cursor:pointer;transition:.2s;border:none;backdrop-filter:blur(8px)">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" id="muteIcon">
+        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/>
+      </svg>
+    </button>
+    
+    <!-- Video camera toggle -->
+    <button id="cameraBtn" onclick="toggleCamera()" title="Camera"
+      style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:grid;place-items:center;cursor:pointer;transition:.2s;border:none;backdrop-filter:blur(8px)">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+      </svg>
+    </button>
+    
+    <!-- End call (red, bigger) -->
+    <button onclick="endCall()" title="End call"
+      style="width:70px;height:70px;border-radius:50%;background:#ea0038;color:#fff;display:grid;place-items:center;cursor:pointer;transition:.2s;border:none;box-shadow:0 4px 15px rgba(234,0,56,.4)">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" style="transform:rotate(135deg)">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>
+    </button>
+    
+    <!-- Speaker -->
+    <button onclick="toggleSpeaker()" title="Speaker"
+      style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:grid;place-items:center;cursor:pointer;transition:.2s;border:none;backdrop-filter:blur(8px)">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
+    </button>
+    
+    <!-- Switch camera -->
+    <button id="switchCamBtn" onclick="switchCamera()" title="Flip camera"
+      style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:grid;place-items:center;cursor:pointer;transition:.2s;border:none;backdrop-filter:blur(8px)">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+        <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
+      </svg>
+    </button>
+  </div>
+</section>
 
-    <!-- Call Actions -->
-    <div class="call-actions">
-      <button class="call-btn" onclick="toggleMute()" id="muteBtn" title="Mute">🎤</button>
-      <button class="call-btn" onclick="toggleCamera()" id="cameraBtn" title="Camera On/Off">📹</button>
-      <button class="call-btn end" onclick="endCall()" title="End Call">📞</button>
-      <button class="call-btn" onclick="toggleSpeaker()" title="Speaker">🔊</button>
-      <button class="call-btn" onclick="switchCamera()" id="switchCamBtn" title="Flip Camera">🔄</button>
-    </div>
-  </section>
   <!-- ========== NEW CHAT SHEET ========== -->
   <div class="modal" id="sheet" onclick="if(event.target===this)closeSheet('sheet')">
     <div class="sheet">
@@ -1537,16 +2692,52 @@ body.dark .chat-options-menu button.danger:hover {
     </div>
   </div>
 
-  <!-- ========== INCOMING CALL ========== -->
-  <div class="incoming-call" id="incomingCall">
-    <div class="call-avatar" id="incomingAvatar">👤</div>
-    <div class="call-name" id="incomingName">Incoming Call</div>
-    <div class="call-status" id="incomingType">Voice Call</div>
-    <div class="call-actions" style="margin-top:40px">
-      <button class="call-btn end" onclick="rejectCall()">📞</button>
-      <button class="call-btn accept" onclick="acceptCall()">📞</button>
+<!-- ========== INCOMING CALL ========== -->
+<div id="incomingCall" style="position:absolute;inset:0;background:linear-gradient(180deg,#0b141a 0%,#1a1a1a 100%);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:space-between;z-index:400;padding:60px 24px 50px;text-align:center">
+  
+  <!-- Top info -->
+  <div style="width:100%">
+    <div style="color:#8696a0;font-size:14px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px" id="incomingType">Incoming voice call</div>
+    
+    <!-- Avatar -->
+    <div id="incomingAvatar" style="width:130px;height:130px;border-radius:50%;background:#2a3942;font-size:60px;display:grid;place-items:center;margin:0 auto 24px;animation:wa-call-pulse 1.5s ease-in-out infinite">👤</div>
+    
+    <!-- Name -->
+    <div id="incomingName" style="font-size:28px;font-weight:400;color:#e9edef;margin-bottom:8px">Incoming Call</div>
+    
+    <!-- Subtitle -->
+    <div style="color:#8696a0;font-size:15px">Ittisal voice call</div>
+  </div>
+
+  <!-- Action buttons -->
+  <div style="display:flex;gap:60px;justify-content:center;align-items:center">
+    
+    <!-- Reject -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <button onclick="rejectCall()" 
+        style="width:70px;height:70px;border-radius:50%;background:#ea0038;color:#fff;display:grid;place-items:center;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(234,0,56,.5);transition:.2s">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" style="transform:rotate(135deg)">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+      </button>
+      <span style="font-size:13px;color:#8696a0">Decline</span>
+    </div>
+    
+    <!-- Accept -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <button onclick="acceptCall()"
+        style="width:70px;height:70px;border-radius:50%;background:#00a884;color:#fff;display:grid;place-items:center;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,168,132,.5);transition:.2s;animation:wa-accept-bounce 1s ease-in-out infinite">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+      </button>
+      <span style="font-size:13px;color:#8696a0">Accept</span>
     </div>
   </div>
+  
+  <!-- Swipe hint -->
+  <div style="color:#8696a0;font-size:12px;margin-top:20px">Tap accept to answer</div>
+</div>
   <!-- IMAGE VIEWER (full-screen) -->
 <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
   <span class="close">✕</span>
@@ -1693,10 +2884,11 @@ const EMOJIS = ['🧑','👨','👩','🧕','👧','👦','🧔','👶','👴','
 // ================================================================
 window.toast = (msg) => {
   const t = document.getElementById('toast');
+  if (!t) return;
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 };
 
 window.showScreen = (id) => {
@@ -1797,83 +2989,75 @@ window.handleSignup = async () => {
 };
 
 // ================================================================
-// PHONE NUMBER LOGIN (OTP)
+// PHONE NUMBER LOGIN (WhatsApp-style)
 // ================================================================
 let confirmationResult = null;
 let recaptchaVerifier = null;
 
-window.showPhoneLogin = () => {
-  document.getElementById('phoneLoginBox').style.display = 'block';
-};
-
-window.hidePhoneLogin = () => {
-  document.getElementById('phoneLoginBox').style.display = 'none';
-  document.getElementById('otpBox').style.display = 'none';
-};
-
 window.sendOTP = async () => {
-  const phoneNumber = document.getElementById('phoneNumber').value.trim();
-  if (!phoneNumber) { toast('Enter phone number'); return; }
-  if (!phoneNumber.startsWith('+')) { toast('Include country code (e.g. +880)'); return; }
-
+  const code = document.getElementById('countryCode').value;
+  const number = document.getElementById('phoneNumber').value.trim();
+  
+  if (!number) { toast('Enter phone number'); return; }
+  if (number.length < 6) { toast('Enter a valid phone number'); return; }
+  
+  const fullNumber = code + number;
+  
   try {
-    // Clean up any existing verifier
     if (recaptchaVerifier) {
-      try { recaptchaVerifier.clear(); } catch (e) {}
+      try { recaptchaVerifier.clear(); } catch(e) {}
       recaptchaVerifier = null;
     }
-
-    // Create a container for reCAPTCHA if not exists
-    let recaptchaContainer = document.getElementById('recaptcha-container');
-    if (!recaptchaContainer) {
-      recaptchaContainer = document.createElement('div');
-      recaptchaContainer.id = 'recaptcha-container';
-      document.querySelector('.app').appendChild(recaptchaContainer);
-    }
-
+    
     recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
       size: 'invisible',
-      callback: () => { /* solved */ },
-      'expired-callback': () => { toast('reCAPTCHA expired. Try again.'); }
+      callback: () => {}
     });
-
-    toast('Sending OTP...');
-    confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-    toast('OTP sent!');
+    
+    toast('Sending code...');
+    confirmationResult = await signInWithPhoneNumber(auth, fullNumber, recaptchaVerifier);
+    toast('Code sent via SMS ✓');
     document.getElementById('otpBox').style.display = 'block';
+    document.getElementById('phoneNumber').disabled = true;
+    document.getElementById('otpCode').focus();
   } catch (e) {
     console.error(e);
-    if (e.code === 'auth/invalid-phone-number') {
-      toast('Invalid phone number format');
-    } else if (e.code === 'auth/too-many-requests') {
-      toast('Too many attempts. Try again later.');
-    } else {
-      toast('Could not send OTP: ' + (e.code || 'error'));
-    }
+    if (e.code === 'auth/invalid-phone-number') toast('Invalid phone number');
+    else if (e.code === 'auth/too-many-requests') toast('Too many attempts. Try later.');
+    else if (e.code === 'auth/operation-not-allowed') toast('Phone login not enabled in Firebase');
+    else toast('Could not send code');
   }
+};
+
+window.resendOTP = () => {
+  document.getElementById('otpBox').style.display = 'none';
+  document.getElementById('phoneNumber').disabled = false;
+  document.getElementById('otpCode').value = '';
+  sendOTP();
 };
 
 window.verifyOTP = async () => {
   const code = document.getElementById('otpCode').value.trim();
-  if (!code || code.length !== 6) { toast('Enter 6-digit OTP'); return; }
-  if (!confirmationResult) { toast('Send OTP first'); return; }
-
+  if (!code || code.length !== 6) { toast('Enter 6-digit code'); return; }
+  if (!confirmationResult) { toast('Send code first'); return; }
+  
   try {
     const result = await confirmationResult.confirm(code);
     const user = result.user;
-    toast('Logged in with phone!');
-
-    // Create user profile if new
+    toast('Verified!');
+    
     const userRef = doc(db, 'users', user.uid);
     const snap = await getDoc(userRef);
+    
     if (!snap.exists()) {
-      const defaultName = 'User' + user.phoneNumber.slice(-4);
+      const defaultName = 'User' + (user.phoneNumber || '').slice(-4);
       await setDoc(userRef, {
         uid: user.uid,
         name: defaultName,
         emoji: '🧑',
         phone: user.phoneNumber,
-        email: user.email || '',
+        email: '',
+        about: 'Hey there! I am using Ittisal.',
         lastSeen: serverTimestamp(),
         createdAt: serverTimestamp()
       });
@@ -1881,18 +3065,16 @@ window.verifyOTP = async () => {
     } else {
       await updateDoc(userRef, { lastSeen: serverTimestamp() });
     }
-
-    // Hide phone login box
-    document.getElementById('phoneLoginBox').style.display = 'none';
-    document.getElementById('otpBox').style.display = 'none';
   } catch (e) {
     console.error(e);
-    if (e.code === 'auth/invalid-verification-code') {
-      toast('Wrong OTP. Try again.');
-    } else {
-      toast('Verification failed');
-    }
+    if (e.code === 'auth/invalid-verification-code') toast('Wrong code. Try again.');
+    else toast('Verification failed');
   }
+};
+
+window.showEmailLogin = () => {
+  const box = document.getElementById('emailLoginBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
 };
 
 window.handleLogout = async () => {
@@ -1906,6 +3088,12 @@ window.handleLogout = async () => {
   } catch (e) { toast('Logout failed'); }
 };
 
+window.toggleSetupEmojiPicker = () => {
+  const picker = document.getElementById('setupEmojiPicker');
+  if (!picker) return;
+  picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+};
+
 // ================================================================
 // PROFILE SETUP
 // ================================================================
@@ -1913,13 +3101,39 @@ function renderEmojiPicker() {
   const picker = document.getElementById('emojiPicker');
   if (!picker) return;
   picker.innerHTML = EMOJIS.map(e => 
-    `<div class="emoji-option" data-emoji="${e}">${e}</div>`
+    `<div class="emoji-option" data-emoji="${e}" 
+      style="font-size:28px;padding:10px;border-radius:12px;background:#f0f2f5;text-align:center;cursor:pointer;transition:.15s">${e}</div>`
   ).join('');
+  picker.style.display = 'grid';
+  picker.style.gridTemplateColumns = 'repeat(6,1fr)';
+  picker.style.gap = '8px';
+  
   picker.querySelectorAll('.emoji-option').forEach(el => {
     el.onclick = () => {
-      picker.querySelectorAll('.emoji-option').forEach(x => x.classList.remove('selected'));
+      picker.querySelectorAll('.emoji-option').forEach(x => {
+        x.classList.remove('selected');
+        x.style.background = '#f0f2f5';
+      });
       el.classList.add('selected');
+      el.style.background = '#d9fdd3';
+      el.style.border = '2px solid #00a884';
       selectedEmoji = el.dataset.emoji;
+      
+      // Update preview
+      const preview = document.getElementById('setupAvatarPreview');
+      if (preview) {
+        const svg = preview.querySelector('div');
+        preview.childNodes[0].nodeValue = selectedEmoji + ' ';
+        if (!svg) {
+          preview.innerHTML = selectedEmoji + `
+            <div style="position:absolute;bottom:0;right:0;width:36px;height:36px;border-radius:50%;background:#00a884;color:#fff;display:grid;place-items:center;border:3px solid #fff">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+              </svg>
+            </div>
+          `;
+        }
+      }
     };
   });
 }
@@ -1969,27 +3183,104 @@ window.loadUsers = async () => {
 function renderUsers(users) {
   const el = document.getElementById('userList');
   if (!el) return;
+  
   if (users.length === 0) {
-    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#718096">
-      <div style="font-size:50px">👥</div>
-      <p style="margin-top:10px">No other users yet</p>
-      <p style="font-size:13px;margin-top:6px">Invite friends to join Ittisal!</p>
-    </div>`;
+    el.innerHTML = `
+      <div style="text-align:center;padding:80px 20px;color:#8696a0">
+        <div style="font-size:64px;opacity:.3;margin-bottom:8px">👥</div>
+        <p style="margin-top:16px;font-size:16px;color:#667781">No contacts yet</p>
+        <p style="font-size:14px;margin-top:6px">Invite friends to join Ittisal!</p>
+      </div>
+    `;
     return;
   }
-  el.innerHTML = users.map(u => {
-    const isOnline = u.lastSeen && (Date.now() - (u.lastSeen.toMillis ? u.lastSeen.toMillis() : 0) < 60000);
-    return `
-    <div class="row" onclick="startPrivateChat('${u.uid}')">
-      <div class="avatar">${u.emoji || '🧑'}${isOnline ? '<span class="dot"></span>' : ''}</div>
-      <div class="info">
-        <div class="name">${escapeHtml(u.name || 'User')}</div>
-        <div class="preview">${isOnline ? 'Online' : timeAgo(u.lastSeen) || 'Offline'}</div>
-      </div>
-    </div>
-  `;
-  }).join('');
+  
+  // Sort alphabetically
+  const sorted = [...users].sort((a, b) => 
+    (a.name || '').localeCompare(b.name || '')
+  );
+  
+  // Group by first letter
+  const grouped = {};
+  sorted.forEach(u => {
+    const first = (u.name || 'U').charAt(0).toUpperCase();
+    if (!grouped[first]) grouped[first] = [];
+    grouped[first].push(u);
+  });
+  
+  let html = '';
+  Object.keys(grouped).sort().forEach(letter => {
+    html += `<div style="padding:8px 16px;font-size:13px;color:#00a884;font-weight:600;background:#fff;text-transform:uppercase">${letter}</div>`;
+    grouped[letter].forEach(u => {
+      const isOnline = u.lastSeen && u.lastSeen.toMillis && 
+        (Date.now() - u.lastSeen.toMillis()) < 60000;
+      const about = u.about || (isOnline ? 'online' : 'Hey there! I am using Ittisal.');
+      
+      html += `
+        <div class="row" onclick="startPrivateChat('${u.uid}')" 
+             oncontextmenu="event.preventDefault(); showUserOptions(event, '${u.uid}')"
+             data-user-id="${u.uid}">
+          <div class="avatar" style="width:49px;height:49px;font-size:24px;background:#dfe5e7;color:#54656f">
+            ${u.emoji || '🧑'}
+            ${isOnline ? '<span class="dot"></span>' : ''}
+          </div>
+          <div class="info">
+            <div class="name" style="font-weight:500">${escapeHtml(u.name || 'User')}</div>
+            <div class="preview" style="color:${isOnline ? '#00a884' : '#667781'}">
+              ${isOnline ? '● online' : escapeHtml(about)}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  });
+  
+  el.innerHTML = html;
 }
+
+window.showUserOptions = (event, uid) => {
+  document.querySelectorAll('.wa-user-menu').forEach(el => el.remove());
+  const user = allUsers.find(u => u.uid === uid);
+  if (!user) return;
+  
+  const menu = document.createElement('div');
+  menu.className = 'wa-main-menu wa-user-menu';
+  menu.style.position = 'fixed';
+  menu.style.left = Math.min(event.clientX, window.innerWidth - 200) + 'px';
+  menu.style.top = Math.min(event.clientY, window.innerHeight - 200) + 'px';
+  menu.style.right = 'auto';
+  
+  menu.innerHTML = `
+    <button onclick="closeUserMenu();openProfileViewer('${uid}')">
+      <span class="mm-icon">👤</span> View profile
+    </button>
+    <button onclick="closeUserMenu();startPrivateChat('${uid}')">
+      <span class="mm-icon">💬</span> Message
+    </button>
+    <button onclick="closeUserMenu();callUser('${uid}')">
+      <span class="mm-icon">📞</span> Voice call
+    </button>
+  `;
+  document.querySelector('.app').appendChild(menu);
+  
+  setTimeout(() => {
+    document.addEventListener('click', function closeMenu(ev) {
+      if (!menu.contains(ev.target)) {
+        menu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    });
+  }, 100);
+};
+
+window.closeUserMenu = () => {
+  document.querySelectorAll('.wa-user-menu').forEach(el => el.remove());
+};
+
+window.callUser = async (uid) => {
+  await startPrivateChat(uid);
+  setTimeout(() => startVoiceCall(), 500);
+};
 
 window.filterUsers = () => {
   const q = document.getElementById('searchUsers').value.toLowerCase();
@@ -2129,13 +3420,12 @@ function renderChats(chats) {
   const el = document.getElementById('chatList');
   if (!el) return;
   
-  // ---- Empty state ----
   if (chats.length === 0) {
     el.innerHTML = `
-      <div style="text-align:center;padding:60px 20px;color:#718096">
-        <div style="font-size:50px">💬</div>
-        <p style="margin-top:10px">No chats yet</p>
-        <p style="font-size:13px;margin-top:6px">Tap 👥 to find people</p>
+      <div style="text-align:center;padding:80px 20px;color:#8696a0">
+        <div style="font-size:64px;opacity:.3;margin-bottom:8px">💬</div>
+        <p style="margin-top:16px;font-size:16px;color:#667781">No chats yet</p>
+        <p style="font-size:14px;margin-top:6px">Tap the message icon to start chatting</p>
       </div>
     `;
     return;
@@ -2145,12 +3435,11 @@ function renderChats(chats) {
   const muted = JSON.parse(localStorage.getItem('ittisal_muted_chats') || '[]');
   const pinned = JSON.parse(localStorage.getItem('ittisal_pinned_chats') || '[]');
   
-  // Pinned chats উপরে
   const sorted = [...chats].sort((a, b) => {
     const aPin = pinned.includes(a.id) ? 1 : 0;
     const bPin = pinned.includes(b.id) ? 1 : 0;
     if (aPin !== bPin) return bPin - aPin;
-    return 0; // already sorted by updatedAt from Firestore
+    return 0;
   });
   
   el.innerHTML = sorted.map(c => {
@@ -2159,72 +3448,60 @@ function renderChats(chats) {
     const isPinned = pinned.includes(c.id);
     const isMuted = muted.includes(c.id);
     
-    // ---- Title & Avatar ----
-    const title = isGroup 
-      ? (c.groupName || 'Group') 
-      : (other?.name || 'Chat');
+    const title = isGroup ? (c.groupName || 'Group') : (other?.name || 'Chat');
     const emoji = isGroup ? '👥' : (other?.emoji || '🧑');
     
-    // ---- Online status ----
+    // Online status
     let isOnline = false;
     if (!isGroup && other?.lastSeen) {
       const last = other.lastSeen.toMillis ? other.lastSeen.toMillis() : 0;
       isOnline = (Date.now() - last) < 60000;
     }
     
-    // ---- Preview message ----
+    // Preview message
     let preview = 'Tap to start chatting';
     let previewPrefix = '';
-    let previewStyle = '';
     
     if (drafts[c.id]) {
-      preview = drafts[c.id].slice(0, 45);
-      previewPrefix = '<span style="color:#ef4444;font-weight:600">Draft: </span>';
+      preview = drafts[c.id].slice(0, 40);
+      previewPrefix = '<span style="color:#ea0038;font-weight:500">Draft: </span>';
     } else if (c.lastMessage) {
-      // Group-এ sender name দেখাবে
       if (isGroup && c.lastSenderId) {
         if (c.lastSenderId === currentUser.uid) {
-          previewPrefix = '<span style="color:#718096">You: </span>';
+          previewPrefix = '<span style="color:#667781">You: </span>';
         } else {
           const sender = allUsers.find(u => u.uid === c.lastSenderId);
           if (sender) {
-            previewPrefix = `<span style="color:#1677ff;font-weight:600">${escapeHtml(sender.name)}: </span>`;
+            previewPrefix = `<span style="color:#00a884;font-weight:500">${escapeHtml(sender.name)}: </span>`;
           }
         }
       }
       
-      // Last message type icon
-      if (c.lastMessageType === 'image') {
-        preview = '📸 Photo';
-      } else if (c.lastMessageType === 'file') {
-        preview = '📄 File';
-      } else if (c.lastMessageType === 'voice') {
-        preview = '🎤 Voice message';
-      } else if (c.lastMessageType === 'sticker') {
-        preview = '😀 Sticker';
-      } else {
-        preview = escapeHtml(c.lastMessage);
-      }
-      
-      // Sent tick (for my own last message)
-      if (c.lastSenderId === currentUser.uid && c.lastMessageType === 'text') {
-        preview = preview + ' <span style="color:#22c55e;font-size:11px">✓✓</span>';
-      }
+      if (c.lastMessageType === 'image') preview = '📷 Photo';
+      else if (c.lastMessageType === 'file') preview = '📄 Document';
+      else if (c.lastMessageType === 'voice') preview = '🎤 Voice message';
+      else if (c.lastMessageType === 'sticker') preview = '😀 Sticker';
+      else preview = escapeHtml(c.lastMessage);
     }
     
-    // ---- Time formatting ----
+    // Tick (for my own last message)
+    let tickHTML = '';
+    if (c.lastSenderId === currentUser.uid && c.lastMessageType === 'text') {
+      tickHTML = `<svg class="tick-svg" viewBox="0 0 16 11" width="16" height="11" style="flex-shrink:0"><path fill="#53bdeb" d="M11.071.653a.457.457 0 0 0-.304-.102.493.493 0 0 0-.381.178l-6.19 7.636-2.405-2.272a.463.463 0 0 0-.336-.146.47.47 0 0 0-.343.146l-.311.31a.445.445 0 0 0-.14.337c0 .136.047.25.14.343l2.996 2.996a.724.724 0 0 0 .501.204.725.725 0 0 0 .501-.204l7.104-8.744a.457.457 0 0 0 .091-.36.487.487 0 0 0-.122-.322Z"/></svg>`;
+    }
+    
+    // Time
     const timeStr = timeAgo(c.updatedAt);
     
-    // ---- Unread badge (simple: if last message not mine & not muted) ----
-    // (আপনি চাইলে Firestore-এ unreadCount ফিল্ড যোগ করতে পারেন)
-    const unreadCount = 0; // placeholder — পরে implement করতে পারেন
-    const badge = unreadCount > 0 && !isMuted
-      ? `<div class="badge">${unreadCount > 99 ? '99+' : unreadCount}</div>`
-      : '';
+    // Pin & Mute
+    const pinIcon = isPinned ? '<span style="font-size:13px;margin-right:3px">📌</span>' : '';
+    const muteIcon = isMuted ? '<span style="font-size:13px;margin-right:3px">🔕</span>' : '';
     
-    // ---- Pin & Mute icons ----
-    const pinIcon = isPinned ? '<span style="font-size:12px">📌</span> ' : '';
-    const muteIcon = isMuted ? '<span style="font-size:12px">🔕</span> ' : '';
+    // Unread badge
+    const unread = c.unreadCounts?.[currentUser.uid] || 0;
+    const badge = unread > 0 && !isMuted
+      ? `<div class="badge">${unread > 99 ? '99+' : unread}</div>`
+      : '';
     
     return `
       <div class="row" 
@@ -2236,12 +3513,8 @@ function renderChats(chats) {
           ${isOnline ? '<span class="dot"></span>' : ''}
         </div>
         <div class="info">
-          <div class="name">
-            ${pinIcon}${muteIcon}${escapeHtml(title)}
-          </div>
-          <div class="preview" style="${previewStyle}">
-            ${previewPrefix}${preview}
-          </div>
+          <div class="name">${pinIcon}${muteIcon}${escapeHtml(title)}</div>
+          <div class="preview">${tickHTML}${previewPrefix}${preview}</div>
         </div>
         <div class="meta">
           <div>${timeStr}</div>
@@ -2465,12 +3738,118 @@ async function refreshProfileUI() {
     const data = userDoc.exists() ? userDoc.data() : {};
     const name = data.name || currentUser.displayName || 'Guest';
     const emoji = data.emoji || '🧑';
-    const email = currentUser.email || 'guest@ittisal.app';
-    document.getElementById('profileAvatar').textContent = emoji;
-    document.getElementById('profileName').textContent = name;
-    document.getElementById('profileEmail').textContent = email;
-  } catch (e) { console.error(e); }
+    const email = currentUser.email || data.email || 'Not set';
+    const phone = data.phone || currentUser.phoneNumber || 'Not set';
+    const about = data.about || 'Hey there! I am using Ittisal.';
+    
+    // Main profile card
+    const avatarEl = document.getElementById('profileAvatar');
+    if (avatarEl) {
+      // Preserve the checkmark div
+      const checkmark = avatarEl.querySelector('div');
+      avatarEl.childNodes[0].nodeValue = emoji + ' ';
+      if (!checkmark) {
+        avatarEl.innerHTML = emoji + `
+          <div style="position:absolute;bottom:6px;right:6px;width:26px;height:26px;border-radius:50%;background:#00a884;border:3px solid #fff;display:grid;place-items:center">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#fff">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+        `;
+      }
+    }
+    
+    const nameEl = document.getElementById('profileName');
+    if (nameEl) nameEl.textContent = name;
+    
+    const emailEl = document.getElementById('profileEmail');
+    if (emailEl) emailEl.textContent = email;
+    
+    const phoneEl = document.getElementById('profilePhone');
+    if (phoneEl) phoneEl.textContent = phone !== 'Not set' ? phone : '';
+    
+    // Menu items
+    const aboutEl = document.getElementById('profileAbout');
+    if (aboutEl) aboutEl.textContent = about;
+    
+    const phoneFullEl = document.getElementById('profilePhoneFull');
+    if (phoneFullEl) phoneFullEl.textContent = phone;
+    
+    const emailFullEl = document.getElementById('profileEmailFull');
+    if (emailFullEl) emailFullEl.textContent = email;
+        // Also update Settings screen profile card
+    const settingsAvatar = document.getElementById('settingsAvatar');
+    if (settingsAvatar) {
+      settingsAvatar.childNodes[0].nodeValue = emoji + ' ';
+    }
+    const settingsName = document.getElementById('settingsProfileName');
+    if (settingsName) settingsName.textContent = name;
+    const settingsAbout = document.getElementById('settingsProfileAbout');
+    if (settingsAbout) settingsAbout.textContent = about;
+  } catch (e) { 
+    console.error('Profile refresh error:', e); 
+  }
 }
+
+window.editAbout = async () => {
+  const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+  const current = userDoc.exists() ? (userDoc.data().about || 'Hey there! I am using Ittisal.') : 'Hey there! I am using Ittisal.';
+  const newAbout = prompt('Update your about:', current);
+  if (newAbout === null || !newAbout.trim()) return;
+  try {
+    await updateDoc(doc(db, 'users', currentUser.uid), { about: newAbout.trim().slice(0, 140) });
+    toast('About updated');
+    refreshProfileUI();
+  } catch (e) { toast('Could not update'); }
+};
+
+window.editPhone = () => {
+  toast('Phone number cannot be changed (linked to login)');
+};
+
+window.editEmail = () => {
+  if (currentUser.email) {
+    toast('Email: ' + currentUser.email);
+  } else {
+    toast('No email linked (phone login)');
+  }
+};
+
+window.changeAvatar = () => {
+  const EMOJIS = ['🧑','👨','👩','🧕','👧','👦','🧔','👶','👴','👵','🧑‍💼','👨‍💻','👩‍💻','🦸','🧙','🐱','🐶','🦊','🐼','🦁','🐯','🐨','🐸','🦄','🐻'];
+  
+  // Create modal
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(11,20,26,.5);display:flex;align-items:flex-end;z-index:1000';
+  modal.innerHTML = `
+    <div style="width:100%;max-width:480px;margin:auto;background:#fff;border-radius:20px 20px 0 0;padding:20px;animation:slideUp .25s ease">
+      <h3 style="font-size:17px;font-weight:500;margin-bottom:16px;color:#111b21">Choose avatar</h3>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px" id="avatarGrid">
+        ${EMOJIS.map(e => `
+          <div onclick="selectNewAvatar('${e}',this)" 
+            style="font-size:32px;padding:10px;text-align:center;border-radius:12px;background:#f0f2f5;cursor:pointer;transition:.15s">
+            ${e}
+          </div>
+        `).join('')}
+      </div>
+      <button onclick="this.closest('div[style*=fixed]').remove()" 
+        style="width:100%;margin-top:16px;padding:13px;background:#f0f2f5;border-radius:10px;font-size:15px;color:#111b21;font-weight:500">
+        Cancel
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+};
+
+window.selectNewAvatar = async (emoji, el) => {
+  try {
+    await updateDoc(doc(db, 'users', currentUser.uid), { emoji });
+    el.closest('div[style*=fixed]').remove();
+    toast('Avatar updated');
+    refreshProfileUI();
+    loadUsers();
+  } catch (e) { toast('Could not update avatar'); }
+};
 
 window.openEditProfile = () => {
   document.getElementById('editName').value = document.getElementById('profileName').textContent;
@@ -2493,9 +3872,48 @@ window.saveProfileEdit = async () => {
 };
 
 // ================================================================
-// NEW CHAT SHEET
+// NEW CHAT SHEET (FAB button)
 // ================================================================
 window.openNewChatSheet = () => document.getElementById('sheet')?.classList.add('show');
+
+// ================================================================
+// MAIN MENU (3-dot button in header)
+// ================================================================
+window.openMenuSheet = () => {
+  // Remove any existing menu
+  document.querySelectorAll('.wa-main-menu').forEach(el => el.remove());
+  
+  const menu = document.createElement('div');
+  menu.className = 'wa-main-menu';
+  menu.innerHTML = `
+    <button onclick="closeMainMenu();openCreateGroup()">
+      <span class="mm-icon">👥</span> New group
+    </button>
+    <button onclick="closeMainMenu();showScreen('screen-profile')">
+      <span class="mm-icon">👤</span> Profile
+    </button>
+    <button onclick="closeMainMenu();showScreen('screen-settings')">
+      <span class="mm-icon">⚙️</span> Settings
+    </button>
+    <button onclick="closeMainMenu();handleLogout()">
+      <span class="mm-icon">↪</span> Log out
+    </button>
+  `;
+  document.querySelector('.app').appendChild(menu);
+  
+  setTimeout(() => {
+    document.addEventListener('click', function closeMenu(ev) {
+      if (!menu.contains(ev.target)) {
+        menu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    });
+  }, 100);
+};
+
+window.closeMainMenu = () => {
+  document.querySelectorAll('.wa-main-menu').forEach(el => el.remove());
+};
 
 // ================================================================
 // INVITE
@@ -3241,10 +4659,19 @@ window.toggleMute = () => {
   if (!localStream) return;
   isMuted = !isMuted;
   localStream.getAudioTracks().forEach(t => { t.enabled = !isMuted; });
+  
   const btn = document.getElementById('muteBtn');
   if (btn) {
-    btn.textContent = isMuted ? '🔇' : '🎤';
-    btn.style.background = isMuted ? '#ef4444' : 'rgba(255,255,255,.15)';
+    btn.classList.toggle('muted', isMuted);
+    // Change icon
+    const icon = btn.querySelector('svg');
+    if (icon) {
+      if (isMuted) {
+        icon.innerHTML = '<path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>';
+      } else {
+        icon.innerHTML = '<path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/>';
+      }
+    }
   }
   toast(isMuted ? '🔇 Muted' : '🎤 Unmuted');
 };
@@ -3343,8 +4770,11 @@ function cleanupCall() {
     localStream.getTracks().forEach(t => t.stop());
     localStream = null;
   }
+  
   const remoteAudio = document.getElementById('remoteAudio');
-    // Reset video elements
+  if (remoteAudio) remoteAudio.srcObject = null;
+  
+  // Reset video elements
   const remoteVideo = document.getElementById('remoteVideo');
   if (remoteVideo) {
     remoteVideo.srcObject = null;
@@ -3356,27 +4786,32 @@ function cleanupCall() {
     localVideo.classList.remove('show');
     localVideo.style.opacity = '1';
   }
-  document.getElementById('screen-call').classList.remove('video-mode');
-  document.getElementById('videoOverlay').classList.remove('show');
-  document.getElementById('callInfoBox').classList.remove('hide');
+  
+  document.getElementById('screen-call')?.classList.remove('video-mode');
+  document.getElementById('videoOverlay')?.classList.remove('show');
+  document.getElementById('callInfoBox')?.classList.remove('hide');
   
   // Reset camera button
   isCameraOn = true;
   const camBtn = document.getElementById('cameraBtn');
   if (camBtn) {
     camBtn.classList.remove('camera-off');
-    camBtn.textContent = '📹';
   }
   currentFacingMode = 'user';
-  if (remoteAudio) remoteAudio.srcObject = null;
-  currentCallId = null;
-  currentCallRole = null;
+  
+  // Reset mute button
   isMuted = false;
   const muteBtn = document.getElementById('muteBtn');
   if (muteBtn) {
-    muteBtn.textContent = '🎤';
-    muteBtn.style.background = 'rgba(255,255,255,.15)';
+    muteBtn.classList.remove('muted');
+    const icon = muteBtn.querySelector('svg');
+    if (icon) {
+      icon.innerHTML = '<path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/>';
+    }
   }
+  
+  currentCallId = null;
+  currentCallRole = null;
   window._incomingCallId = null;
   window._incomingType = null;
 }
@@ -3501,10 +4936,8 @@ window.toggleCamera = () => {
   const btn = document.getElementById('cameraBtn');
   if (btn) {
     btn.classList.toggle('camera-off', !isCameraOn);
-    btn.textContent = isCameraOn ? '📹' : '🚫';
   }
   
-  // Show placeholder if camera off
   const localVideo = document.getElementById('localVideo');
   if (localVideo) {
     localVideo.style.opacity = isCameraOn ? '1' : '0.3';
@@ -3668,10 +5101,29 @@ setInterval(async () => {
 }, 60000);
 
 // ================================================================
+// WELCOME FLOW
+// ================================================================
+window.acceptWelcome = () => {
+  const lang = document.getElementById('welcomeLang').value;
+  localStorage.setItem('ittisal_welcome_done', '1');
+  localStorage.setItem('ittisal_lang', lang);
+  showScreen('screen-login');
+};
+
+// Splash → Welcome/Login after 1.5s
+setTimeout(() => {
+  const done = localStorage.getItem('ittisal_welcome_done');
+  if (done) {
+    showScreen('screen-login');
+  } else {
+    showScreen('screen-welcome');
+  }
+}, 1500);
+
+// ================================================================
 // INITIALIZE
 // ================================================================
 document.getElementById('loading').classList.add('hide');
-document.getElementById('screen-login').classList.add('active');
 renderEmojiPicker();
 
 // ================================================================
@@ -3751,76 +5203,103 @@ window.closeSettingScreen = () => {
 // ---------- Render each sub-screen ----------
 function renderSettingContent(name) {
   switch (name) {
-    case 'account':      return renderAccount();
-    case 'privacy':      return renderPrivacy();
-    case 'notifications':return renderNotifications();
-    case 'chat':         return renderChatSettings();
-    case 'storage':      return renderStorage();
-    case 'language':     return renderLanguage();
-    case 'help':         return renderHelp();
-    case 'about':        return renderAbout();
-    default:             return '<p style="padding:20px">Coming soon</p>';
+    case 'account':       return renderAccount();
+    case 'privacy':       return renderPrivacy();
+    case 'notifications': return renderNotifications();
+    case 'chat':          return renderChatSettings();
+    case 'storage':       return renderStorage();
+    case 'language':      return renderLanguage();
+    case 'help':          return renderHelp();
+    case 'about':         return renderAbout();
+    default:              return '<p style="padding:20px;text-align:center;color:#8696a0">Coming soon</p>';
   }
 }
 
 // ---------- Account ----------
 function renderAccount() {
-  const name = document.getElementById('profileName').textContent;
-  const email = document.getElementById('profileEmail').textContent;
-  const emoji = document.getElementById('profileAvatar').textContent;
+  const name = document.getElementById('profileName')?.textContent || 'User';
+  const email = document.getElementById('profileEmail')?.textContent || 'Not set';
+  const emoji = document.getElementById('profileAvatar')?.childNodes[0]?.nodeValue?.trim() || '🧑';
   const uid = currentUser?.uid || 'Unknown';
-  const shortUid = uid.slice(0, 12) + '...' + uid.slice(-4);
+  const shortUid = uid.length > 20 ? uid.slice(0, 12) + '...' + uid.slice(-4) : uid;
 
   return `
-    <div class="profile-info-card">
-      <div class="big-avatar">${emoji}</div>
+    <div class="wa-info-card">
+      <div class="wa-big-avatar">${emoji}</div>
       <h2>${escapeHtml(name)}</h2>
       <p>${escapeHtml(email)}</p>
-      <div class="uid">ID: ${shortUid}</div>
+      <div class="wa-uid">ID: ${shortUid}</div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Account Info</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="editAccountName()">
-          <div class="row-icon">✏️</div>
-          <div class="row-text"><b>Edit Name</b><small>Change your display name</small></div>
-          <span class="row-arrow">›</span>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">ACCOUNT INFO</div>
+      <div class="wa-setting-row" onclick="editAccountName()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
         </div>
-        <div class="setting-row" onclick="copyUid()">
-          <div class="row-icon">📋</div>
-          <div class="row-text"><b>Copy ID</b><small>Share your unique ID</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Edit name</b>
+          <small>Change your display name</small>
         </div>
-        <div class="setting-row" onclick="viewEmail()">
-          <div class="row-icon">✉️</div>
-          <div class="row-text"><b>Email</b><small>${escapeHtml(email)}</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="copyUid()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Copy ID</b>
+          <small>Share your unique ID</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="viewEmail()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Email</b>
+          <small>${escapeHtml(email)}</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Security</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="sendPasswordReset()">
-          <div class="row-icon">🔑</div>
-          <div class="row-text"><b>Change Password</b><small>Send reset email</small></div>
-          <span class="row-arrow">›</span>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">SECURITY</div>
+      <div class="wa-setting-row" onclick="sendPasswordReset()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
         </div>
-        <div class="setting-row" onclick="toast('Two-step verification coming soon')">
-          <div class="row-icon">🛡️</div>
-          <div class="row-text"><b>Two-Step Verification</b><small>Extra security</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Change password</b>
+          <small>Send reset email</small>
         </div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="toast('Two-step verification coming soon')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Two-step verification</b>
+          <small>Extra security for your account</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
-    <div class="setting-section danger-zone">
-      <div class="setting-section-title">Danger Zone</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="deleteAccountConfirm()">
-          <div class="row-icon">⚠️</div>
-          <div class="row-text"><b>Delete My Account</b><small>Permanently delete all data</small></div>
-          <span class="row-arrow">›</span>
+    
+    <div class="wa-section">
+      <div class="wa-section-title" style="color:#ea0038">DANGER ZONE</div>
+      <div class="wa-danger-row" onclick="deleteAccountConfirm()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Delete my account</b>
+          <small>Permanently delete all data</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
   `;
@@ -3830,58 +5309,84 @@ function renderAccount() {
 function renderPrivacy() {
   const s = userSettings;
   return `
-    <div class="setting-section">
-      <div class="setting-section-title">Who Can See</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="openPrivacyOption('lastSeen')">
-          <div class="row-icon">🕒</div>
-          <div class="row-text"><b>Last Seen</b><small>When you were last online</small></div>
-          <span class="row-value">${labelFor(s.privacy_lastSeen)}</span>
-          <span class="row-arrow">›</span>
+    <div class="wa-section">
+      <div class="wa-section-title">WHO CAN SEE MY PERSONAL INFO</div>
+      <div class="wa-setting-row" onclick="openPrivacyOption('lastSeen')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
         </div>
-        <div class="setting-row" onclick="openPrivacyOption('profilePhoto')">
-          <div class="row-icon">📷</div>
-          <div class="row-text"><b>Profile Photo</b><small>Who can see your avatar</small></div>
-          <span class="row-value">${labelFor(s.privacy_profilePhoto)}</span>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Last seen and online</b>
+          <small>When you were last online</small>
         </div>
-        <div class="setting-row" onclick="openPrivacyOption('about')">
-          <div class="row-icon">💬</div>
-          <div class="row-text"><b>About</b><small>Who can see your status</small></div>
-          <span class="row-value">${labelFor(s.privacy_about)}</span>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-value">${labelFor(s.privacy_lastSeen)}</div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="openPrivacyOption('profilePhoto')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Profile photo</b>
+          <small>Who can see your avatar</small>
+        </div>
+        <div class="wa-setting-value">${labelFor(s.privacy_profilePhoto)}</div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="openPrivacyOption('about')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>About</b>
+          <small>Who can see your status</small>
+        </div>
+        <div class="wa-setting-value">${labelFor(s.privacy_about)}</div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Messaging</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toggleSettingRow('privacy_readReceipts')">
-          <div class="row-icon">✓✓</div>
-          <div class="row-text"><b>Read Receipts</b><small>Show blue ticks when you read</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.privacy_readReceipts ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">MESSAGING</div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('privacy_readReceipts')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 7l-1.41 1.41L21.17 13H6v2h15.17l-4.58 4.59L18 21l7-7-7-7zM3 11h3v2H3zM0 11h2v2H0z"/></svg>
         </div>
-        <div class="setting-row" onclick="toggleSettingRow('privacy_typingIndicator')">
-          <div class="row-icon">⌨️</div>
-          <div class="row-text"><b>Typing Indicator</b><small>Show when you're typing</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.privacy_typingIndicator ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+        <div class="wa-setting-text">
+          <b>Read receipts</b>
+          <small>Show blue ticks when you read</small>
         </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.privacy_readReceipts ? 'checked' : ''} onchange="toggleSettingRow('privacy_readReceipts')">
+          <span class="wa-slider"></span>
+        </label>
+      </div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('privacy_typingIndicator')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Typing indicator</b>
+          <small>Show when you're typing</small>
+        </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.privacy_typingIndicator ? 'checked' : ''} onchange="toggleSettingRow('privacy_typingIndicator')">
+          <span class="wa-slider"></span>
+        </label>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Blocked</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toast('Block list empty')">
-          <div class="row-icon">🚫</div>
-          <div class="row-text"><b>Blocked Contacts</b><small>0 contacts blocked</small></div>
-          <span class="row-arrow">›</span>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">BLOCKED</div>
+      <div class="wa-setting-row" onclick="toast('Block list empty')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.42 3.58-8 8-8 1.85 0 3.55.63 4.9 1.69L5.69 16.9A7.902 7.902 0 014 12zm8 8c-1.85 0-3.55-.63-4.9-1.69L18.31 7.1A7.902 7.902 0 0120 12c0 4.42-3.58 8-8 8z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Blocked contacts</b>
+          <small>0 contacts blocked</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
   `;
@@ -3891,62 +5396,89 @@ function renderPrivacy() {
 function renderNotifications() {
   const s = userSettings;
   return `
-    <div class="setting-section">
-      <div class="setting-section-title">Messages</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toggleSettingRow('notif_messageSound')">
-          <div class="row-icon">🔊</div>
-          <div class="row-text"><b>Message Sound</b><small>Play sound on new message</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.notif_messageSound ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+    <div class="wa-section">
+      <div class="wa-section-title">MESSAGES</div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('notif_messageSound')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
         </div>
-        <div class="setting-row" onclick="toggleSettingRow('notif_messageVibrate')">
-          <div class="row-icon">📳</div>
-          <div class="row-text"><b>Vibrate</b><small>Vibrate on new message</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.notif_messageVibrate ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+        <div class="wa-setting-text">
+          <b>Message sound</b>
+          <small>Play sound on new message</small>
         </div>
-        <div class="setting-row" onclick="toggleSettingRow('notif_messagePopup')">
-          <div class="row-icon">💬</div>
-          <div class="row-text"><b>Message Popup</b><small>Show popup preview</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.notif_messagePopup ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.notif_messageSound ? 'checked' : ''} onchange="toggleSettingRow('notif_messageSound')">
+          <span class="wa-slider"></span>
+        </label>
+      </div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('notif_messageVibrate')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M0 15h2V9H0v6zm3 2h2V7H3v10zm19-8v6h2V9h-2zm-3 8h2V7h-2v10zM16.5 3h-9C6.67 3 6 3.67 6 4.5v15c0 .83.67 1.5 1.5 1.5h9c.83 0 1.5-.67 1.5-1.5v-15c0-.83-.67-1.5-1.5-1.5zM16 19H8V5h8v14z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Vibrate</b>
+          <small>Vibrate on new message</small>
+        </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.notif_messageVibrate ? 'checked' : ''} onchange="toggleSettingRow('notif_messageVibrate')">
+          <span class="wa-slider"></span>
+        </label>
+      </div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('notif_messagePopup')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Message popup</b>
+          <small>Show popup preview</small>
+        </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.notif_messagePopup ? 'checked' : ''} onchange="toggleSettingRow('notif_messagePopup')">
+          <span class="wa-slider"></span>
+        </label>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Groups & Calls</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toggleSettingRow('notif_groupSound')">
-          <div class="row-icon">👥</div>
-          <div class="row-text"><b>Group Sound</b><small>Play sound for group messages</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.notif_groupSound ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">GROUPS & CALLS</div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('notif_groupSound')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
         </div>
-        <div class="setting-row" onclick="toggleSettingRow('notif_callRingtone')">
-          <div class="row-icon">📞</div>
-          <div class="row-text"><b>Call Ringtone</b><small>Play ringtone for calls</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.notif_callRingtone ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+        <div class="wa-setting-text">
+          <b>Group sound</b>
+          <small>Play sound for group messages</small>
         </div>
-        <div class="setting-row" onclick="toggleSettingRow('notif_highPriority')">
-          <div class="row-icon">⚡</div>
-          <div class="row-text"><b>High Priority</b><small>Show previews at top</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.notif_highPriority ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.notif_groupSound ? 'checked' : ''} onchange="toggleSettingRow('notif_groupSound')">
+          <span class="wa-slider"></span>
+        </label>
+      </div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('notif_callRingtone')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Call ringtone</b>
+          <small>Play ringtone for calls</small>
+        </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.notif_callRingtone ? 'checked' : ''} onchange="toggleSettingRow('notif_callRingtone')">
+          <span class="wa-slider"></span>
+        </label>
+      </div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('notif_highPriority')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>High priority</b>
+          <small>Show previews at top</small>
+        </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.notif_highPriority ? 'checked' : ''} onchange="toggleSettingRow('notif_highPriority')">
+          <span class="wa-slider"></span>
+        </label>
       </div>
     </div>
   `;
@@ -3956,80 +5488,101 @@ function renderNotifications() {
 function renderChatSettings() {
   const s = userSettings;
   return `
-    <div class="setting-section">
-      <div class="setting-section-title">Display</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toggleSettingRow('chat_enterToSend')">
-          <div class="row-icon">⏎</div>
-          <div class="row-text"><b>Enter to Send</b><small>Press Enter to send messages</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.chat_enterToSend ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+    <div class="wa-section">
+      <div class="wa-section-title">DISPLAY</div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('chat_enterToSend')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z"/></svg>
         </div>
-        <div class="setting-row" onclick="openFontSizeOptions()">
-          <div class="row-icon">🔤</div>
-          <div class="row-text"><b>Font Size</b><small>Adjust chat text size</small></div>
-          <span class="row-value">${s.chat_fontSize}px</span>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Enter to send</b>
+          <small>Press Enter to send messages</small>
         </div>
-        <div class="setting-row" onclick="openWallpaperOptions()">
-          <div class="row-icon">🎨</div>
-          <div class="row-text"><b>Chat Wallpaper</b><small>Change chat background</small></div>
-          <span class="row-value">${s.chat_wallpaper}</span>
-          <span class="row-arrow">›</span>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.chat_enterToSend ? 'checked' : ''} onchange="toggleSettingRow('chat_enterToSend')">
+          <span class="wa-slider"></span>
+        </label>
+      </div>
+      <div class="wa-setting-row" onclick="openFontSizeOptions()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 4v3h5v12h3V7h5V4H9zm-6 8h3v7h3v-7h3V9H3v3z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Font size</b>
+          <small>Adjust chat text size</small>
+        </div>
+        <div class="wa-setting-value">${s.chat_fontSize}px</div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="openWallpaperOptions()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Chat wallpaper</b>
+          <small>Change chat background</small>
+        </div>
+        <div class="wa-setting-value">${s.chat_wallpaper}</div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
-        <div class="setting-section">
-      <div class="setting-section-title">Theme</div>
-      <div class="setting-section-body">
-        <div class="radio-option ${userSettings.theme === 'light' ? 'selected' : ''}" onclick="setTheme('light')">
-          <div class="row-icon">☀️</div>
-          <div class="radio-text">Light</div>
-          <div class="radio-circle"></div>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">THEME</div>
+      <div class="wa-radio-row ${s.theme === 'light' ? 'selected' : ''}" onclick="setTheme('light')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
         </div>
-        <div class="radio-option ${userSettings.theme === 'dark' ? 'selected' : ''}" onclick="setTheme('dark')">
-          <div class="row-icon">🌙</div>
-          <div class="radio-text">Dark</div>
-          <div class="radio-circle"></div>
+        <div class="wa-radio-text">Light</div>
+        <div class="wa-radio-circle"></div>
+      </div>
+      <div class="wa-radio-row ${s.theme === 'dark' ? 'selected' : ''}" onclick="setTheme('dark')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M9.37 5.51c-.18.64-.27 1.31-.27 1.99 0 4.08 3.32 7.4 7.4 7.4.68 0 1.35-.09 1.99-.27C17.45 17.19 14.93 19 12 19c-3.86 0-7-3.14-7-7 0-2.93 1.81-5.45 4.37-6.49zM12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
         </div>
-        <div class="radio-option ${userSettings.theme === 'system' ? 'selected' : ''}" onclick="setTheme('system')">
-          <div class="row-icon">📱</div>
-          <div class="radio-text">System Default<small>Follow your device theme</small></div>
-          <div class="radio-circle"></div>
+        <div class="wa-radio-text">Dark</div>
+        <div class="wa-radio-circle"></div>
+      </div>
+      <div class="wa-radio-row ${s.theme === 'system' ? 'selected' : ''}" onclick="setTheme('system')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
         </div>
+        <div class="wa-radio-text">System default<small>Follow device theme</small></div>
+        <div class="wa-radio-circle"></div>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Media</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toggleSettingRow('chat_mediaAutoDownload')">
-          <div class="row-icon">⬇️</div>
-          <div class="row-text"><b>Auto-Download Media</b><small>Images & files on WiFi</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.chat_mediaAutoDownload ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">MEDIA</div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('chat_mediaAutoDownload')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Auto-download media</b>
+          <small>Images & files on WiFi</small>
+        </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.chat_mediaAutoDownload ? 'checked' : ''} onchange="toggleSettingRow('chat_mediaAutoDownload')">
+          <span class="wa-slider"></span>
+        </label>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Backup</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toggleSettingRow('chat_backupEnabled')">
-          <div class="row-icon">☁️</div>
-          <div class="row-text"><b>Chat Backup</b><small>Backup to cloud</small></div>
-          <label class="switch">
-            <input type="checkbox" ${s.chat_backupEnabled ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">BACKUP</div>
+      <div class="wa-setting-row" onclick="toggleSettingRow('chat_backupEnabled')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
         </div>
-        <div class="setting-row" onclick="toast('Last backup: never')">
-          <div class="row-icon">📅</div>
-          <div class="row-text"><b>Last Backup</b><small>Never</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Chat backup</b>
+          <small>Backup to cloud</small>
         </div>
+        <label class="wa-switch" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.chat_backupEnabled ? 'checked' : ''} onchange="toggleSettingRow('chat_backupEnabled')">
+          <span class="wa-slider"></span>
+        </label>
       </div>
     </div>
   `;
@@ -4038,40 +5591,54 @@ function renderChatSettings() {
 // ---------- Storage ----------
 function renderStorage() {
   return `
-    <div class="setting-section">
-      <div class="setting-section-title">Storage Usage</div>
-      <div style="background:#fff;padding:16px 0">
-        <div class="storage-info">
-          <span><b style="font-size:18px">~50 MB</b> used</span>
-          <span>of 5 GB available</span>
+    <div class="wa-section">
+      <div class="wa-section-title">STORAGE USAGE</div>
+      <div style="padding:16px 20px 0">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+          <span style="font-size:24px;font-weight:500;color:#111b21">~50 MB</span>
+          <span style="font-size:13px;color:#667781">of 5 GB available</span>
         </div>
-        <div class="storage-bar">
-          <div class="storage-bar-fill" style="width:5%"></div>
+        <div class="wa-storage-bar">
+          <div class="wa-storage-fill" style="width:5%"></div>
         </div>
-        <div class="storage-info" style="padding-top:8px">
-          <span>📸 Photos: ~30 MB</span>
+        <div style="display:flex;justify-content:space-between;padding:14px 0;font-size:13px;color:#667781">
+          <span>📷 Photos: ~30 MB</span>
           <span>📄 Files: ~15 MB</span>
         </div>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Manage</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="clearLocalCache()">
-          <div class="row-icon">🗑️</div>
-          <div class="row-text"><b>Clear Local Cache</b><small>Free up browser storage</small></div>
-          <span class="row-arrow">›</span>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">MANAGE</div>
+      <div class="wa-setting-row" onclick="clearLocalCache()">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
         </div>
-        <div class="setting-row" onclick="toast('Data usage: WiFi only')">
-          <div class="row-icon">📊</div>
-          <div class="row-text"><b>Data Usage</b><small>WiFi only</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Clear local cache</b>
+          <small>Free up browser storage</small>
         </div>
-        <div class="setting-row" onclick="toast('No downloads yet')">
-          <div class="row-icon">⬇️</div>
-          <div class="row-text"><b>Downloaded Files</b><small>0 files</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="toast('Data usage: WiFi only')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Data usage</b>
+          <small>WiFi only</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="toast('No downloads yet')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Downloaded files</b>
+          <small>0 files</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
   `;
@@ -4086,20 +5653,18 @@ function renderLanguage() {
     { code: 'hi', name: 'हिन्दी',    flag: '🇮🇳' }
   ];
   return `
-    <div class="setting-section">
-      <div class="setting-section-title">Choose Language</div>
-      <div class="setting-section-body">
-        ${langs.map(l => `
-          <div class="radio-option ${userSettings.language === l.code ? 'selected' : ''}" onclick="setLanguage('${l.code}')">
-            <div class="row-icon" style="font-size:24px">${l.flag}</div>
-            <div class="radio-text">${l.name}</div>
-            <div class="radio-circle"></div>
-          </div>
-        `).join('')}
-      </div>
+    <div class="wa-section">
+      <div class="wa-section-title">CHOOSE LANGUAGE</div>
+      ${langs.map(l => `
+        <div class="wa-radio-row ${userSettings.language === l.code ? 'selected' : ''}" onclick="setLanguage('${l.code}')">
+          <div class="wa-setting-icon" style="font-size:24px">${l.flag}</div>
+          <div class="wa-radio-text">${l.name}</div>
+          <div class="wa-radio-circle"></div>
+        </div>
+      `).join('')}
     </div>
-    <p style="padding:16px 20px;color:var(--muted);font-size:12px">
-      Note: Full translation will be added in the next update. Currently the UI stays in English.
+    <p style="padding:16px 20px;color:#8696a0;font-size:12px;text-align:center">
+      Full translation coming in the next update.
     </p>
   `;
 }
@@ -4107,39 +5672,49 @@ function renderLanguage() {
 // ---------- Help ----------
 function renderHelp() {
   return `
-    <div class="setting-section">
-      <div class="setting-section-title">Get Help</div>
-      <div class="setting-section-body">
-        <a class="link-row" href="mailto:kamaluddin43@example.com">
-          <div class="link-icon">✉️</div>
-          <div class="link-text">Contact Support</div>
-          <span class="row-arrow">›</span>
-        </a>
-        <a class="link-row" href="#" onclick="event.preventDefault();toast('FAQ coming soon')">
-          <div class="link-icon">❓</div>
-          <div class="link-text">Frequently Asked Questions</div>
-          <span class="row-arrow">›</span>
-        </a>
-        <a class="link-row" href="#" onclick="event.preventDefault();toast('Privacy policy opened')">
-          <div class="link-icon">🔒</div>
-          <div class="link-text">Privacy Policy</div>
-          <span class="row-arrow">›</span>
-        </a>
-        <a class="link-row" href="#" onclick="event.preventDefault();toast('Terms opened')">
-          <div class="link-icon">📜</div>
-          <div class="link-text">Terms of Service</div>
-          <span class="row-arrow">›</span>
-        </a>
-      </div>
-    </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Report</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toast('Thanks for your report')">
-          <div class="row-icon">🚨</div>
-          <div class="row-text"><b>Report a Problem</b><small>Tell us what went wrong</small></div>
-          <span class="row-arrow">›</span>
+    <div class="wa-section">
+      <div class="wa-section-title">GET HELP</div>
+      <a class="wa-link-row" href="mailto:kamaluddin43@example.com">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
         </div>
+        <div class="wa-link-text">Contact support</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
+      <a class="wa-link-row" href="#" onclick="event.preventDefault();toast('FAQ coming soon')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        </div>
+        <div class="wa-link-text">Frequently asked questions</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
+      <a class="wa-link-row" href="#" onclick="event.preventDefault();toast('Privacy policy opened')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <div class="wa-link-text">Privacy policy</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
+      <a class="wa-link-row" href="#" onclick="event.preventDefault();toast('Terms opened')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        </div>
+        <div class="wa-link-text">Terms of service</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
+    </div>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">REPORT</div>
+      <div class="wa-setting-row" onclick="toast('Thanks for your report')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Report a problem</b>
+          <small>Tell us what went wrong</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
   `;
@@ -4148,73 +5723,93 @@ function renderHelp() {
 // ---------- About ----------
 function renderAbout() {
   return `
-    <div class="about-logo">
-      <div class="logo">💬</div>
+    <div class="wa-about-logo">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" width="52" height="52" fill="#fff"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+      </div>
       <h2>Ittisal</h2>
       <p>Connect · Chat · Share</p>
-      <span class="ver">Version 4.5.0</span>
+      <div class="wa-version">Version 4.5.0</div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Information</div>
-      <div class="setting-section-body">
-        <div class="setting-row" onclick="toast('Built with ❤️ in Bangladesh')">
-          <div class="row-icon">🇧🇩</div>
-          <div class="row-text"><b>Made in</b><small>Bangladesh</small></div>
-          <span class="row-arrow">›</span>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">INFORMATION</div>
+      <div class="wa-setting-row" onclick="toast('Built with ❤️ in Bangladesh')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
-        <div class="setting-row" onclick="toast('Built with Firebase + WebRTC')">
-          <div class="row-icon">🔧</div>
-          <div class="row-text"><b>Powered by</b><small>Firebase + WebRTC</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-text">
+          <b>Made in</b>
+          <small>Bangladesh</small>
         </div>
-        <div class="setting-row" onclick="toast('Developer: Kamal Uddin')">
-          <div class="row-icon">👨‍💻</div>
-          <div class="row-text"><b>Developer</b><small>Kamal Uddin</small></div>
-          <span class="row-arrow">›</span>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="toast('Built with Firebase + WebRTC')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
         </div>
+        <div class="wa-setting-text">
+          <b>Powered by</b>
+          <small>Firebase + WebRTC</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
+      </div>
+      <div class="wa-setting-row" onclick="toast('Developer: Kamal Uddin')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+        </div>
+        <div class="wa-setting-text">
+          <b>Developer</b>
+          <small>Kamal Uddin</small>
+        </div>
+        <div class="wa-setting-arrow">›</div>
       </div>
     </div>
-    <div class="setting-section">
-      <div class="setting-section-title">Legal</div>
-      <div class="setting-section-body">
-        <a class="link-row" href="#" onclick="event.preventDefault();toast('Privacy policy')">
-          <div class="link-icon">🔒</div>
-          <div class="link-text">Privacy Policy</div>
-          <span class="row-arrow">›</span>
-        </a>
-        <a class="link-row" href="#" onclick="event.preventDefault();toast('Terms of service')">
-          <div class="link-icon">📜</div>
-          <div class="link-text">Terms of Service</div>
-          <span class="row-arrow">›</span>
-        </a>
-        <a class="link-row" href="#" onclick="event.preventDefault();toast('Open-source licenses')">
-          <div class="link-icon">⚖️</div>
-          <div class="link-text">Open-Source Licenses</div>
-          <span class="row-arrow">›</span>
-        </a>
-      </div>
+    
+    <div class="wa-section">
+      <div class="wa-section-title">LEGAL</div>
+      <a class="wa-link-row" href="#" onclick="event.preventDefault();toast('Privacy policy')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <div class="wa-link-text">Privacy policy</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
+      <a class="wa-link-row" href="#" onclick="event.preventDefault();toast('Terms of service')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg>
+        </div>
+        <div class="wa-link-text">Terms of service</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
+      <a class="wa-link-row" href="#" onclick="event.preventDefault();toast('Open-source licenses')">
+        <div class="wa-setting-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11L12 2zm0 5.5l1.5 3h-3l1.5-3zM12 22l5.5-9h-11L12 22zm0-5.5l-1.5-3h3l-1.5 3z"/></svg>
+        </div>
+        <div class="wa-link-text">Open-source licenses</div>
+        <div class="wa-setting-arrow">›</div>
+      </a>
     </div>
-    <p style="text-align:center;padding:24px;color:var(--muted);font-size:12px">
+    
+    <p style="text-align:center;padding:24px;color:#8696a0;font-size:12px">
       © 2026 Ittisal · All rights reserved
     </p>
   `;
 }
 
-// ---------- Helper: Attach Handlers (mostly delegated) ----------
+// ---------- Attach handlers (empty now, kept for compatibility) ----------
 function attachSettingHandlers(name) {
-  // Most handlers are inline onclick, so nothing extra needed here
-  // But we ensure switches don't double-trigger
-  document.querySelectorAll('#settingContent .switch input').forEach(inp => {
-    inp.addEventListener('click', (e) => e.stopPropagation());
-  });
+  // Nothing needed — all handlers are inline
 }
 
 // ---------- Toggle Setting ----------
 window.toggleSettingRow = (key) => {
   userSettings[key] = !userSettings[key];
   saveSettings(userSettings);
+  
   // Re-render current screen
-  const title = document.getElementById('settingTitle').textContent;
+  const titleEl = document.getElementById('settingTitle');
+  const title = titleEl ? titleEl.textContent : '';
   const map = {
     'Privacy': 'privacy',
     'Notifications': 'notifications',
@@ -4225,7 +5820,7 @@ window.toggleSettingRow = (key) => {
     document.getElementById('settingContent').innerHTML = renderSettingContent(name);
     attachSettingHandlers(name);
   }
-  // Apply side effects
+  
   applySettingEffect(key);
 };
 
